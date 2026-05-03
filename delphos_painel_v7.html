@@ -1,1 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Delphos &#226;&#128;&#148; Painel R&S</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#eef1f6;--white:#fff;--s2:#f5f7fb;--b:#dde3ef;--b2:#c8d0e0;
+  --navy:#0d2b1e;--green:#1db86a;--g2:#17a05c;--g3:#e6f9f0;--g4:#b8edd4;
+  --blue:#2563eb;--pur:#7c3aed;--cyan:#0891b2;--pink:#db2777;
+  --dan:#dc2626;--wrn:#d97706;--ok:#16a34a;
+  --tx:#0f1923;--tx2:#374151;--mu:#6b7280;--mu2:#9ca3af;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
+  --sh2:0 6px 24px rgba(0,0,0,.10);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:'Nunito Sans',sans-serif;min-height:100vh}
+.topbar{background:var(--navy);height:56px;display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:300;box-shadow:0 2px 16px rgba(0,0,0,.25)}
+.logo{display:flex;align-items:center;gap:10px;margin-right:16px;flex-shrink:0}
+.logo-icon{width:30px;height:30px;background:var(--green);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:900;color:#fff}
+.logo-name{font-family:'Nunito',sans-serif;font-weight:900;font-size:.95rem;color:#fff}
+.logo-name span{color:var(--green)}
+.logo-div{width:1px;height:18px;background:rgba(255,255,255,.15);margin:0 6px}
+.logo-sub{font-size:.56rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em}
+.tabs{display:flex;align-items:center;height:100%}
+.tab{padding:0 16px;height:100%;display:flex;align-items:center;font-size:.72rem;font-weight:700;color:rgba(255,255,255,.38);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;font-family:'Nunito',sans-serif;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.tab:hover{color:rgba(255,255,255,.65)}
+.tab.on{color:#fff;border-bottom-color:var(--green)}
+.topbar-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.total-box{background:rgba(29,184,106,.1);border:1px solid rgba(29,184,106,.28);border-radius:7px;padding:4px 11px;display:flex;align-items:center;gap:7px}
+.total-box .tn{font-family:'Nunito',sans-serif;font-size:1.45rem;font-weight:900;color:var(--green);line-height:1}
+.total-box .tl{font-size:.52rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.06em;line-height:1.5}
+.upd-pill{font-size:.6rem;color:rgba(255,255,255,.25);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:5px;padding:3px 8px;white-space:nowrap}
+.cfg-btn{position:fixed;bottom:18px;right:18px;width:32px;height:32px;background:rgba(13,43,30,.7);border:1px solid rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.85rem;z-index:500;transition:all .2s}
+.cfg-btn:hover{background:var(--navy);border-color:var(--green)}
+.cfg-panel{position:fixed;bottom:60px;right:18px;background:var(--navy);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px;z-index:500;display:none;flex-direction:column;gap:8px;min-width:210px;box-shadow:var(--sh2)}
+.cfg-panel.open{display:flex}
+.cfg-title{font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:2px}
+.upload-lbl{display:flex;align-items:center;gap:7px;padding:7px 10px;background:rgba(29,184,106,.08);border:1.5px dashed rgba(29,184,106,.3);border-radius:7px;cursor:pointer;transition:all .2s}
+.upload-lbl:hover{background:rgba(29,184,106,.15);border-color:var(--green)}
+.upload-lbl input{display:none}
+.upload-lbl span{font-size:.68rem;color:var(--green);font-weight:700}
+.alert-bar{background:#fef2f2;border-bottom:2px solid #fca5a5;padding:6px 24px;display:flex;align-items:center;gap:8px;font-size:.72rem;color:#991b1b;font-weight:600}
+.alert-bar button{margin-left:auto;font-size:.67rem;color:var(--dan);cursor:pointer;text-decoration:underline;background:none;border:none;font-family:inherit;font-weight:700}
+.filters{background:var(--white);border-bottom:1px solid var(--b);padding:7px 24px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.filter-row{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;overflow-x:auto}
+.filter-row::-webkit-scrollbar{height:3px}.filter-row::-webkit-scrollbar-thumb{background:var(--green);border-radius:2px}
+.fg{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.fl{font-size:.58rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;font-weight:700;white-space:nowrap}
+.fb{padding:3px 10px;border-radius:20px;border:1.5px solid var(--b);background:transparent;color:var(--tx2);font-family:'Nunito Sans',sans-serif;font-size:.68rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.fb:hover{border-color:var(--green);color:var(--navy)}
+.fb.on{background:var(--green);border-color:var(--green);color:#fff}
+.fsep{width:1px;height:18px;background:var(--b);flex-shrink:0}
+select{padding:3px 8px;border-radius:20px;border:1.5px solid var(--b);background:var(--white);color:var(--tx);font-family:'Nunito Sans',sans-serif;font-size:.68rem;font-weight:600;cursor:pointer;outline:none;flex-shrink:0;max-width:160px}
+select:focus{border-color:var(--green)}
+.page{display:none}.page.on{display:flex;flex-direction:column}
+.pmain{padding:14px 24px;display:flex;flex-direction:column;gap:12px}
+.esteira{display:grid;grid-template-columns:1.2fr repeat(8,1fr);gap:8px}
+.ek{background:var(--white);border-radius:10px;padding:12px 14px;box-shadow:var(--sh);border:1px solid var(--b);border-top:3px solid var(--b2);transition:transform .15s;animation:fu .4s ease both}
+.ek:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.ek.total{border-top-color:var(--green);background:linear-gradient(160deg,#f0fdf6,#fff)}
+.ek.eabe{border-top-color:#9ca3af}
+.ek.etri{border-top-color:var(--blue)}.ek.erh{border-top-color:var(--pur)}.ek.eops{border-top-color:#a855f7}
+.ek.ecli{border-top-color:var(--pink)}.ek.epesq{border-top-color:var(--wrn)}.ek.eteste{border-top-color:var(--cyan)}.ek.edoc{border-top-color:var(--ok)}
+.ek.ecanc{border-top-color:var(--wrn);background:linear-gradient(160deg,#fffbeb,#fff)}
+.ek.ecanc .ek-v{color:var(--wrn)}
+.ek-l{font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:2px;line-height:1.3}
+.ek-v{font-family:'Nunito',sans-serif;font-size:1.7rem;font-weight:900;line-height:1;color:var(--tx)}
+.ek.total .ek-v{color:var(--green)}.ek.edoc .ek-v{color:var(--ok)}
+.ek-s{font-size:.55rem;color:var(--mu2);margin-top:2px}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.crit-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.cs{border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:12px;border:1.5px solid transparent}
+.cs.pr{background:#f0fdf4;border-color:#bbf7d0}.cs.at{background:#fffbeb;border-color:#fde68a}.cs.cr{background:#fff1f2;border-color:#fecdd3}
+.cs .cn{font-family:'Nunito',sans-serif;font-size:2.1rem;font-weight:900;line-height:1}
+.cs.pr .cn{color:var(--ok)}.cs.at .cn{color:var(--wrn)}.cs.cr .cn{color:var(--dan)}
+.cs-info .cs-l{font-size:.7rem;font-weight:700;color:var(--tx)}.cs-info .cs-s{font-size:.58rem;color:var(--mu)}
+.g2{display:grid;grid-template-columns:1.4fr 1fr;gap:12px}
+.card{background:var(--white);border-radius:10px;padding:16px;box-shadow:var(--sh);border:1px solid var(--b)}
+.ct{font-family:'Nunito',sans-serif;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;display:flex;align-items:center;gap:7px;color:var(--navy)}
+.ct .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.funnel{display:flex;flex-direction:column;gap:6px}
+.fi{display:flex;align-items:center;gap:8px}
+.fi-l{font-size:.67rem;width:148px;flex-shrink:0;color:var(--tx2);font-weight:600}
+.fi-bw{flex:1;background:var(--bg);border-radius:3px;height:20px;overflow:hidden}
+.fi-b{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:7px;font-size:.62rem;font-weight:700;color:#fff;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.fi-n{font-size:.7rem;font-weight:700;width:22px;text-align:right;color:var(--tx)}
+.dwrap{display:flex;align-items:center;justify-content:center;gap:20px}
+.dleg{display:flex;flex-direction:column;gap:8px;flex:1}
+.di{display:flex;align-items:center;gap:8px;font-size:.7rem}
+.dd{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.dv{margin-left:auto;font-family:'Nunito',sans-serif;font-weight:800;font-size:.82rem;color:var(--tx)}
+table.rt{width:100%;border-collapse:collapse}
+.rt th{font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:5px 5px;text-align:center;border-bottom:2px solid var(--b);font-weight:700}
+.rt th:first-child{text-align:left}
+.rt td{font-size:.67rem;padding:6px 5px;border-bottom:1px solid var(--b);text-align:center}
+.rt td:first-child{text-align:left}
+.rt tr:last-child td{border-bottom:none}
+.rt tbody tr:hover td{background:var(--s2)}
+.bx{display:inline-block;padding:2px 6px;border-radius:12px;font-size:.58rem;font-weight:700;min-width:20px;text-align:center}
+.bx.cr{background:#fee2e2;color:var(--dan)}.bx.at{background:#fef3c7;color:var(--wrn)}.bx.pr{background:#dcfce7;color:var(--ok)}
+.bx.bl{background:#dbeafe;color:var(--blue)}.bx.gy{background:#f3f4f6;color:var(--mu)}.bx.pu{background:#ede9fe;color:var(--pur)}
+.pipe-esteira{display:grid;grid-template-columns:1.3fr repeat(4,1fr) 1fr;gap:8px}
+.pe{background:var(--white);border-radius:10px;padding:12px 14px;box-shadow:var(--sh);border:1px solid var(--b);border-top:3px solid var(--b2);animation:fu .4s ease both}
+.pe.total{border-top-color:var(--blue);background:linear-gradient(160deg,#eff6ff,#fff)}
+.pe.cadastro{border-top-color:#9ca3af}.pe.aso{border-top-color:var(--wrn)}.pe.integ{border-top-color:var(--blue)}
+.pe.adm{border-top-color:var(--ok);background:linear-gradient(160deg,#f0fdf6,#fff)}
+.pe.pct{border-top-color:var(--pur);background:linear-gradient(160deg,#faf5ff,#fff)}
+.pe-l{font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:2px;line-height:1.3}
+.pe-v{font-family:'Nunito',sans-serif;font-size:1.7rem;font-weight:900;line-height:1;color:var(--tx)}
+.pe.total .pe-v{color:var(--blue)}.pe.aso .pe-v{color:var(--wrn)}.pe.integ .pe-v{color:var(--blue)}.pe.adm .pe-v{color:var(--ok)}.pe.pct .pe-v{color:var(--pur);font-size:1.4rem}
+.pe-s{font-size:.55rem;color:var(--mu2);margin-top:2px}
+.adml{display:flex;flex-direction:column;gap:5px;max-height:320px;overflow-y:auto}
+.adml::-webkit-scrollbar{width:3px}.adml::-webkit-scrollbar-thumb{background:var(--green);border-radius:2px}
+.ai{display:flex;align-items:center;gap:7px;background:var(--s2);border-radius:7px;padding:7px 9px;border-left:3px solid var(--green)}
+.ai-info{flex:1;min-width:0}
+.ai-n{font-size:.7rem;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ai-s{font-size:.59rem;color:var(--mu)}
+.ai-r{font-size:.6rem;color:var(--blue);font-weight:700;white-space:nowrap}
+.tbl-wrap{background:var(--white);border-radius:10px;box-shadow:var(--sh);border:1px solid var(--b);overflow:hidden}
+.tbl-hd{padding:10px 14px;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tbl-title{font-family:'Nunito',sans-serif;font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--navy);display:flex;align-items:center;gap:6px}
+.tbl-cnt{font-size:.65rem;color:var(--mu);background:var(--s2);border:1px solid var(--b);border-radius:20px;padding:2px 9px;font-weight:700}
+.tbl-acts{margin-left:auto;display:flex;gap:5px}
+.btn-sm{padding:4px 10px;border-radius:6px;border:1.5px solid var(--b);background:var(--white);color:var(--tx2);font-family:'Nunito Sans',sans-serif;font-size:.63rem;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-sm:hover{border-color:var(--green);color:var(--green)}
+.btn-sm.act{background:var(--dan);border-color:var(--dan);color:#fff}
+.tbl-sc{overflow-x:auto;max-height:280px;overflow-y:auto}
+.tbl-sc::-webkit-scrollbar{height:4px;width:4px}.tbl-sc::-webkit-scrollbar-thumb{background:var(--green);border-radius:2px}
+table.vt{width:100%;border-collapse:collapse;min-width:1200px}
+.vt th{font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:7px 10px;text-align:left;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700;position:sticky;top:0;z-index:10;white-space:nowrap}
+.vt td{font-size:.66rem;padding:7px 10px;border-bottom:1px solid var(--b);color:var(--tx2)}
+.vt tr:last-child td{border-bottom:none}
+.vt tbody tr:hover td{background:#f0fdf4}
+.vt tbody tr.alrt td{background:#fff7f7}
+.ctag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.57rem;font-weight:700}
+.ctag.cr{background:#fee2e2;color:var(--dan)}.ctag.at{background:#fef3c7;color:var(--wrn)}.ctag.pr{background:#dcfce7;color:var(--ok)}
+.etag{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.57rem;font-weight:700;background:var(--g3);color:var(--g2)}
+.obs-c{max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.6rem;color:var(--mu);font-style:italic}
+.p2grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tempo-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tc{background:var(--white);border-radius:10px;padding:14px 16px;box-shadow:var(--sh);border:1px solid var(--b);text-align:center}
+.tc .tcn{font-family:'Nunito',sans-serif;font-size:2.5rem;font-weight:900;line-height:1}
+.tc .tcu{font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:700;color:var(--mu)}
+.tc .tcl{font-size:.6rem;color:var(--mu);margin-top:3px;text-transform:uppercase;letter-spacing:.06em}
+.tc .tcb{font-size:.58rem;color:var(--mu2);margin-top:2px}
+.fmain{padding:14px 24px;display:flex;flex-direction:column;gap:12px}
+.fkpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.fk{background:var(--white);border-radius:10px;padding:13px 15px;box-shadow:var(--sh);border:1px solid var(--b);border-left:4px solid var(--b2)}
+.fk.ab{border-left-color:var(--blue)}.fk.fe{border-left-color:var(--ok)}.fk.ca{border-left-color:var(--dan)}.fk.sl{border-left-color:var(--green)}
+.fk-l{font-size:.57rem;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;font-weight:700;margin-bottom:4px}
+.fk-v{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;line-height:1;color:var(--tx)}
+.fk.sl .fk-v{color:var(--green)}.fk.fe .fk-v{color:var(--ok)}.fk.ca .fk-v{color:var(--dan)}
+.fk-s{font-size:.58rem;color:var(--mu);margin-top:3px}
+.dia-wrap{overflow-x:auto}.dia-wrap::-webkit-scrollbar{height:4px}.dia-wrap::-webkit-scrollbar-thumb{background:var(--green);border-radius:2px}
+table.dt{border-collapse:collapse;min-width:900px;width:100%}
+.dt th{font-size:.55rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;padding:5px 7px;text-align:center;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700;position:sticky;top:0}
+.dt th:first-child{text-align:left;min-width:120px}
+.dt td{font-size:.65rem;padding:5px 7px;border-bottom:1px solid var(--b);text-align:center;font-family:'Nunito',sans-serif;font-weight:600}
+.dt td:first-child{text-align:left;font-size:.65rem;color:var(--tx2);font-family:'Nunito Sans',sans-serif;font-weight:700}
+.dt tbody tr:hover td{background:var(--s2)}
+.cell-ab{color:var(--blue)}.cell-en{color:var(--ok)}.cell-ca{color:var(--dan)}.cell-ac{color:var(--navy);font-weight:800!important}
+.cell-0{color:var(--mu2)!important;font-weight:400!important}
+table.pt{border-collapse:collapse;width:100%}
+.pt th{font-size:.55rem;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;padding:5px 7px;text-align:center;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700;position:sticky;top:0;white-space:nowrap}
+.pt th:first-child{text-align:left;min-width:90px}
+.pt td{font-size:.65rem;padding:5px 7px;border-bottom:1px solid var(--b);text-align:center}
+.pt td:first-child{text-align:left;font-weight:700}
+.pt tbody tr:hover td{background:var(--s2)}
+.h0{background:#f9fafb;color:var(--mu2)}.h1{background:#dcfce7;color:var(--ok)}.h2{background:#bbf7d0;color:#15803d}.h3{background:#86efac;color:#166534}.h4{background:#4ade80;color:#14532d}
+footer{text-align:center;padding:9px;font-size:.58rem;color:var(--mu);border-top:1px solid var(--b);background:var(--white)}
+@media(max-width:1100px){.esteira{grid-template-columns:repeat(4,1fr)}.g2,.p2grid,.fkpis,.tempo-cards{grid-template-columns:1fr 1fr}.pmain,.fmain{padding:10px 12px}.topbar,.filters{padding-left:12px;padding-right:12px}}
+</style>
+</head>
+<body>
 
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-icon">D</div>
+    <div class="logo-name">DEL<span>PHOS</span></div>
+    <div class="logo-div"></div>
+    <div class="logo-sub">Painel R&S</div>
+  </div>
+  <div class="tabs">
+    <div class="tab on" onclick="showPage('p1',this)">&#240;&#159;&#147;&#138; Vagas Ativas</div>
+    <div class="tab" onclick="showPage('p2',this)">&#240;&#159;&#148;&#181; Pipeline Admiss&#195;&#163;o</div>
+    <div class="tab" onclick="showPage('p3',this)">&#240;&#159;&#147;&#136; Fluxo de Vagas</div>
+  </div>
+  <div class="topbar-r">
+    <div class="total-box">
+      <div class="tn" id="totalAtivas">&#226;&#128;&#147;</div>
+      <div class="tl">Vagas<br>Ativas</div>
+    </div>
+    <div class="upd-pill" id="updPill">&#226;&#128;&#147;</div>
+  </div>
+</div>
+
+<div id="alertBar" style="display:none" class="alert-bar">
+  <span>&#226;&#154;&#160;&#239;&#184;&#143;</span><span id="alertMsg"></span>
+  <button onclick="filterAlert()">Ver vagas &#226;&#134;&#147;</button>
+</div>
+
+<div class="filters" id="filterBar">
+  <div class="filter-row">
+    <div class="fg">
+      <span class="fl">Servi&#195;&#167;o</span>
+      <button class="fb on" data-f="s" data-v="">Todos</button>
+      <button class="fb" data-f="s" data-v="FACILITIES">Facilities</button>
+      <button class="fb" data-f="s" data-v="SEGURAN&#195;&#135;A">Seguran&#195;&#167;a</button>
+      <button class="fb" data-f="s" data-v="VIGILANCIA">Vigil&#195;&#162;ncia</button>
+      <button class="fb" data-f="s" data-v="ADM">ADM</button>
+    </div>
+    <div class="fsep"></div>
+    <div class="fg">
+      <span class="fl">Criticidade</span>
+      <button class="fb on" data-f="c" data-v="">Todas</button>
+      <button class="fb" data-f="c" data-v="Cr&#195;&#173;tico">&#240;&#159;&#148;&#180; Cr&#195;&#173;tico</button>
+      <button class="fb" data-f="c" data-v="Aten&#195;&#167;&#195;&#163;o">&#240;&#159;&#159;&#161; Aten&#195;&#167;&#195;&#163;o</button>
+      <button class="fb" data-f="c" data-v="No Prazo">&#240;&#159;&#159;&#162; No Prazo</button>
+    </div>
+    <div class="fsep"></div>
+    <div class="fg">
+      <span class="fl">Filial</span>
+      <button class="fb on" data-f="fil" data-v="">Todas</button>
+      <button class="fb" data-f="fil" data-v="JUNDIAI">Jundia&#195;&#173;</button>
+      <button class="fb" data-f="fil" data-v="CAMPINAS">Campinas</button>
+      <button class="fb" data-f="fil" data-v="S&#195;&#131;O PAULO">S&#195;&#163;o Paulo</button>
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="fg">
+      <span class="fl">Recrutador</span>
+      <select id="selR"><option value="">Todos</option></select>
+    </div>
+    <div class="fg">
+      <span class="fl">Supervisor</span>
+      <select id="selSup"><option value="">Todos</option></select>
+    </div>
+    <div class="fg">
+      <span class="fl">Cliente</span>
+      <select id="selL"><option value="">Todos</option></select>
+    </div>
+    <div class="fg">
+      <span class="fl">Etapa</span>
+      <select id="selE"><option value="">Todas</option></select>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 1 -->
+<div class="page on" id="p1">
+  <div class="pmain">
+    <div class="esteira" id="esteira"></div>
+    <div class="crit-strip" id="critStrip"></div>
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--green)"></span>Funil de Vagas Ativas</div>
+        <div class="funnel" id="funil"></div>
+      </div>
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--green)"></span>Por Servi&#195;&#167;o</div>
+        <div class="dwrap">
+          <svg id="donut" width="130" height="130" viewBox="0 0 130 130"></svg>
+          <div class="dleg" id="dleg"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="dot" style="background:var(--pur)"></span>Performance Recrutadores</div>
+      <table class="rt" id="recTab"></table>
+    </div>
+    <div class="tbl-wrap" id="tblWrap">
+      <div class="tbl-hd">
+        <div class="tbl-title"><span style="width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block"></span>Vagas &#226;&#128;&#148; Detalhamento</div>
+        <span class="tbl-cnt" id="tblCnt"></span>
+        <div class="tbl-acts">
+          <button class="btn-sm" id="btnAlrt" onclick="toggleAlerta()">&#226;&#154;&#160;&#239;&#184;&#143; S&#195;&#179; alertas</button>
+          <button class="btn-sm" onclick="clearFilters()">&#226;&#156;&#149; Limpar</button>
+        </div>
+      </div>
+      <div class="tbl-sc"><table class="vt" id="vt"></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2 -->
+<div class="page" id="p2">
+  <!-- Filtros P2 -->
+  <div class="filters" id="filterBar2">
+    <div class="filter-row">
+      <div class="fg">
+        <span class="fl">Filial Adm.</span>
+        <button class="fb on" data-f2="fadm" data-v="">Todas</button>
+        <button class="fb" data-f2="fadm" data-v="JUNDIAI">Jundia&#195;&#173;</button>
+        <button class="fb" data-f2="fadm" data-v="CAMPINAS">Campinas</button>
+        <button class="fb" data-f2="fadm" data-v="S&#195;&#131;O PAULO">S&#195;&#163;o Paulo</button>
+      </div>
+      <div class="fsep"></div>
+      <div class="fg">
+        <span class="fl">Criticidade</span>
+        <button class="fb on" data-f2="crit" data-v="">Todas</button>
+        <button class="fb" data-f2="crit" data-v="Cr&#195;&#173;tico">&#240;&#159;&#148;&#180; Cr&#195;&#173;tico</button>
+        <button class="fb" data-f2="crit" data-v="Aten&#195;&#167;&#195;&#163;o">&#240;&#159;&#159;&#161; Aten&#195;&#167;&#195;&#163;o</button>
+        <button class="fb" data-f2="crit" data-v="No Prazo">&#240;&#159;&#159;&#162; No Prazo</button>
+      </div>
+    </div>
+    <div class="filter-row">
+      <div class="fg">
+        <span class="fl">Auxiliar</span>
+        <select id="selAux"><option value="">Todos</option></select>
+      </div>
+      <div class="fg">
+        <span class="fl">Cliente</span>
+        <select id="selLC"><option value="">Todos</option></select>
+      </div>
+      <div class="fg">
+        <span class="fl">Status</span>
+        <select id="selST"><option value="">Todos</option></select>
+      </div>
+    </div>
+  </div>
+  <div class="pmain">
+    <!-- Esteira Pipeline -->
+    <div class="pipe-esteira" id="pipeEsteira"></div>
+    <!-- Grid principal -->
+    <div class="g2">
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--blue)"></span>Pipeline por Auxiliar</div>
+        <table class="rt" id="auxTable"></table>
+      </div>
+      <div class="card">
+        <div class="ct"><span class="dot" style="background:var(--blue)"></span>&#240;&#159;&#147;&#133; Integra&#195;&#167;&#195;&#181;es Programadas</div>
+        <div class="adml" id="adml"></div>
+      </div>
+    </div>
+    <!-- Tempo m&#195;&#169;dio -->
+    <div class="tempo-cards" id="tempoCards"></div>
+    <!-- Tabela completa -->
+    <div class="tbl-wrap">
+      <div class="tbl-hd">
+        <div class="tbl-title"><span style="width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block"></span>Vagas em Documenta&#195;&#167;&#195;&#163;o &#226;&#128;&#148; Detalhamento</div>
+        <span class="tbl-cnt" id="tblCnt2"></span>
+      </div>
+      <div class="tbl-sc"><table class="vt" id="vt2"></table></div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 3 -->
+<div class="page" id="p3">
+  <div class="fmain">
+    <div class="fkpis" id="fkpis"></div>
+    <div class="card">
+      <div class="ct"><span class="dot" style="background:var(--blue)"></span>Fluxo do M&#195;&#170;s Atual &#226;&#128;&#148; Abril 2026 (dia a dia)</div>
+      <div class="dia-wrap"><table class="dt" id="diaDia"></table></div>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="dot" style="background:var(--green)"></span>Fluxo Anual &#226;&#128;&#148; Vis&#195;&#163;o Mensal</div>
+      <table class="dt" id="fluxoAnual"></table>
+    </div>
+    <div class="card">
+      <div class="ct"><span class="dot" style="background:var(--pur)"></span>Produtividade por Recrutador</div>
+      <div class="tbl-sc" style="max-height:none"><table class="pt" id="prodTable"></table></div>
+    </div>
+  </div>
+</div>
+
+<div class="cfg-btn" id="cfgBtn" title="Configura&#195;&#167;&#195;&#181;es">&#226;&#154;&#153;&#239;&#184;&#143;</div>
+<div class="cfg-panel" id="cfgPanel">
+  <div class="cfg-title">Atualizar Dados</div>
+  <label class="upload-lbl">
+    <input type="file" accept=".csv" onchange="loadCSV(this,'painel')">
+    <span>&#226;&#172;&#134; Carregar Painel CSV</span>
+  </label>
+  <label class="upload-lbl">
+    <input type="file" accept=".csv" onchange="loadCSV(this,'lista')">
+    <span>&#226;&#172;&#134; Carregar Lista CSV</span>
+  </label>
+</div>
+
+<footer>Delphos Servi&#195;&#167;os e Seguran&#195;&#167;a &#194;&#183; Painel R&S &#194;&#183; Use &#226;&#154;&#153;&#239;&#184;&#143; para atualizar os dados</footer>
+
+<script>
+var RAW = [{"RP": "28789", "DIAS_ABERTO": 97, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 6", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "CAMPINAS3 - RESERVA TECNICA - SEGURANCA", "CIDADE": "RESERVAS", "CANDIDATO": "WAGNER BENEDITO DA SILVA", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "Vaga da Bruna / Houveram 2 desist\u00eancias - passada Elony dia 20/04", "OBS_ADM": "Candidato - JULIO CEZAR DE OLIVEIRA CAMISA desistiu no dia 28/04", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29493", "DIAS_ABERTO": 41, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "THE ONE OFFICE", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "RAISSA APARECIDA JESUS", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "29/4", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29199", "DIAS_ABERTO": 65, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "FACILITIES2 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "SARA PASSOS GARCIA", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "30/4", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29200", "DIAS_ABERTO": 65, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "MAESTRAL COML.", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Desist\u00eancia de candidatos", "OBS_ADM": "JOS\u00c9 LUEDSON VIEIRA DA SILVA - Integra\u00e7\u00e3o foi agendada mas n\u00e3o compareceu e n\u00e3o retornou", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29270", "DIAS_ABERTO": 59, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "URBAN PACAEMBU", "CIDADE": "S\u00c3O PAULO", "CANDIDATO": "RICHARD THIAGO ARNAIS DA SILVA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ROSI", "OBS_REC": "27/04 - Cristian n\u00e3o compareceu na integra\u00e7\u00e3o por 2x", "OBS_ADM": "30/04 - Realizando exame m\u00e9dico, falta alguns documentos", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29345", "DIAS_ABERTO": 54, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "CRISTIANE APARECIDA VIANA DA SILVA", "LOCAL": "FACILITIES3 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "MARIA APARECIDA MENDES DE SOUZA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "CANDIDATA ADRIANA MARIA", "OBS_ADM": "Exame agendado para o dia 29/04, por\u00e9m ela n\u00e3o compareceu. Solicitou reagendamento", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29385", "DIAS_ABERTO": 52, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "PASARGADA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "MARIANA GOME", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "CANDIDATA SIMONE APROVADA 30/03 (Desistiu da vaga) - CANDIDATA LUCIANA APROVADA 09/04 (Declinada por falta de documentos) CNAD MARIANA DO WILLIAM 29/04", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29417", "DIAS_ABERTO": 48, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 3", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "HORIBA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "LUCIANA FERREIRA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "Candidata Claudin\u00e9ia declinou da vaga em 28/04 - vaga reabera", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29444", "DIAS_ABERTO": 47, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "CRISTIANE APARECIDA VIANA DA SILVA", "LOCAL": "FACILITIES3 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "CANDIDATA MARIA APARECIDA APROVADA", "OBS_ADM": "Atraso para subir , devido atraso para exame e documenta\u00e7\u00e3o. Desist\u00eancia vaga", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29429", "DIAS_ABERTO": 47, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FACILITIES7 - RESERVA DELPHOS", "CIDADE": "RESERVAS", "CANDIDATO": "FRANCISCO PELE DE MOURA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "PATRICIA", "OBS_REC": "CANDIDATA ANA FLAVIA APROVADA 10/04 (Parou de responder) - CANDIDATO FRANCISCO APROVADO 30/04", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29485", "DIAS_ABERTO": 44, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "L\u00cdDER DE LIMPEZA 13", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Haver\u00e1 promo\u00e7\u00e3o Interna - Supervisora Eliana - 20/04 - aguardar Elony", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29529", "DIAS_ABERTO": 40, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA CONDUTOR", "SUPERVISAO": "JOSIMAR ALVES DE LIMA", "LOCAL": "JARDIM DOS LAGOS", "CIDADE": "INDAIATUBA", "CANDIDATO": "LARISSA CRISTINA DE MELO SANTOS", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29521", "DIAS_ABERTO": 40, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "NEO PARTS", "CIDADE": "TATU\u00cd", "CANDIDATO": "CLAUDIA APARECIDA PAES CAMARGO", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "Patricia, atualizar", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29533", "DIAS_ABERTO": 40, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "SENSIENT", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Desist\u00eancia de candidatos, Reteve JERONIMO SANTOS DE ALMEIDA", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29554", "DIAS_ABERTO": 39, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "URBAN LIVING PACAEMBU", "CIDADE": "S\u00c3O PAULO", "CANDIDATO": "ELITON JAIRMILE DOS SANTOS", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "5/4", "RESP_ADM": "ROSI", "OBS_REC": "Candidato Jose Luiz declinou da vaga dia 17/04", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29564", "DIAS_ABERTO": 38, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA 23", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "CAEP", "CIDADE": "CAMPINAS", "CANDIDATO": "HIGOR  SOUZA CARVALHO", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29581", "DIAS_ABERTO": 38, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ENTREVISTA RH 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "CAMPINAS5 - FERISTA - FACILITIES", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "Candidata - BRUNA CUST\u00d3DIA DE SOUSA NEVES desistiu no dia 17/04", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29598", "DIAS_ABERTO": 37, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 3", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "DUO RESERVA DO JAPI", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "ROSELEI ALVES ROCHAROSELEI ALVES ROCHA", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Colaboradora Cristiana n\u00e3o compareceu no posto no qual foi remanejada", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29624", "DIAS_ABERTO": 34, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "PESQUISA SOCIAL 3", "ETAPA_MACRO": "PESQUISA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "RESORT SANTA ANGELA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "CANDIDATA ELAINE APROVADA 09/04 (Desistiu da vaga por motivos particulares) - CANDIDATA BRUNA EM DVC 30/04", "OBS_ADM": "CANDIDATA ELAINE APROVADA 09-04 (desistencia por motivos de sa\u00fade) - CANDIDATA ELAINE RETORNOU PARA O  PROCESSO 23-04 (parou de responder) DECLINANDO A VAGA", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29625", "DIAS_ABERTO": 34, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "PESQUISA SOCIAL 1", "ETAPA_MACRO": "PESQUISA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "THE ONE OFFICE", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "CANDIDATA NANCI EM ANALISE DE HISTORICO 30/04", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29662", "DIAS_ABERTO": 33, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA 23", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "CAEP", "CIDADE": "CAMPINAS", "CANDIDATO": "KAYKY FREITAS GONZAGA DOS SANTOS", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29655", "DIAS_ABERTO": 33, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "CAMPINAS3 - RESERVA TECNICA - SEGURANCA", "CIDADE": "RESERVAS", "CANDIDATO": "ALINE NASCIMENTO MOTA", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29639", "DIAS_ABERTO": 33, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 3", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "THAIS ALVES DE SOUZA", "LOCAL": "CANTO DA NATUREZA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "SILVANA MARIA DA SILVA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "PATRICIA", "OBS_REC": "28/04 - Vaga fechada pelo William", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29657", "DIAS_ABERTO": 33, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "AMADEUS DANTAS SILVA FELIX", "LOCAL": "MUTIRAO - JUNDIAI - DIURNO", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29633", "DIAS_ABERTO": 33, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "PESQUISA SOCIAL 1", "ETAPA_MACRO": "PESQUISA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "SP7 - RESERVA TECNICA - FACILITIES", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "24/04 - Eunice Branco Francisco em pesquisa", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29602", "DIAS_ABERTO": 32, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 2", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "CAMPINAS5 - RESERVA TECNICA - FACILITIES", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29649", "DIAS_ABERTO": 32, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "CRISTIANE APARECIDA VIANA DA SILVA", "LOCAL": "FACILITIES3 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29604", "DIAS_ABERTO": 32, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "PESQUISA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "MARCIA GODOIS CARVALHO SANTOS", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29684", "DIAS_ABERTO": 32, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "FAREVA", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29671", "DIAS_ABERTO": 32, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "PLASTAMP SUDESTE - CORPAK", "CIDADE": "ITUPEVA", "CANDIDATO": "CAMILA CONTUGNO DOS SANTOS", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "LUANA", "OBS_REC": "Candidata conseguiu outra oportunidade", "OBS_ADM": "23.04 -Ana Paulda declinou da vaga, pois arrumou outro trabalho", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29694", "DIAS_ABERTO": 32, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "VIGILANCIA", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGILANTE", "SUPERVISAO": "HERNANE DE OLIVEIRA", "LOCAL": "SUPERVISOR1 - RESERVA TECNICA - SEGURANCA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29660", "DIAS_ABERTO": 32, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "MARCOS DE MENEZES SANTOS", "LOCAL": "TIVOLI PARK", "CIDADE": "SOROCABA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Candidato Mateus Henrique declinou da vaga dia 16/04", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29703", "DIAS_ABERTO": 31, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "REABERTA", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "ATMOSPHERA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "30.04 declinamos com a candidata Laudic\u00e8ia, pois n\u00e3o fez o exame e pediu um posto, mais pr\u00f3iximo. Por\u00e9m, j\u00e1 tivemos problemas com ela em outro proceso que ela n\u00e3o compareceu na integra\u00e7\u00e3o, sendo que pagamos a passagem pra ela", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29698", "DIAS_ABERTO": 31, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "GEODIS LOGISTICA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "arrumou outra oportunidade/ N\u00e3o responde e n\u00e3o atende", "OBS_ADM": "NAGILA DO CARMO DE SOUZA  - declinou 29/04", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29695", "DIAS_ABERTO": 31, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "VIGILANCIA", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "REABERTA", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGILANTE", "SUPERVISAO": "ANDERSON SILVA", "LOCAL": "SUPERVISOR6 - FERISTA - SEGURANCA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "28/04- David Desistiu da vaga", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29721", "DIAS_ABERTO": 26, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "VIGILANCIA", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "VIGILANTE BALANCEIRO", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "SINTER - MATRIZ", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29743", "DIAS_ABERTO": 25, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "PESQUISA SOCIAL 1", "ETAPA_MACRO": "PESQUISA", "CARGO": "AUXILIAR DE LIMPEZA 23", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "CAEP", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29751", "DIAS_ABERTO": 25, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FACILITIES7 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29733", "DIAS_ABERTO": 25, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "VIGILANCIA", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "ENTREVISTA RH 1", "ETAPA_MACRO": "ENTREVISTA RH", "CARGO": "VIGILANTE", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "NIVEA", "CIDADE": "ITATIBA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29775", "DIAS_ABERTO": 24, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "JARDINEIRO", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "ADP BRASIL - MATRIZ SP", "CIDADE": "S\u00c3O PAULO", "CANDIDATO": "Cristiano Matos da Silva", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "05/04/2026", "RESP_ADM": "ROSI", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29784", "DIAS_ABERTO": 24, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ROSELI BERNARDO", "LOCAL": "CAMPINAS6 - RESERVA TECNICA - FACILITIES", "CIDADE": "RESERVAS", "CANDIDATO": "ELISANGELA CRISTINA SANTOS DA SILVA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29782", "DIAS_ABERTO": 24, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "EXSTO BRASIL", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29764", "DIAS_ABERTO": 24, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FACILITIES7 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29783", "DIAS_ABERTO": 24, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "JARDINEIRO 2", "SUPERVISAO": "ROSELI BERNARDO", "LOCAL": "HARIBO", "CIDADE": "BAURU", "CANDIDATO": "HIGOR SOARES MARINHO", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29769", "DIAS_ABERTO": 24, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "PESQUISA SOCIAL 2", "ETAPA_MACRO": "PESQUISA", "CARGO": "VIGIA 12", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "IRANI", "CIDADE": "INDAIATUBA", "CANDIDATO": "", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29814", "DIAS_ABERTO": 23, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "A RAYMOND - GALPAO", "CIDADE": "VINHEDO", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29804", "DIAS_ABERTO": 23, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "ANAUGER", "CIDADE": "ITUPEVA", "CANDIDATO": "MARILUCIA RIBEIRO DA SILVA CRUZ", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29744", "DIAS_ABERTO": 25, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "THAIS ALVES DE SOUZA", "LOCAL": "GRANI AMICI", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "SANDEILSON DOS SANTOS SILVA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29803", "DIAS_ABERTO": 23, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "GEODIS LOGISTICA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "ANGELA REGINA PEREIRA DA SILVA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "EDJANE DOS SANTOS SILVA  - Foi declinada por falta de retorno dia 28/04", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29806", "DIAS_ABERTO": 23, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 2", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "ITUPEVA - OWB", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Deu dvc", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29827", "DIAS_ABERTO": 20, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "ABITARE ECO CLUBE", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "ANA PAULA MARIA DA SILVA", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "BEATRIZ", "OBS_REC": "CANDIDATA MARIA DESISTIU 23/04 POR CONTA QUE QUER UMA VAGA DO LADO DA ESTA\u00c7\u00c3O DE JUNDIAI - CANDIDATA LUCINELMA DESISTIU DA VAGA 24/04 /ANA PAULA CANDIDTA DO WILLIAM 29/04", "OBS_ADM": "DESIST\u00caNCIA", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29825", "DIAS_ABERTO": 20, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE MANUTEN\u00c7\u00c3O", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FOREST HILLS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "GUSTAVO AVELINO", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "CANDIDATO GUILHERME DECLINOU DA VAGA 24/04", "OBS_ADM": "Candidato Guilherme desistiu", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29857", "DIAS_ABERTO": 20, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "JARDINEIRO 2", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "FULWOOD CASTELO 57 BUSINESS PARK", "CIDADE": "S\u00c3O ROQUE", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29824", "DIAS_ABERTO": 20, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "PORTAL DOS NOBRES", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "CAND LENON APROVADO 28/04 (Fechado pelo recrutador William)", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29844", "DIAS_ABERTO": 20, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "SAO FRANCISCO I", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "LETICIA AMANDA MIRANDA  - Declinou do processo por conta da dist\u00e2ncia 30/04", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29816", "DIAS_ABERTO": 20, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "SP7 - RESERVA TECNICA - FACILITIES - KERRY COTIA", "CIDADE": "RESERVAS", "CANDIDATO": "MARCOS FRANCISCO DAMASCENO", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "5/4", "RESP_ADM": "ROSI", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29868", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "ATMOSPHERA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29896", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "SIDNEY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "SIDNEY DE OLIVEIRA", "LOCAL": "BH - FERISTA - FACILITIES", "CIDADE": "", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "BH", "FILIAL_ADM": "BH"}, {"RP": "29878", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "CAEP", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Falta email de confrma\u00e7\u00e3o do SOuza", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29851", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "VALDINEI CAVALCANTE DA SILVA", "LOCAL": "CENARIO - RESIDENCIAL", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "VICTOR GABRYEL  ENCIARELI SOUZA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29889", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA", "SUPERVISAO": "THAIS FERNANDA TOZZI", "LOCAL": "FITESA NAO TECIDOS S/A", "CIDADE": "COSM\u00d3POLIS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "Candidata - JOS\u00c9 MARCOS DOS SANTOS desistiu no dia 29/04", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29890", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FOREST HILLS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "INAE STEFANI SOARES DA SILVA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "CANDIDATA REGINA EM DVC 29/04", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29893", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FOREST HILLS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "ELISANGELA MARIA PEREIRA BARBOSA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "CANDIDATA ELISANGELA EM DVC 29/04", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29875", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "HERNANE DE OLIVEIRA", "LOCAL": "KSB BRASIL - UNID. JUNDIAI.", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "MARCELO JEFFERSON", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29865", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "MYRIAD", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29834", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "EMERSON AMORIM MACEDO", "LOCAL": "NATURE VILLAGE II", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29880", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "NEO RODAS - VINHEDO", "CIDADE": "VINHEDO", "CANDIDATO": "SANDRA APARECIDA DIAS", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29881", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 2", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA CONDUTOR 9", "SUPERVISAO": "ELIZEU RODRIGUES DA SILVA FILHO", "LOCAL": "NOURYON-ITUPEVA", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "Desist\u00eancia", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29850", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "RESORT SANTA ANGELA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29862", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "RESORT SANTA ANGELA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29870", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "SAO FRANCISCO I", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29859", "DIAS_ABERTO": 19, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "THE JOY UNIDADE MATRIZ JUNDIAI", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29916", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA 23", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "CAEP", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29919", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "ADM", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUX DE COMPRAS", "SUPERVISAO": "CLAUDIA MARTINEZ", "LOCAL": "COMPRAS", "CIDADE": "ADM", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29928", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "FACILITIES2 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29913", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "PESQUISA SOCIAL 1", "ETAPA_MACRO": "PESQUISA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "THAIS ALVES DE SOUZA", "LOCAL": "FACILITIES5 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "KEILA DE SOUZA RIBEIRO", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29910", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FAREVA K&G", "CIDADE": "LOUVEIRA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29909", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "EMERSON AMORIM MACEDO", "LOCAL": "GEHAKA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "Contrato exige 24 horas de analise//Candidatou faltou duas x na integra\u00e7\u00e3o, 27 e 28/04 estamos retirando o candidato do processo", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29918", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA OPERADOR MONITORAMENTO 3", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "HUF", "CIDADE": "ATIBAIA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29908", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE MONITORAMENTO", "SUPERVISAO": "RENAN DE LIMA E SILVA", "LOCAL": "IGUS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "RAFAEL OLIVEIRA ALENCAR", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29907", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 2", "ETAPA_MACRO": "TRIAGEM", "CARGO": "OP MONITORAMENTO ELETRONICO", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "MARAVILHAS DO LAR", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "GUSTAVO realizou entreviasta com a cliente Luana dia 22/04", "OBS_ADM": "27/04 - candidato Gustavo processo declinado por falta de retorno dos documentos e do exame admissional", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29912", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "AMADEUS DANTAS SILVA FELIX", "LOCAL": "MUTIRAO - JUNDIAI - DIURNO", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29901", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA", "SUPERVISAO": "MARCOS DE MENEZES SANTOS", "LOCAL": "NEO PWT", "CIDADE": "SALTO", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29917", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE MANUTEN\u00c7\u00c3O", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "PASARGADA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "PAULO MATHEUS FARIAS MARTINS", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "CANDIDATO PAULO APROVADO 20/04", "OBS_ADM": "Aguardando data da NR", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29876", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "UNITY", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "JOHN WILLIAM RODRIGUES", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "Cand Jhon Willian aprovado", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29926", "DIAS_ABERTO": 18, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 2", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "VALGROUP (MIRVI)", "CIDADE": "CABRE\u00daVA", "CANDIDATO": "SOLANGE MATIAS DE OLIVEIRA", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "BEATRIZ", "OBS_REC": "Karen desistiu, n\u00e3o atende nem responde", "OBS_ADM": "Aguardando DOC para agendar ASO", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29945", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "BRICKLOG GUARULHOS", "CIDADE": "GUARULHOS", "CANDIDATO": "Daniele Anderson de Souza", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "PEND\u00caNCIA DE titulo de eleitor PARA CONCLUIR A ADMISS\u00c3O", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29943", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 6", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "CAMPINAS3 - RESERVA TECNICA - SEGURANCA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29937", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 2", "ETAPA_MACRO": "TRIAGEM", "CARGO": "SUPERVISOR INTERNO FACILITIES", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29939", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "GRAPHIC EMBALAGENS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29934", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "MAXIME OFFICE TOWER", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "ELISABETE APARECIDA MACHADO SANTOS", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "CANDIDATA ALBERTINA DESISTIU 22/04 (Fechado pelo William) / CAND ELISABETE AP ( Fechada por William) - CANDIDATA MARIANA APROVADA 29/04 (Fechado pelo William)", "OBS_ADM": "27.04 - Albertina declinou, por motivos pessoais / MARIANA GOMES DA SILVA  - Declinamos por falta de retorno", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29933", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "MAXIME OFFICE TOWER", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "CANDIDATO LENON APROVADO 29/04 (Fechado pelo William)", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29931", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "MYRIAD", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29940", "DIAS_ABERTO": 17, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "VIDARA - NOVA SEDE (INDUKERN)", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "EDNA MARIA NERYS DE OLIVEIRA", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29956", "DIAS_ABERTO": 16, "CRITICIDADE": "Cr\u00edtico", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "CONAB CONSERBOMBAS LTDA", "CIDADE": "S\u00c3O PAULO", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29976", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "ZELADOR", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "BOTANIQ CONDOMINIUM", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Acordo a Supervisora Mairara ser\u00e1 feito um remanejamento interno e ser\u00e1 solicitado o cancelamento da vaga 29/4 - ser\u00e1 feito um teste com um colaborador por 3 dias", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29973", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "BRICKLOG GUARULHOS", "CIDADE": "GUARULHOS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29970", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "THAIS ALVES DE SOUZA", "LOCAL": "FACILITIES5 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29958", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 2", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "FAREVA", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "CLAUDIO LUCAS DA SILVA FERNANDES  - declinamos do processo pois n\u00e3o se alistou", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29981", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "EVALDO ALMEIDA SANTOS", "LOCAL": "G-KT DO BRASIL", "CIDADE": "CABRE\u00daVA", "CANDIDATO": "LUDMILA APARECIDA SILVA DE SOUZA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "PATRICIA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29975", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 21", "SUPERVISAO": "ANDERSON SILVA", "LOCAL": "HOME SINGULAR", "CIDADE": "BRAGAN\u00c7A PAULISTA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29967", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "ELIZEU RODRIGUES DA SILVA FILHO", "LOCAL": "INHANDJARA", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29960", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "KERRY", "CIDADE": "CAMPINAS", "CANDIDATO": "FABIO ROBERTO BASSANI JORGE", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29977", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "VIGILANCIA", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGILANTE", "SUPERVISAO": "ANDERSON SILVA", "LOCAL": "PITUTA - CLARIOS", "CIDADE": "SOROCABA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29980", "DIAS_ABERTO": 13, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "ANDERSON SILVA", "LOCAL": "SAG AMBIENTAL", "CIDADE": "ARA\u00c7ARIGUAMA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30008", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "ADM", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "ARQUIVISTA", "SUPERVISAO": "CAMILA SPADONE", "LOCAL": "ADMINISTRA\u00c7\u00c3O DE PESSOAL", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29994", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "ADM", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "SDR JUNIOR", "SUPERVISAO": "PRISCILA CHICOLI", "LOCAL": "ADMINISTRATIVO DE VENDAS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30002", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 3", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "BRICKLOG GUARULHOS", "CIDADE": "GUARULHOS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "Sele\u00e7\u00e3o CIET Pimentas 04/05", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30003", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "BRICKLOG GUARULHOS", "CIDADE": "GUARULHOS", "CANDIDATO": "SIMONE LIMA DO NASCIMENTO", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "ROSI", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30004", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "BRICKLOG GUARULHOS", "CIDADE": "GUARULHOS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29990", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "CPE - COMPOSTOS", "CIDADE": "S\u00c3O PAULO", "CANDIDATO": "LUCINALVA DE DEUS OTTOLINI", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "ROSI", "OBS_REC": "24/04 - Lucinalva Reis em pesquisa", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "29984", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA BALANCEIRO 9", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "EPA QUIMICA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29991", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "KERRY", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29987", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "PESQUISA SOCIAL 1", "ETAPA_MACRO": "PESQUISA", "CARGO": "VIGIA 9", "SUPERVISAO": "HERNANE DE OLIVEIRA", "LOCAL": "MORADA DA SERRA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "CANDIDATO PAULO EM ANALISE DE HISTORICO 29/04", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "29986", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "ALISSON DEIVID SILVA MACHADO", "LOCAL": "NATURE VILLAGE II", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30006", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ANALISE CANCELAMENTO", "ETAPA_MACRO": "ANALISE CANCELAMENTO", "CARGO": "VIGIA BALANCEIRO", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "NEO RODAS - VINHEDO", "CIDADE": "VINHEDO", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29985", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "HERNANE DE OLIVEIRA", "LOCAL": "NOURYON", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30007", "DIAS_ABERTO": 11, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "L\u00cdDER DE LIMPEZA 13", "SUPERVISAO": "KELLY ROBERTA FRATUCCI", "LOCAL": "SP3 - RESERVA TECNICA - FACILITIES", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30023", "DIAS_ABERTO": 10, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "ADM", "RECRUTADOR": "RENATO", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "ANALISTA DE RH JUNIOR", "SUPERVISAO": "RENATO CASELLA", "LOCAL": "RECRUTAMENTO E SELE\u00c7\u00c3O DE PESSOAL CAMP", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30020", "DIAS_ABERTO": 10, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA OPERADOR MONITORAMENTO 3", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "TVH BRASIL", "CIDADE": "VINHEDO", "CANDIDATO": "LORENA ROSA DE FREITAS", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30036", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "ALTA VISTA PREMIUM", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30010", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "VIGILANCIA", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGILANTE CONDUTOR", "SUPERVISAO": "ANDERSON SILVA", "LOCAL": "APEX", "CIDADE": "SOROCABA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30041", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE MANUTEN\u00c7\u00c3O", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "ATMOSPHERA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "JO\u00c3O CARLOS DE OLIVEIRA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30021", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "VIGILANCIA", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGILANTE", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "AUSTER", "CIDADE": "HORTOL\u00c2NDIA", "CANDIDATO": "HIGOR SOUSA CARVALHO", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30039", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "CAMPINAS5 - RESERVA TECNICA - FACILITIES", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30043", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "ZELADOR", "SUPERVISAO": "CRISTIANE APARECIDA VIANA DA SILVA", "LOCAL": "FACILITIES3 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30032", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "FACILITIES4 - FERISTA", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30038", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "KARINA DE OLIVEIRA PEREIRA", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30031", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 2", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "EMERSON AMORIM MACEDO", "LOCAL": "GRAPHIC EMBALAGENS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "Jose de Arimateia Sousa - Desistiu da vaga. Recebi a vaga 28/04 Esta em ASO.", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30027", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "KERRY", "CIDADE": "CAMPINAS", "CANDIDATO": "MARIA JOS\u00c9 DE CARVALHO LIBERATO", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30030", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE MANUTEN\u00c7\u00c3O", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "KERRY", "CIDADE": "CAMPINAS", "CANDIDATO": "JO\u00c3O ANTONIO DOS SANTOS", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30044", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "VIGILANCIA", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGILANTE OP MONIT ELETRONICO", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "NIVEA", "CIDADE": "ITATIBA", "CANDIDATO": "GENILDA DE SOUZA QUIRINO", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "Promo\u00e7\u00e3o interna (Recrutadora andr\u00e9iia", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30012", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "ELIZEU RODRIGUES DA SILVA FILHO", "LOCAL": "NOURYON", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30042", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA", "SUPERVISAO": "THAIS FERNANDA TOZZI", "LOCAL": "SABARA", "CIDADE": "SANTA B\u00c1RBARA D'OESTE", "CANDIDATO": "FABIO ALVES FIGUEREDO", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30040", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA BALANCEIRO 9", "SUPERVISAO": "EMERSON AMORIM MACEDO", "LOCAL": "SPUMAPLAST", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "ALESSANDRO GABRIEL AZEVEDO ROSA", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30026", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "VIGILANCIA", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGILANTE L\u00cdDER", "SUPERVISAO": "MARCOS DE MENEZES SANTOS", "LOCAL": "TIVOLI PARK", "CIDADE": "SOROCABA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30019", "DIAS_ABERTO": 9, "CRITICIDADE": "Aten\u00e7\u00e3o", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "OP MONITORAMENTO ELETRONICO", "SUPERVISAO": "EMERSON AMORIM MACEDO", "LOCAL": "VILLAGIO AZZURE", "CIDADE": "ITUPEVA", "CANDIDATO": "FAVIANE MENDES", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30062", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AGENTE DE HIGIENIZACAO", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "CAMPINAS7 - FERISTA - FACILITIES", "CIDADE": "", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30054", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "ALISSON DEIVID SILVA MACHADO", "LOCAL": "DUO RESERVA DO JAPI", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "FELIPE SILVA DOS SANTOS", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30052", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FACILITIES7 - FERISTA", "CIDADE": "", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30049", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FACILITIES7 - RESERVA TECNICA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30055", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "JARDINEIRO 2", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "DAVID FELIPE DOS SANTOS BITENCORT", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/4", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30056", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "FOREST HILLS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "REGINA GOMES SANTOS", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "CANDIDATA INAE EM DVC 29/04", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30065", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 21", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "FULWOOD D.PEDRO BUSINESS PARK - ATIBAIA", "CIDADE": "ATIBAIA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30066", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "VIGILANCIA", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGILANTE CONDUTOR", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "FULWOOD D.PEDRO BUSINESS PARK - ATIBAIA", "CIDADE": "ATIBAIA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30064", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 12", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "IRANI", "CIDADE": "INDAIATUBA", "CANDIDATO": "JOSIRENE FERNANDES ALVES", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30060", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AGENTE DE HIGIENIZACAO", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "KERRY COTIA", "CIDADE": "COTIA", "CANDIDATO": "MARLENE DA SILVA", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "ROSI", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30050", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "NEO PARTS", "CIDADE": "TATU\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30057", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA OPERADOR MONITORAMENTO 9", "SUPERVISAO": "MARCOS DE MENEZES SANTOS", "LOCAL": "NITTO DENKO", "CIDADE": "SANTANA DE PARNA\u00cdBA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30051", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "SODECIA AUTOMOTIVE S\u00c3O PAULO", "CIDADE": "ARA\u00c7ARIGUAMA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30061", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "SP7 - FERISTA - FACILITIES - TV ALIAN\u00c7A", "CIDADE": "SOROCABA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30059", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "SP7 - RESERVA TECNICA - FACILITIES - KERRY COTIA", "CIDADE": "RESERVAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30075", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "SIDNEY", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "PORTEIRO", "SUPERVISAO": "SIDNEY DE OLIVEIRA", "LOCAL": "SUMIDENSO", "CIDADE": "PARA DE MINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "BH", "FILIAL_ADM": "BH"}, {"RP": "30074", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "VALGROUP (MIRVI)", "CIDADE": "CABRE\u00daVA", "CANDIDATO": "JORICE PEREIRA DA SILVA", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "RITA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30073", "DIAS_ABERTO": 6, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "ADOLPHO CARLOS FERNANDES", "LOCAL": "VINTAGE", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "PATRCIA  MARTINS", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30085", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "CRISTIANE APARECIDA VIANA DA SILVA", "LOCAL": "CENARIO - RESIDENCIAL", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30084", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "COMPOSITES VCI DO BRASIL", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30086", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "CRISTIANE APARECIDA VIANA DA SILVA", "LOCAL": "DOCE LAR BELLA COLONIA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30080", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "FAREVA", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30087", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FAREVA K&G", "CIDADE": "LOUVEIRA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30081", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "GRAN CHEF", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30077", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "PLASTAMP SUDESTE - CORPAK", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30079", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "PLASTAMP SUDESTE - CORPAK", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30111", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "ADM", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "TECNICO ENFERMAGEM DO TRABALHO", "SUPERVISAO": "CAMILA SPADONE", "LOCAL": "SEGURAN\u00c7A E MEDICINA DO TRABALHO", "CIDADE": "ADM", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30117", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "ADM", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "TECNICO SEGURANCA DO TRABALHO", "SUPERVISAO": "CAMILA SPADONE", "LOCAL": "SEGURAN\u00c7A E MEDICINA DO TRABALHO", "CIDADE": "ADM", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30083", "DIAS_ABERTO": 5, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "OFICIAL DE MANUTENCAO", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "TVH BRASIL", "CIDADE": "VINHEDO", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "29542", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGILANTE", "SUPERVISAO": "EMERSON AMORIM MACEDO", "LOCAL": "ANPPLA SHOPPING MORATO SPE", "CIDADE": "FRANCISCO MORATO", "CANDIDATO": "JHONATAS TRAVAGLIN DOS SANTOS", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30128", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "SUPERVISOR DE SEGURAN\u00c7A AREA 04", "SUPERVISAO": "F\u00c1BIO", "LOCAL": "DELPHOS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "LUCAS GEORGE PEREIRA PASCHOAL", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "BEATRIZ", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30095", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "LIDER DE LIMPEZA 28", "SUPERVISAO": "GISLENE BESSA DOS SANTOS LOPES", "LOCAL": "CAEP", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30101", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "VIGIA CONDUTOR 9", "SUPERVISAO": "EMERSON AMORIM MACEDO", "LOCAL": "CASAS DA TOSCANA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30114", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "ELEKEIROZ S.A.", "CIDADE": "V\u00c1RZEA PAULISTA", "CANDIDATO": "THIAGO HENRIQUE ZULATO", "STATUS_ADM": "EM ASO", "DATA_INTEGRACAO": "", "RESP_ADM": "RITA", "OBS_REC": "CAND THIAGO ZULATO APROVADO", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30116", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "LEONILDA PEREIRA DE JESUS MART", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30124", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "ADRIANA DE ARAUJO LIMA", "STATUS_ADM": "INTEGRA\u00c7\u00c3O PROGRAMADA", "DATA_INTEGRACAO": "4/5", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30137", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "PESQUISA SOCIAL 1", "ETAPA_MACRO": "PESQUISA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30138", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "FACULDADE SAO LEOPOLDO MANDIC - MATRIZ", "CIDADE": "CAMPINAS", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30088", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "FULWOOD CASTELO 57 BUSINESS PARK", "CIDADE": "S\u00c3O ROQUE", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30115", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "FLAVIA BATISTA DE LIMA", "LOCAL": "GEODIS LOGISTICA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30094", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "THAIS ALVES DE SOUZA", "LOCAL": "GHADDAD EMPREENDIMENTOS IMOBILIARIOS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30106", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MIGUEL GIOSA PIVA", "LOCAL": "GRAPHIC EMBALAGENS", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30105", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "RENAN DE LIMA E SILVA", "LOCAL": "INHANDJARA", "CIDADE": "ITUPEVA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30118", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "VIGIA CONDUTOR", "SUPERVISAO": "MARCELO RODRIGUES CARUNCHO CARNAVAL", "LOCAL": "JARDIM DOS LAGOS", "CIDADE": "INDAIATUBA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30136", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "K E G (FAREVA)", "CIDADE": "LOUVEIRA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30129", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "K E G (FAREVA)", "CIDADE": "LOUVEIRA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30089", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "VIGILANCIA", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "VIGILANTE", "SUPERVISAO": "JOSIMAR ALVES DE LIMA", "LOCAL": "MIBA", "CIDADE": "INDAIATUBA", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30102", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA 9", "SUPERVISAO": "HERNANE DE OLIVEIRA", "LOCAL": "MORADA DA SERRA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30126", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR ADM", "SUPERVISAO": "ADOLPHO CARLOS FERNANDES", "LOCAL": "MYRIAD", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30110", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "SIDNEY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "VIGIA", "SUPERVISAO": "SIDNEY DE OLIVEIRA", "LOCAL": "NEMAK", "CIDADE": "BETIM", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "BH", "FILIAL_ADM": "BH"}, {"RP": "30096", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "FREITAS", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MARICLEIA CARDOSO SOARES", "LOCAL": "NEO PARTS", "CIDADE": "TATU\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "S\u00c3O PAULO", "FILIAL_ADM": "S\u00c3O PAULO"}, {"RP": "30098", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "VIGIA BALANCEIRO", "SUPERVISAO": "JOSIMAR ALVES DE LIMA", "LOCAL": "NEO RODAS - VINHEDO", "CIDADE": "VINHEDO", "CANDIDATO": "ANDERSON PAIX\u00c3O JUNIOR", "STATUS_ADM": "EM CADASTRO", "DATA_INTEGRACAO": "", "RESP_ADM": "ANA", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30100", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "AMANDA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "VIGIA 9", "SUPERVISAO": "RENAN DE LIMA E SILVA", "LOCAL": "NOURYON", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30090", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "RESORT SANTA ANGELA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30092", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE SERVI\u00c7OS GERAIS", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "RESORT SANTA ANGELA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30107", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "OP MONITORAMENTO ELETRONICO", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "SAN GIOVANNI", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30127", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ANDREIA", "STATUS_VAGA": "EM DOCUMENTA\u00c7\u00c3O 1", "ETAPA_MACRO": "DOCUMENTA\u00c7\u00c3O", "CARGO": "PORTEIRO BALANCEIRO", "SUPERVISAO": "ELIZEU RODRIGUES DA SILVA FILHO", "LOCAL": "SANCHEZ CANO LTDA", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30093", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "L\u00cdDER DE LIMPEZA 13", "SUPERVISAO": "ELIANA MARIA MOREIRA BRANSANI", "LOCAL": "TAGOUT TREIN E COM DE EQUIP DE PROT DE SEG IND EIRELI", "CIDADE": "VINHEDO", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}, {"RP": "30091", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "NATHALYA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA", "SUPERVISAO": "MAIARA RODRIGUES DE ANDRADE COSTA", "LOCAL": "THE ONE OFFICE", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30119", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "FACILITIES", "RECRUTADOR": "GIOVANNA", "STATUS_VAGA": "TRIAGEM 1", "ETAPA_MACRO": "TRIAGEM", "CARGO": "AUXILIAR DE LIMPEZA 31", "SUPERVISAO": "THAIS ALVES DE SOUZA", "LOCAL": "TORRES DO CAXAMBU", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30108", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "VIGIA 9", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "UNITY", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30109", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "VIGILANCIA", "RECRUTADOR": "WILLIAM", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "VIGILANTE", "SUPERVISAO": "SANDRO APARECIDO FABIANO", "LOCAL": "UNITY", "CIDADE": "JUNDIA\u00cd", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "JUNDIAI", "FILIAL_ADM": "JUNDIAI"}, {"RP": "30097", "DIAS_ABERTO": 4, "CRITICIDADE": "No Prazo", "SERVICO": "SEGURAN\u00c7A", "RECRUTADOR": "ELONY", "STATUS_VAGA": "ABERTA", "ETAPA_MACRO": "ABERTA", "CARGO": "VIGIA", "SUPERVISAO": "JOSIMAR ALVES DE LIMA", "LOCAL": "VILLA DAS ARTES", "CIDADE": "SALTO", "CANDIDATO": "", "STATUS_ADM": "", "DATA_INTEGRACAO": "", "RESP_ADM": "", "OBS_REC": "", "OBS_ADM": "", "FILIAL": "CAMPINAS", "FILIAL_ADM": "CAMPINAS"}];
+var FLUXO = [{"MES": "2026-01", "abertas": 1, "encerradas": 0, "canceladas": 0, "saldo": 1}, {"MES": "2026-02", "abertas": 4, "encerradas": 1, "canceladas": 1, "saldo": 2}, {"MES": "2026-03", "abertas": 40, "encerradas": 11, "canceladas": 4, "saldo": 25}, {"MES": "2026-04", "abertas": 293, "encerradas": 75, "canceladas": 22, "saldo": 196}];
+var DIAS  = [{"dia": 1, "abertas": 13, "encerradas": 0, "saldo_dia": 13, "acumulado": 13}, {"dia": 2, "abertas": 6, "encerradas": 0, "saldo_dia": 6, "acumulado": 19}, {"dia": 3, "abertas": 0, "encerradas": 0, "saldo_dia": 0, "acumulado": 19}, {"dia": 4, "abertas": 0, "encerradas": 0, "saldo_dia": 0, "acumulado": 19}, {"dia": 5, "abertas": 0, "encerradas": 1, "saldo_dia": -1, "acumulado": 18}, {"dia": 6, "abertas": 0, "encerradas": 0, "saldo_dia": 0, "acumulado": 18}, {"dia": 7, "abertas": 4, "encerradas": 0, "saldo_dia": 4, "acumulado": 22}, {"dia": 8, "abertas": 11, "encerradas": 0, "saldo_dia": 11, "acumulado": 33}, {"dia": 9, "abertas": 13, "encerradas": 0, "saldo_dia": 13, "acumulado": 46}, {"dia": 10, "abertas": 15, "encerradas": 0, "saldo_dia": 15, "acumulado": 61}, {"dia": 11, "abertas": 0, "encerradas": 0, "saldo_dia": 0, "acumulado": 61}, {"dia": 12, "abertas": 0, "encerradas": 0, "saldo_dia": 0, "acumulado": 61}, {"dia": 13, "abertas": 16, "encerradas": 0, "saldo_dia": 16, "acumulado": 77}, {"dia": 14, "abertas": 38, "encerradas": 0, "saldo_dia": 38, "acumulado": 115}, {"dia": 15, "abertas": 31, "encerradas": 0, "saldo_dia": 31, "acumulado": 146}, {"dia": 16, "abertas": 15, "encerradas": 0, "saldo_dia": 15, "acumulado": 161}, {"dia": 17, "abertas": 4, "encerradas": 0, "saldo_dia": 4, "acumulado": 165}, {"dia": 18, "abertas": 0, "encerradas": 2, "saldo_dia": -2, "acumulado": 163}, {"dia": 19, "abertas": 0, "encerradas": 0, "saldo_dia": 0, "acumulado": 163}, {"dia": 20, "abertas": 18, "encerradas": 0, "saldo_dia": 18, "acumulado": 181}, {"dia": 21, "abertas": 0, "encerradas": 1, "saldo_dia": -1, "acumulado": 180}, {"dia": 22, "abertas": 21, "encerradas": 9, "saldo_dia": 12, "acumulado": 192}, {"dia": 23, "abertas": 2, "encerradas": 15, "saldo_dia": -13, "acumulado": 179}, {"dia": 24, "abertas": 20, "encerradas": 19, "saldo_dia": 1, "acumulado": 180}, {"dia": 25, "abertas": 0, "encerradas": 6, "saldo_dia": -6, "acumulado": 174}, {"dia": 26, "abertas": 0, "encerradas": 0, "saldo_dia": 0, "acumulado": 174}, {"dia": 27, "abertas": 19, "encerradas": 6, "saldo_dia": 13, "acumulado": 187}, {"dia": 28, "abertas": 12, "encerradas": 11, "saldo_dia": 1, "acumulado": 188}, {"dia": 29, "abertas": 35, "encerradas": 11, "saldo_dia": 24, "acumulado": 212}, {"dia": 30, "abertas": 0, "encerradas": 15, "saldo_dia": -15, "acumulado": 197}];
+var PROD  = {"recs": ["AMANDA", "ANDREIA", "ELONI", "ELONY", "FREITAS", "GIOVANNA", "NATHALYA", "N&#195;&#131;O INFORMADO", "RENATO", "SIDNEY", "WILLIAM"], "meses": ["2026-01", "2026-02", "2026-03", "2026-04"], "data": {"AMANDA": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 1, "en": 0}, "2026-04": {"ab": 44, "en": 12}}, "ANDREIA": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 1, "en": 0}, "2026-04": {"ab": 38, "en": 14}}, "ELONI": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 0, "en": 0}, "2026-04": {"ab": 1, "en": 0}}, "ELONY": {"2026-01": {"ab": 1, "en": 0}, "2026-02": {"ab": 1, "en": 0}, "2026-03": {"ab": 10, "en": 0}, "2026-04": {"ab": 68, "en": 16}}, "FREITAS": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 1, "en": 0}, "2026-03": {"ab": 5, "en": 0}, "2026-04": {"ab": 48, "en": 14}}, "GIOVANNA": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 2, "en": 0}, "2026-03": {"ab": 8, "en": 0}, "2026-04": {"ab": 23, "en": 7}}, "NATHALYA": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 8, "en": 0}, "2026-04": {"ab": 45, "en": 9}}, "N&#195;&#131;O INFORMADO": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 0, "en": 0}, "2026-04": {"ab": 1, "en": 0}}, "RENATO": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 0, "en": 0}, "2026-04": {"ab": 2, "en": 0}}, "SIDNEY": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 0, "en": 0}, "2026-04": {"ab": 3, "en": 0}}, "WILLIAM": {"2026-01": {"ab": 0, "en": 0}, "2026-02": {"ab": 0, "en": 0}, "2026-03": {"ab": 7, "en": 0}, "2026-04": {"ab": 17, "en": 10}}}};
+var TEMPO = {"tempo_total_media": 16.9, "tempo_total_base": 87, "tempo_adm_media": 7.1, "tempo_adm_base": 85};
+var MAPS  = {"rec": {"ANDREIA": "JUNDIAI", "FREITAS": "S&#195;&#131;O PAULO", "WILLIAM": "JUNDIAI", "NATHALYA": "JUNDIAI", "GIOVANNA": "JUNDIAI", "AMANDA": "JUNDIAI", "ELONY": "CAMPINAS", "RENATO": "JUNDIAI", "EFETIVA": "JUNDIAI", "ANA LUIZA": "JUNDIAI", "GABRIELA": "CAMPINAS"}, "pre": {"BEATRIZ": "JUNDIAI", "RITA": "JUNDIAI", "PATRICIA": "JUNDIAI", "ROSI": "S&#195;&#131;O PAULO", "ANA": "CAMPINAS", "LUANA": "JUNDIAI"}, "admitidos_total": 87};
+
+var ETAPA_ORDER = ['ABERTA','TRIAGEM','ENTREVISTA RH','ENTREVISTA OPS','ENTREVISTA CLIENTE','PESQUISA','TESTE','DOCUMENTA&#195;&#135;&#195;&#131;O','ANALISE CANCELAMENTO'];
+var ETAPA_COL = {ABERTA:'#9ca3af',TRIAGEM:'#2563eb','ENTREVISTA RH':'#7c3aed','ENTREVISTA OPS':'#a855f7','ENTREVISTA CLIENTE':'#db2777',PESQUISA:'#d97706',TESTE:'#0891b2',DOCUMENTA&#195;&#135;&#195;&#131;O:'#16a34a','ANALISE CANCELAMENTO':'#dc2626'};
+var SVC_COL = {FACILITIES:'#2563eb',SEGURAN&#195;&#135;A:'#1db86a',VIGILANCIA:'#7c3aed',ADM:'#d97706'};
+var MESES = {'2026-01':'Jan/26','2026-02':'Fev/26','2026-03':'Mar/26','2026-04':'Abr/26','2026-05':'Mai/26','2026-06':'Jun/26','2026-07':'Jul/26','2026-08':'Ago/26','2026-09':'Set/26','2026-10':'Out/26','2026-11':'Nov/26','2026-12':'Dez/26'};
+var A = {s:'',c:'',fil:'',r:'',sup:'',l:'',e:''};
+var ALRT_ONLY = false;
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});
+  document.getElementById(id).classList.add('on');
+  el.classList.add('on');
+  document.getElementById('filterBar').style.display  = (id === 'p1') ? 'flex' : 'none';
+  document.getElementById('filterBar2').style.display = (id === 'p2') ? 'flex' : 'none';
+  document.getElementById('alertBar').style.display = 'none';
+  if (id === 'p2') renderPipeline();
+  if (id === 'p3') renderFluxo();
+}
+
+document.getElementById('cfgBtn').addEventListener('click', function(e) {
+  e.stopPropagation();
+  document.getElementById('cfgPanel').classList.toggle('open');
+});
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#cfgBtn') && !e.target.closest('#cfgPanel')) {
+    document.getElementById('cfgPanel').classList.remove('open');
+  }
+});
+
+function parseDate(s) {
+  if (!s || s === 'nan' || s === '' || s === '-') return null;
+  s = s.trim();
+  var m;
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);
+  if (m) return new Date(2000 + +m[3], +m[2]-1, +m[1]);
+  m = s.match(/^(\d{1,2})\/(\d{1,2})$/);
+  if (m) return new Date(2026, +m[2]-1, +m[1]);
+  return null;
+}
+
+function safeMes(dt) {
+  try { return dt ? dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') : null; }
+  catch(e) { return null; }
+}
+
+function loadCSV(input, tipo) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var text = e.target.result;
+    var rows = text.split('\n').filter(function(r){return r.trim()});
+    var sep = rows[0].includes(';') ? ';' : ',';
+    if (tipo === 'lista') {
+      MAPS.rec = {}; MAPS.pre = {};
+      for (var i = 1; i < rows.length; i++) {
+        var c = rows[i].split(sep).map(function(x){return x.trim().replace(/"/g,'')});
+        if (c[1] && c[2]) MAPS.rec[c[1].toUpperCase()] = c[2].toUpperCase();
+        if (c[3] && c[4]) MAPS.pre[c[3].toUpperCase()] = c[4].toUpperCase();
+      }
+      RAW = RAW.map(function(r) {
+        return Object.assign({}, r, {FILIAL: MAPS.rec[r.RECRUTADOR ? r.RECRUTADOR.toUpperCase() : ''] || '&#226;&#128;&#147;'});
+      });
+    } else {
+      var newData = [];
+      for (var i = 1; i < rows.length; i++) {
+        var c = rows[i].split(sep).map(function(x){return x.trim().replace(/"/g,'')});
+        if (!c[0] || !c[0].match(/^\d+/)) continue;
+        var et = (c[8] || '').trim();
+        var sv = (c[7] || '').toUpperCase();
+        if (sv.includes('TESTE') || et.toUpperCase().includes('TESTE')) et = 'TESTE';
+        else if (et.toUpperCase().includes('DOCUMENTA&#195;&#135;&#195;&#131;O') || et.toUpperCase().includes('DOCUMENTACAO')) et = 'DOCUMENTA&#195;&#135;&#195;&#131;O';
+        else if (et.toUpperCase().startsWith('TRIAGEM')) et = 'TRIAGEM';
+        else if (et.toUpperCase().includes('ANALISE CANCELAMENTO')) et = 'ANALISE CANCELAMENTO';
+        else if (et === '' && c[0]) et = 'ABERTA';
+        if (et === 'ENCERRADA' || et === 'CANCELADA') continue;
+        if (et === 'REABERTA' || et === '') et = 'ABERTA';
+        newData.push({
+          RP:c[0], DIAS_ABERTO:parseInt(c[3])||0, CRITICIDADE:c[4]||'',
+          SERVICO:c[5]||'', RECRUTADOR:c[6]||'', STATUS_VAGA:c[7]||'',
+          ETAPA_MACRO:et, CARGO:c[9]||'', SUPERVISAO:c[10]||'', CIDADE:c[12]||'', LOCAL:c[11]||'',
+          CANDIDATO:c[21]||'', STATUS_ADM:c[22]||'', DATA_INTEGRACAO:c[23]||'',
+          RESP_ADM:c[19]||'', OBS_REC:c[16]||'', OBS_ADM:c[26]||'',
+          FILIAL: MAPS.rec[(c[6]||'').toUpperCase()] || '&#226;&#128;&#147;',
+          FILIAL_ADM: MAPS.pre[(c[19]||'').toUpperCase()] || '&#226;&#128;&#147;'
+        });
+      }
+      RAW = newData;
+      var dab = {}, den = {};
+      for (var i = 1; i < rows.length; i++) {
+        var c = rows[i].split(sep).map(function(x){return x.trim().replace(/"/g,'')});
+        if (!c[0] || !c[0].match(/^\d+/)) continue;
+        var da = parseDate(c[2]), dd = parseDate(c[24]);
+        if (da && da.getFullYear()===2026 && da.getMonth()===3) { var d=da.getDate(); dab[d]=(dab[d]||0)+1; }
+        if (dd && dd.getFullYear()===2026 && dd.getMonth()===3) { var d=dd.getDate(); den[d]=(den[d]||0)+1; }
+      }
+      var ac = 0; DIAS = [];
+      for (var d = 1; d <= 30; d++) {
+        var ab = dab[d]||0, en = den[d]||0; ac += ab-en;
+        DIAS.push({dia:d, abertas:ab, encerradas:en, saldo_dia:ab-en, acumulado:ac});
+      }
+      resetSelects(); buildSelects();
+    }
+    render();
+    var now = new Date();
+    document.getElementById('updPill').textContent = '&#240;&#159;&#147;&#133; ' + now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('cfgPanel').classList.remove('open');
+  };
+  reader.readAsText(file, 'latin1');
+}
+
+function resetSelects() {
+  ['selR','selSup','selL','selE'].forEach(function(id) {
+    document.getElementById(id).innerHTML = '<option value="">Todos</option>';
+  });
+}
+
+function buildSelects() {
+  var recs = [...new Set(RAW.map(function(r){return r.RECRUTADOR}).filter(Boolean))].sort();
+  var sups = [...new Set(RAW.map(function(r){return r.SUPERVISAO}).filter(Boolean))].sort();
+  var locs = [...new Set(RAW.map(function(r){return r.LOCAL}).filter(Boolean))].sort();
+  var ets  = [...new Set(RAW.map(function(r){return r.ETAPA_MACRO}).filter(Boolean))].sort();
+  [['selR',recs,'r'],['selSup',sups,'sup'],['selL',locs,'l'],['selE',ets,'e']].forEach(function(item) {
+    var id = item[0], arr = item[1], key = item[2];
+    var el = document.getElementById(id);
+    arr.forEach(function(v) {
+      var o = document.createElement('option'); o.value = v; o.text = v; el.appendChild(o);
+    });
+    el.onchange = function(ev) { A[key] = ev.target.value; render(); };
+  });
+}
+
+function filtered() {
+  var d = RAW.slice();
+  if (A.s)   d = d.filter(function(r){return r.SERVICO === A.s});
+  if (A.c)   d = d.filter(function(r){return r.CRITICIDADE === A.c});
+  if (A.fil) d = d.filter(function(r){return r.FILIAL === A.fil});
+  if (A.r)   d = d.filter(function(r){return r.RECRUTADOR === A.r});
+  if (A.sup) d = d.filter(function(r){return r.SUPERVISAO === A.sup});
+  if (A.l)   d = d.filter(function(r){return r.LOCAL === A.l});
+  if (A.e)   d = d.filter(function(r){return r.ETAPA_MACRO === A.e});
+  return d;
+}
+
+function clearFilters() {
+  Object.keys(A).forEach(function(k){A[k]=''});
+  ALRT_ONLY = false;
+  document.querySelectorAll('.fb').forEach(function(b){b.classList.toggle('on', b.dataset.v==='')});
+  ['selR','selSup','selL','selE'].forEach(function(id){document.getElementById(id).value=''});
+  document.getElementById('btnAlrt').classList.remove('act');
+  render();
+}
+
+function toggleAlerta() {
+  ALRT_ONLY = !ALRT_ONLY;
+  document.getElementById('btnAlrt').classList.toggle('act', ALRT_ONLY);
+  render();
+}
+
+function filterAlert() {
+  ALRT_ONLY = true;
+  document.getElementById('btnAlrt').classList.add('act');
+  render();
+  document.getElementById('tblWrap').scrollIntoView({behavior:'smooth'});
+}
+
+function render() {
+  var d = filtered();
+  document.getElementById('totalAtivas').textContent = d.length;
+  checkAlert();
+  renderEsteira(d); renderCrit(d); renderFunil(d); renderDonut(d); renderRec(d); renderTable(d);
+}
+
+function checkAlert() {
+  // Alerta s&#195;&#179; dispara quando: DOCUMENTA&#195;&#135;&#195;&#131;O + RESP_ADM preenchido + sem CANDIDATO
+  var bad = RAW.filter(function(r){return r.ETAPA_MACRO==='DOCUMENTA&#195;&#135;&#195;&#131;O' && r.RESP_ADM && !r.CANDIDATO});
+  var bar = document.getElementById('alertBar');
+  if (bad.length && document.getElementById('p1').classList.contains('on')) {
+    bar.style.display = 'flex';
+    document.getElementById('alertMsg').textContent = bad.length + ' vaga(s) em DOCUMENTA&#195;&#135;&#195;&#131;O com respons&#195;&#161;vel mas sem candidato preenchido &#226;&#128;&#148; RP: ' + bad.map(function(r){return r.RP}).join(', ');
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
+function renderEsteira(d) {
+  var cnt = function(e){return d.filter(function(r){return r.ETAPA_MACRO===e}).length};
+  var items = [
+    {l:'Vagas Ativas',v:d.length,s:'em aberto agora',c:'total'},
+    {l:'Rec&#195;&#169;m Abertas',v:cnt('ABERTA'),s:'sem movimenta&#195;&#167;&#195;&#163;o',c:'eabe'},
+    {l:'Triagem',v:cnt('TRIAGEM'),s:'',c:'etri'},
+    {l:'Entrev. RH',v:cnt('ENTREVISTA RH'),s:'',c:'erh'},
+    {l:'Entrev. OPS',v:cnt('ENTREVISTA OPS'),s:'',c:'eops'},
+    {l:'Pesquisa',v:cnt('PESQUISA'),s:'',c:'epesq'},
+    {l:'Teste',v:cnt('TESTE'),s:'',c:'eteste'},
+    {l:'Documenta&#195;&#167;&#195;&#163;o',v:cnt('DOCUMENTA&#195;&#135;&#195;&#131;O'),s:'pr&#195;&#169;-admiss&#195;&#163;o',c:'edoc'},
+    {l:'An&#195;&#161;lise Canc.',v:cnt('ANALISE CANCELAMENTO'),s:'em risco',c:'ecanc'},
+  ];
+  document.getElementById('esteira').innerHTML = items.map(function(k,i) {
+    return '<div class="ek ' + k.c + '" style="animation-delay:' + (i*.04) + 's"><div class="ek-l">' + k.l + '</div><div class="ek-v">' + k.v + '</div>' + (k.s ? '<div class="ek-s">' + k.s + '</div>' : '') + '</div>';
+  }).join('');
+}
+
+function renderCrit(d) {
+  var pr = d.filter(function(r){return r.CRITICIDADE==='No Prazo'}).length;
+  var at = d.filter(function(r){return r.CRITICIDADE==='Aten&#195;&#167;&#195;&#163;o'}).length;
+  var cr = d.filter(function(r){return r.CRITICIDADE==='Cr&#195;&#173;tico'}).length;
+  document.getElementById('critStrip').innerHTML =
+    '<div class="cs pr"><div class="cn">' + pr + '</div><div class="cs-info"><div class="cs-l">No Prazo</div><div class="cs-s">0&#226;&#128;&#147;7 dias em aberto</div></div></div>' +
+    '<div class="cs at"><div class="cn">' + at + '</div><div class="cs-info"><div class="cs-l">Aten&#195;&#167;&#195;&#163;o</div><div class="cs-s">8&#226;&#128;&#147;14 dias em aberto</div></div></div>' +
+    '<div class="cs cr"><div class="cn">' + cr + '</div><div class="cs-info"><div class="cs-l">Cr&#195;&#173;tico</div><div class="cs-s">Mais de 14 dias</div></div></div>';
+}
+
+function renderFunil(d) {
+  var cnts = {};
+  ETAPA_ORDER.forEach(function(e){cnts[e]=0});
+  d.forEach(function(r){if(cnts[r.ETAPA_MACRO]!==undefined)cnts[r.ETAPA_MACRO]++});
+  var mx = Math.max.apply(null, Object.values(cnts).concat([1]));
+  document.getElementById('funil').innerHTML = ETAPA_ORDER.map(function(e) {
+    return '<div class="fi"><div class="fi-l">' + e + '</div><div class="fi-bw"><div class="fi-b" style="width:' + (cnts[e]/mx*100) + '%;background:' + (ETAPA_COL[e]||'#9ca3af') + '">' + (cnts[e]||'') + '</div></div><div class="fi-n">' + cnts[e] + '</div></div>';
+  }).join('');
+}
+
+function renderDonut(d) {
+  var svcs = {};
+  d.forEach(function(r){if(r.SERVICO)svcs[r.SERVICO]=(svcs[r.SERVICO]||0)+1});
+  var tot = d.length || 1;
+  var ents = Object.entries(svcs);
+  var ang = -Math.PI/2, cx=65, cy=65, r=52, ir=30, paths='';
+  ents.forEach(function(item) {
+    var s=item[0], n=item[1];
+    var a = (n/tot)*2*Math.PI;
+    var x1=cx+r*Math.cos(ang), y1=cy+r*Math.sin(ang);
+    var x2=cx+r*Math.cos(ang+a), y2=cy+r*Math.sin(ang+a);
+    var ix1=cx+ir*Math.cos(ang), iy1=cy+ir*Math.sin(ang);
+    var ix2=cx+ir*Math.cos(ang+a), iy2=cy+ir*Math.sin(ang+a);
+    var lg = a > Math.PI ? 1 : 0;
+    paths += '<path d="M'+ix1+','+iy1+' L'+x1+','+y1+' A'+r+','+r+' 0 '+lg+' 1 '+x2+','+y2+' L'+ix2+','+iy2+' A'+ir+','+ir+' 0 '+lg+' 0 '+ix1+','+iy1+'" fill="'+(SVC_COL[s]||'#9ca3af')+'"/>';
+    ang += a;
+  });
+  document.getElementById('donut').innerHTML = paths +
+    '<text x="65" y="61" text-anchor="middle" fill="#0f1923" font-size="12" font-weight="700" font-family="Nunito">' + d.length + '</text>' +
+    '<text x="65" y="73" text-anchor="middle" fill="#6b7280" font-size="8" font-family="Nunito Sans">vagas</text>';
+  document.getElementById('dleg').innerHTML = ents.map(function(item) {
+    return '<div class="di"><div class="dd" style="background:'+(SVC_COL[item[0]]||'#9ca3af')+'"></div><span style="color:#374151">'+item[0]+'</span><span class="dv">'+item[1]+'</span></div>';
+  }).join('');
+}
+
+function renderRec(d) {
+  var recs = {};
+  d.forEach(function(r) {
+    if (!r.RECRUTADOR) return;
+    if (!recs[r.RECRUTADOR]) recs[r.RECRUTADOR] = {t:0,fil:'&#226;&#128;&#147;',tri:0,ent:0,pesq:0,doc:0,at:0,cr:0};
+    recs[r.RECRUTADOR].t++;
+    recs[r.RECRUTADOR].fil = r.FILIAL || '&#226;&#128;&#147;';
+    if (r.ETAPA_MACRO==='TRIAGEM') recs[r.RECRUTADOR].tri++;
+    if (['ENTREVISTA RH','ENTREVISTA OPS','ENTREVISTA CLIENTE'].includes(r.ETAPA_MACRO)) recs[r.RECRUTADOR].ent++;
+    if (['PESQUISA','TESTE'].includes(r.ETAPA_MACRO)) recs[r.RECRUTADOR].pesq++;
+    if (r.ETAPA_MACRO==='DOCUMENTA&#195;&#135;&#195;&#131;O') recs[r.RECRUTADOR].doc++;
+    if (r.CRITICIDADE==='Aten&#195;&#167;&#195;&#163;o') recs[r.RECRUTADOR].at++;
+    if (r.CRITICIDADE==='Cr&#195;&#173;tico') recs[r.RECRUTADOR].cr++;
+  });
+  document.getElementById('recTab').innerHTML =
+    '<thead><tr><th>Recrutador</th><th>Filial</th><th>Total</th><th>Triagem</th><th>Entrevista</th><th>Pesq/Teste</th><th>Doc.</th><th>Aten&#195;&#167;&#195;&#163;o</th><th>Cr&#195;&#173;tico</th></tr></thead><tbody>' +
+    Object.entries(recs).sort(function(a,b){return b[1].t-a[1].t}).map(function(item) {
+      var r=item[0], s=item[1];
+      return '<tr><td><b>'+r+'</b></td><td style="font-size:.6rem;color:var(--mu)">'+s.fil+'</td><td><b>'+s.t+'</b></td><td><span class="bx bl">'+s.tri+'</span></td><td><span class="bx pu">'+s.ent+'</span></td><td><span class="bx gy">'+s.pesq+'</span></td><td><span class="bx pr">'+s.doc+'</span></td><td><span class="bx at">'+s.at+'</span></td><td><span class="bx '+(s.cr>4?'cr':s.cr>2?'at':'pr')+'">'+s.cr+'</span></td></tr>';
+    }).join('') + '</tbody>';
+}
+
+function renderTable(d) {
+  var alertRPs = new Set(RAW.filter(function(r){return r.ETAPA_MACRO==='DOCUMENTA&#195;&#135;&#195;&#131;O' && r.RESP_ADM && !r.CANDIDATO}).map(function(r){return r.RP}));
+  var rows = ALRT_ONLY ? d.filter(function(r){return alertRPs.has(r.RP)}) : d.slice();
+  rows.sort(function(a,b){return b.DIAS_ABERTO-a.DIAS_ABERTO});
+  document.getElementById('tblCnt').textContent = rows.length + ' vagas';
+  var cc = {Cr&#195;&#173;tico:'cr',Aten&#195;&#167;&#195;&#163;o:'at','No Prazo':'pr'};
+  document.getElementById('vt').innerHTML =
+    '<thead><tr><th>RP</th><th>Servi&#195;&#167;o</th><th>Cargo</th><th>Supervisor</th><th>Cliente</th><th>Filial</th><th>Cidade</th><th>Recrutador</th><th>Etapa</th><th>Dias</th><th>Criticidade</th><th>Candidato</th><th>Status Adm.</th><th>Obs. Admiss&#195;&#163;o</th></tr></thead><tbody>' +
+    rows.map(function(r) {
+      return '<tr class="'+(alertRPs.has(r.RP)?'alrt':'')+'"><td><b>'+r.RP+'</b>'+(alertRPs.has(r.RP)?' &#226;&#154;&#160;&#239;&#184;&#143;':'')+'</td><td>'+
+        (r.SERVICO||'&#226;&#128;&#147;')+'</td><td style="max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(r.CARGO||'')+'">'+
+        (r.CARGO||'&#226;&#128;&#147;')+'</td><td style="max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.62rem" title="'+(r.SUPERVISAO||'')+'">'+
+        (r.SUPERVISAO||'&#226;&#128;&#147;')+'</td><td style="max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(r.LOCAL||'')+'">'+
+        (r.LOCAL||'&#226;&#128;&#147;')+'</td><td>'+(r.FILIAL||'&#226;&#128;&#147;')+'</td><td>'+(r.CIDADE||'&#226;&#128;&#147;')+'</td><td>'+(r.RECRUTADOR||'&#226;&#128;&#147;')+'</td>'+
+        '<td><span class="etag">'+(r.ETAPA_MACRO||'&#226;&#128;&#147;')+'</span></td>'+
+        '<td style="font-family:\'Nunito\',sans-serif;font-weight:800;text-align:center">'+(r.DIAS_ABERTO||0)+'</td>'+
+        '<td><span class="ctag '+(cc[r.CRITICIDADE]||'')+'">'+(r.CRITICIDADE||'&#226;&#128;&#147;')+'</span></td>'+
+        '<td style="max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(r.CANDIDATO||'')+'">'+
+        (r.CANDIDATO||'&#226;&#128;&#147;')+'</td><td>'+(r.STATUS_ADM||'&#226;&#128;&#147;')+'</td>'+
+        '<td class="obs-c" title="'+(r.OBS_ADM||'')+'">'+( r.OBS_ADM||'')+'</td></tr>';
+    }).join('') + '</tbody>';
+}
+
+function parseDate2(s) {
+  if(!s||s==='&#226;&#128;&#147;'||s==='') return null;
+  s=s.trim();
+  var m;
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/); if(m) return new Date(+m[3],+m[2]-1,+m[1]);
+  m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2})$/);  if(m) return new Date(2000+ +m[3],+m[2]-1,+m[1]);
+  m=s.match(/^(\d{1,2})\/(\d{1,2})$/);            if(m) return new Date(2026,+m[2]-1,+m[1]);
+  return null;
+}
+
+// Filtros p&#195;&#161;gina 2
+var A2 = {fadm:'', crit:'', aux:'', lc:'', st:''};
+
+function filteredDoc() {
+  var doc = RAW.filter(function(r){return r.ETAPA_MACRO==='DOCUMENTA&#195;&#135;&#195;&#131;O'});
+  if (A2.fadm) doc = doc.filter(function(r){return r.FILIAL_ADM === A2.fadm});
+  if (A2.crit) doc = doc.filter(function(r){return r.CRITICIDADE === A2.crit});
+  if (A2.aux)  doc = doc.filter(function(r){return r.RESP_ADM && r.RESP_ADM.toUpperCase() === A2.aux.toUpperCase()});
+  if (A2.lc)   doc = doc.filter(function(r){return r.LOCAL === A2.lc});
+  if (A2.st)   doc = doc.filter(function(r){return r.STATUS_ADM === A2.st});
+  return doc;
+}
+
+function buildSelectsP2() {
+  var allDoc = RAW.filter(function(r){return r.ETAPA_MACRO==='DOCUMENTA&#195;&#135;&#195;&#131;O'});
+  var auxs = [...new Set(allDoc.map(function(r){return r.RESP_ADM}).filter(Boolean))].sort();
+  var locs = [...new Set(allDoc.map(function(r){return r.LOCAL}).filter(Boolean))].sort();
+  var stats= [...new Set(allDoc.map(function(r){return r.STATUS_ADM}).filter(Boolean))].sort();
+  [['selAux',auxs,'aux'],['selLC',locs,'lc'],['selST',stats,'st']].forEach(function(item){
+    var el=document.getElementById(item[0]);
+    item[1].forEach(function(v){var o=document.createElement('option');o.value=v;o.text=v;el.appendChild(o)});
+    el.onchange=function(ev){A2[item[2]]=ev.target.value;renderPipeline()};
+  });
+  document.querySelectorAll('.fb[data-f2]').forEach(function(b){
+    b.addEventListener('click',function(){
+      var f=b.dataset.f2, v=b.dataset.v;
+      document.querySelectorAll('.fb[data-f2="'+f+'"]').forEach(function(x){x.classList.remove('on')});
+      b.classList.add('on'); A2[f]=v; renderPipeline();
+    });
+  });
+}
+
+function renderPipeline() {
+  var doc = filteredDoc();
+  var totalDoc = RAW.filter(function(r){return r.ETAPA_MACRO==='DOCUMENTA&#195;&#135;&#195;&#131;O'}).length;
+  var pct = totalDoc > 0 ? Math.round(doc.length/RAW.length*100) : 0;
+  var cadastro = doc.filter(function(r){return r.STATUS_ADM==='EM CADASTRO'}).length;
+  var aso      = doc.filter(function(r){return r.STATUS_ADM==='EM ASO'}).length;
+  var integ    = doc.filter(function(r){return r.STATUS_ADM==='INTEGRA&#195;&#135;&#195;&#131;O PROGRAMADA'}).length;
+  var admTotal = MAPS.admitidos_total || 0;
+
+  // Esteira pipeline
+  document.getElementById('pipeEsteira').innerHTML =
+    '<div class="pe total"><div class="pe-l">Em Documenta&#195;&#167;&#195;&#163;o</div><div class="pe-v">'+doc.length+'</div><div class="pe-s">'+pct+'% do total ativo</div></div>' +
+    '<div class="pe cadastro"><div class="pe-l">Em Cadastro</div><div class="pe-v" style="color:#9ca3af">'+cadastro+'</div><div class="pe-s">aguardando docs</div></div>' +
+    '<div class="pe aso"><div class="pe-l">Em ASO</div><div class="pe-v">'+aso+'</div><div class="pe-s">exame agendado</div></div>' +
+    '<div class="pe integ"><div class="pe-l">Integra&#195;&#167;&#195;&#163;o Progr.</div><div class="pe-v">'+integ+'</div><div class="pe-s">data definida</div></div>' +
+    '<div class="pe adm"><div class="pe-l">Admitidos Hist.</div><div class="pe-v">'+admTotal+'</div><div class="pe-s">ciclo encerrado</div></div>' +
+    '<div class="pe pct"><div class="pe-l">% do Total Ativo</div><div class="pe-v">'+pct+'%</div><div class="pe-s">'+doc.length+' de '+RAW.length+' vagas</div></div>';
+
+  // Tempo m&#195;&#169;dio
+  document.getElementById('tempoCards').innerHTML =
+    '<div class="tc"><div class="tcn" style="color:var(--blue)">'+TEMPO.tempo_adm_media+'</div><div class="tcu">dias</div><div class="tcl">Tempo m&#195;&#169;dio pr&#195;&#169;-admiss&#195;&#163;o</div><div class="tcb">Recebimento &#226;&#134;&#146; Admiss&#195;&#163;o &#194;&#183; base: '+TEMPO.tempo_adm_base+' vagas encerradas</div></div>' +
+    '<div class="tc"><div class="tcn" style="color:var(--pur)">'+TEMPO.tempo_total_media+'</div><div class="tcu">dias</div><div class="tcl">Tempo m&#195;&#169;dio total da vaga</div><div class="tcb">Abertura &#226;&#134;&#146; Admiss&#195;&#163;o &#194;&#183; base: '+TEMPO.tempo_total_base+' vagas encerradas</div></div>' +
+    '<div class="tc"><div class="tcn" style="color:var(--wrn)">'+doc.filter(function(r){return r.RESP_ADM && !r.CANDIDATO}).length+'</div><div class="tcu">alertas</div><div class="tcl">Com respons&#195;&#161;vel sem candidato</div><div class="tcb">Col T preenchida &#194;&#183; Col V vazia</div></div>';
+
+  // Tabela auxiliares
+  var auxList = Object.keys(MAPS.pre).sort();
+  var auxRows = auxList.map(function(aux) {
+    var vagsAux = doc.filter(function(r){return r.RESP_ADM && r.RESP_ADM.toUpperCase()===aux});
+    return {
+      nome: aux.charAt(0)+aux.slice(1).toLowerCase(),
+      filial: (MAPS.pre[aux]||'').charAt(0)+(MAPS.pre[aux]||'').slice(1).toLowerCase(),
+      total: vagsAux.length,
+      cadastro: vagsAux.filter(function(r){return r.STATUS_ADM==='EM CADASTRO'}).length,
+      aso: vagsAux.filter(function(r){return r.STATUS_ADM==='EM ASO'}).length,
+      integracao: vagsAux.filter(function(r){return r.STATUS_ADM==='INTEGRA&#195;&#135;&#195;&#131;O PROGRAMADA'}).length,
+      outros: vagsAux.filter(function(r){return !['EM CADASTRO','EM ASO','INTEGRA&#195;&#135;&#195;&#131;O PROGRAMADA'].includes(r.STATUS_ADM)}).length
+    };
+  });
+  var semResp = doc.filter(function(r){return !r.RESP_ADM});
+  if (semResp.length) {
+    auxRows.push({nome:'&#226;&#154;&#160;&#239;&#184;&#143; Sem Respons&#195;&#161;vel',filial:'&#226;&#128;&#147;',total:semResp.length,
+      cadastro:0,aso:0,integracao:0,
+      outros:semResp.length
+    });
+  }
+  document.getElementById('auxTable').innerHTML =
+    '<thead><tr><th>Auxiliar</th><th>Filial</th><th>Total</th><th>Em Cadastro</th><th>Em ASO</th><th>Integra&#195;&#167;&#195;&#163;o</th><th>&#226;&#154;&#160;&#239;&#184;&#143; Outros</th></tr></thead><tbody>' +
+    auxRows.map(function(a){
+      var isAlerta = a.nome.includes('Sem');
+      return '<tr style="'+(isAlerta?'background:#fff7f7':'')+'">' +
+        '<td><b>'+a.nome+'</b></td>' +
+        '<td style="font-size:.6rem;color:var(--mu)">'+a.filial+'</td>' +
+        '<td style="font-family:\'Nunito\',sans-serif;font-weight:800;color:var(--navy)">'+a.total+'</td>' +
+        '<td><span class="bx gy">'+a.cadastro+'</span></td>' +
+        '<td><span class="bx at">'+a.aso+'</span></td>' +
+        '<td><span class="bx bl">'+a.integracao+'</span></td>' +
+        '<td>'+(a.outros>0?'<span class="bx cr">'+a.outros+'</span>':'<span class="bx pr">0</span>')+'</td></tr>';
+    }).join('') + '</tbody>';
+
+  // Tabela de integra&#195;&#167;&#195;&#181;es programadas &#226;&#128;&#148; ordenada por data mais pr&#195;&#179;xima
+  var comInteg = doc.filter(function(r){return r.DATA_INTEGRACAO && r.DATA_INTEGRACAO !== '&#226;&#128;&#147;'});
+  comInteg.sort(function(a,b){
+    var da = parseDate2(a.DATA_INTEGRACAO), db = parseDate2(b.DATA_INTEGRACAO);
+    if(!da && !db) return 0; if(!da) return 1; if(!db) return -1;
+    return da-db;
+  });
+  var integHtml = comInteg.length ?
+    '<table style="width:100%;border-collapse:collapse">' +
+    '<thead><tr>' +
+    '<th style="font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;text-align:left;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700">Candidato</th>' +
+    '<th style="font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;text-align:left;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700">RP</th>' +
+    '<th style="font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;text-align:left;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700">Cliente</th>' +
+    '<th style="font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;text-align:left;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700">Respons&#195;&#161;vel</th>' +
+    '<th style="font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;text-align:center;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700">&#240;&#159;&#147;&#133; Integra&#195;&#167;&#195;&#163;o</th>' +
+    '<th style="font-size:.56rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;text-align:center;border-bottom:2px solid var(--b);background:var(--s2);font-weight:700">&#240;&#159;&#151;&#147; Prev. Admiss&#195;&#163;o</th>' +
+    '</tr></thead><tbody>' +
+    comInteg.map(function(r, i) {
+      var isNext = i === 0;
+      return '<tr style="'+(isNext?'background:#f0fdf4':i%2===0?'':'background:var(--s2)')+'">' +
+        '<td style="font-size:.7rem;font-weight:700;color:var(--navy);padding:7px 8px;border-bottom:1px solid var(--b)">'+(r.CANDIDATO||'&#226;&#128;&#147;')+'</td>' +
+        '<td style="font-size:.67rem;padding:7px 8px;border-bottom:1px solid var(--b);color:var(--tx2)">'+r.RP+'</td>' +
+        '<td style="font-size:.65rem;max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:7px 8px;border-bottom:1px solid var(--b);color:var(--tx2)" title="'+(r.LOCAL||'')+'">'+( r.LOCAL||'&#226;&#128;&#147;')+'</td>' +
+        '<td style="font-size:.67rem;padding:7px 8px;border-bottom:1px solid var(--b);color:var(--tx2)">'+( r.RESP_ADM||'&#226;&#128;&#147;')+'</td>' +
+        '<td style="font-size:.72rem;font-weight:700;color:var(--blue);padding:7px 8px;border-bottom:1px solid var(--b);text-align:center">'+r.DATA_INTEGRACAO+'</td>' +
+        '<td style="font-size:.72rem;font-weight:700;color:var(--ok);padding:7px 8px;border-bottom:1px solid var(--b);text-align:center">'+(r.DATA_INTEGRACAO||'&#226;&#128;&#147;')+'</td>' +
+        '</tr>';
+    }).join('') + '</tbody></table>'
+    : '<div style="color:var(--mu);font-size:.72rem;padding:12px;text-align:center">Nenhuma integra&#195;&#167;&#195;&#163;o programada no momento.</div>';
+
+  document.getElementById('adml').innerHTML = integHtml;
+
+  // Tabela detalhamento
+  var cc2 = {Cr&#195;&#173;tico:'cr',Aten&#195;&#167;&#195;&#163;o:'at','No Prazo':'pr'};
+  document.getElementById('tblCnt2').textContent = doc.length + ' vagas';
+  document.getElementById('vt2').innerHTML =
+    '<thead><tr><th>RP</th><th>Cargo</th><th>Cliente</th><th>Filial</th><th>Recrutador</th><th>Dias</th><th>Criticidade</th><th>Candidato</th><th>Resp. Adm.</th><th>Status Adm.</th><th>Integra&#195;&#167;&#195;&#163;o</th><th>Obs. Admiss&#195;&#163;o</th></tr></thead><tbody>' +
+    doc.slice().sort(function(a,b){return b.DIAS_ABERTO-a.DIAS_ABERTO}).map(function(r) {
+      var isAlerta = r.RESP_ADM && !r.CANDIDATO;
+      return '<tr class="'+(isAlerta?'alrt':'')+'">'+
+        '<td><b>'+r.RP+'</b>'+(isAlerta?' &#226;&#154;&#160;&#239;&#184;&#143;':'')+'</td>'+
+        '<td style="max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(r.CARGO||'')+'">'+( r.CARGO||'&#226;&#128;&#147;')+'</td>'+
+        '<td style="max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="'+(r.LOCAL||'')+'">'+( r.LOCAL||'&#226;&#128;&#147;')+'</td>'+
+        '<td>'+(r.FILIAL||'&#226;&#128;&#147;')+'</td>'+
+        '<td>'+(r.RECRUTADOR||'&#226;&#128;&#147;')+'</td>'+
+        '<td style="font-family:\'Nunito\',sans-serif;font-weight:800;text-align:center">'+(r.DIAS_ABERTO||0)+'</td>'+
+        '<td><span class="ctag '+(cc2[r.CRITICIDADE]||'')+'">'+(r.CRITICIDADE||'&#226;&#128;&#147;')+'</span></td>'+
+        '<td style="font-weight:700;color:var(--navy)">'+(r.CANDIDATO||'&#226;&#154;&#160;&#239;&#184;&#143; &#226;&#128;&#147;')+'</td>'+
+        '<td>'+(r.RESP_ADM||'&#226;&#128;&#147;')+'</td>'+
+        '<td>'+(r.STATUS_ADM||'&#226;&#128;&#147;')+'</td>'+
+        '<td style="color:var(--blue);font-weight:600">'+(r.DATA_INTEGRACAO||'&#226;&#128;&#147;')+'</td>'+
+        '<td class="obs-c" title="'+(r.OBS_ADM||'')+'">'+( r.OBS_ADM||'')+'</td></tr>';
+    }).join('') + '</tbody>';
+}
+
+function renderFluxo() {
+  var totAb = FLUXO.reduce(function(s,r){return s+(r.abertas||0)},0);
+  var totFe = FLUXO.reduce(function(s,r){return s+(r.encerradas||0)},0);
+  var totCa = FLUXO.reduce(function(s,r){return s+(r.canceladas||0)},0);
+  var totSl = totAb - totFe - totCa;
+  document.getElementById('fkpis').innerHTML = [
+    {l:'Total Abertas',v:totAb,s:'vagas criadas no per&#195;&#173;odo',c:'ab'},
+    {l:'Encerradas (Adm.)',v:totFe,s:'candidatos admitidos',c:'fe'},
+    {l:'Canceladas',v:totCa,s:'vagas canceladas',c:'ca'},
+    {l:'Saldo Atual',v:totSl,s:'vagas em aberto',c:'sl'},
+  ].map(function(k){return '<div class="fk '+k.c+'"><div class="fk-l">'+k.l+'</div><div class="fk-v">'+k.v+'</div><div class="fk-s">'+k.s+'</div></div>'}).join('');
+
+  document.getElementById('diaDia').innerHTML =
+    '<thead><tr><th>Linha</th>' + DIAS.map(function(d){return '<th>'+d.dia+'</th>'}).join('') + '</tr></thead><tbody>' +
+    '<tr><td>Abertas no dia</td>' + DIAS.map(function(d){return '<td class="'+(d.abertas?'cell-ab':'cell-0')+'">'+(d.abertas||'')+'</td>'}).join('') + '</tr>' +
+    '<tr><td>Encerradas no dia</td>' + DIAS.map(function(d){return '<td class="'+(d.encerradas?'cell-en':'cell-0')+'">'+(d.encerradas||'')+'</td>'}).join('') + '</tr>' +
+    '<tr><td>Saldo do dia</td>' + DIAS.map(function(d){return '<td class="'+(d.saldo_dia>0?'cell-ab':d.saldo_dia<0?'cell-en':'cell-0')+'">'+(d.saldo_dia||'')+'</td>'}).join('') + '</tr>' +
+    '<tr style="border-top:2px solid var(--b)"><td><b>Acumulado</b></td>' + DIAS.map(function(d){return '<td class="cell-ac">'+d.acumulado+'</td>'}).join('') + '</tr>' +
+    '</tbody>';
+
+  var acum = 0;
+  var fluxRows = FLUXO.map(function(r){acum+=(r.saldo||0); return Object.assign({},r,{acum:acum})});
+  document.getElementById('fluxoAnual').innerHTML =
+    '<thead><tr><th>Linha</th>' + fluxRows.map(function(r){return '<th>'+(MESES[r.MES]||r.MES)+'</th>'}).join('') + '</tr></thead><tbody>' +
+    '<tr><td>Abertas</td>' + fluxRows.map(function(r){return '<td class="'+(r.abertas?'cell-ab':'cell-0')+'">'+(r.abertas||'')+'</td>'}).join('') + '</tr>' +
+    '<tr><td>Encerradas</td>' + fluxRows.map(function(r){return '<td class="'+(r.encerradas?'cell-en':'cell-0')+'">'+(r.encerradas||'')+'</td>'}).join('') + '</tr>' +
+    '<tr><td>Canceladas</td>' + fluxRows.map(function(r){return '<td class="'+(r.canceladas?'cell-ca':'cell-0')+'">'+(r.canceladas||'')+'</td>'}).join('') + '</tr>' +
+    '<tr><td>Saldo</td>' + fluxRows.map(function(r){return '<td class="'+((r.saldo||0)>=0?'cell-ab':'cell-en')+'" style="font-weight:800">'+((r.saldo||0)>=0?'+':'')+r.saldo+'</td>'}).join('') + '</tr>' +
+    '<tr style="border-top:2px solid var(--b)"><td><b>Acumulado</b></td>' + fluxRows.map(function(r){return '<td class="cell-ac">'+r.acum+'</td>'}).join('') + '</tr>' +
+    '</tbody>';
+
+  var recs = PROD.recs, meses = PROD.meses, data = PROD.data;
+  var maxVal = Math.max.apply(null, recs.map(function(r){return meses.map(function(m){return data[r]&&data[r][m]?data[r][m].ab:0})}).flat().concat([1]));
+  function hc(v){return v===0?'h0':v<=5?'h1':v<=20?'h2':v<=40?'h3':'h4'}
+  document.getElementById('prodTable').innerHTML =
+    '<thead><tr><th>Recrutador</th>' + meses.map(function(m){return '<th colspan="2" style="border-left:1px solid var(--b)">'+(MESES[m]||m)+'</th>'}).join('') + '</tr>' +
+    '<tr><th></th>' + meses.map(function(){return '<th style="font-size:.5rem;border-left:1px solid var(--b)">Abertas</th><th style="font-size:.5rem">Fechadas</th>'}).join('') + '</tr></thead><tbody>' +
+    recs.map(function(rec) {
+      return '<tr><td><b>'+rec+'</b></td>' + meses.map(function(m) {
+        var v = (data[rec]&&data[rec][m]) ? data[rec][m] : {ab:0,en:0};
+        return '<td class="'+hc(v.ab)+'" style="border-left:1px solid var(--b)">'+(v.ab||'')+'</td><td class="'+(v.en?'h2':'h0')+'">'+(v.en||'')+'</td>';
+      }).join('') + '</tr>';
+    }).join('') + '</tbody>';
+}
+
+document.querySelectorAll('.fb').forEach(function(b) {
+  b.addEventListener('click', function() {
+    var f = b.dataset.f, v = b.dataset.v;
+    document.querySelectorAll('.fb[data-f="'+f+'"]').forEach(function(x){x.classList.remove('on')});
+    b.classList.add('on'); A[f] = v; render();
+  });
+});
+
+var now = new Date();
+document.getElementById('updPill').textContent = '&#240;&#159;&#147;&#133; ' + now.toLocaleDateString('pt-BR') + ' ' + now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+document.getElementById('filterBar2').style.display = 'none';
+buildSelects();
+buildSelectsP2();
+render();
+</script>
+</body>
+</html>
