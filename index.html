@@ -1,1 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Delphos · Portal R&S</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0a1f14;--green:#1db86a;--g2:#17a05c;
+  --g4:#d8f3e8;--g5:#f0faf4;
+  --white:#fff;--gray:#f1f5f2;
+  --tx:#0a1f14;--tx2:#2d4a38;--mu:#6b8f78;
+  --border:#cce0d4;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--tx);min-height:100vh;}
 
+/* NAV */
+nav{
+  height:58px;padding:0 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo img{height:28px;filter:brightness(0) invert(1);opacity:.85;}
+.nav-logo-fb{display:none;align-items:center;gap:8px;}
+.nav-logo-mk{width:28px;height:28px;border-radius:6px;background:var(--green);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.8rem;color:#fff;}
+.nav-logo-nm{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;color:#fff;letter-spacing:.05em;}
+.nav-logo-nm em{color:var(--green);font-style:normal;}
+.nav-div{width:1px;height:16px;background:rgba(255,255,255,.1);margin:0 12px;}
+.nav-tag{font-size:.58rem;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.14em;}
+.nav-right{font-size:.6rem;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.08em;}
+.nav-right b{color:rgba(29,184,106,.7);}
+
+/* HERO */
+.hero{
+  padding:72px 40px 64px;
+  position:relative;overflow:hidden;
+  text-align:center;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 600px 400px at 50% 0%,rgba(29,184,106,.07) 0%,transparent 60%),
+    radial-gradient(ellipse 300px 300px at 80% 80%,rgba(29,184,106,.04) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.012) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.012) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;
+}
+.hero-content{position:relative;z-index:1;}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(29,184,106,.1);border:1px solid rgba(29,184,106,.18);
+  border-radius:20px;padding:4px 14px;
+  font-size:.6rem;font-weight:700;color:var(--green);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:22px;
+}
+.hero h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:2.8rem;color:#fff;line-height:1.1;
+  letter-spacing:-.03em;margin-bottom:14px;
+}
+.hero h1 em{color:var(--green);font-style:normal;}
+.hero-sub{
+  font-size:.88rem;color:rgba(255,255,255,.35);
+  max-width:440px;margin:0 auto 10px;line-height:1.65;
+}
+.hero-note{
+  font-size:.65rem;color:rgba(255,255,255,.18);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+
+/* CARDS */
+.cards{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:16px;max-width:720px;margin:48px auto 64px;
+  padding:0 40px;
+}
+.card{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;overflow:hidden;
+  transition:all .25s;
+}
+.card:hover{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(29,184,106,.3);
+  transform:translateY(-2px);
+  box-shadow:0 12px 40px rgba(0,0,0,.3);
+}
+.card-top{
+  padding:28px 28px 22px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  position:relative;
+}
+.card-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:rgba(29,184,106,.12);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;margin-bottom:14px;
+}
+.card-title{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:1rem;color:#fff;margin-bottom:4px;
+}
+.card-desc{font-size:.7rem;color:rgba(255,255,255,.3);line-height:1.5;}
+.card-badge{
+  position:absolute;top:16px;right:16px;
+  padding:2px 8px;border-radius:4px;
+  font-size:.57rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+  background:rgba(29,184,106,.15);color:var(--green);
+}
+.card-badge.soon{background:rgba(255,255,255,.06);color:rgba(255,255,255,.25);}
+.card-body{padding:20px 28px;}
+.card-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:12px;border-radius:10px;
+  background:var(--green);color:#fff;
+  font-size:.75rem;font-weight:700;
+  border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;
+  text-decoration:none;
+  transition:all .2s;letter-spacing:.02em;
+}
+.card-btn:hover{background:var(--g2);}
+.card-btn.disabled{
+  background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.2);
+  cursor:default;pointer-events:none;
+}
+
+/* FOOTER */
+footer{
+  text-align:center;padding:20px;
+  font-size:.6rem;color:rgba(255,255,255,.12);
+  text-transform:uppercase;letter-spacing:.08em;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+
+@media(max-width:600px){
+  nav{padding:0 20px;}
+  .hero{padding:48px 20px 40px;}
+  .cards{grid-template-columns:1fr;padding:0 20px;}
+  .hero h1{font-size:2rem;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <img src="https://delphostec.com.br/wp-content/uploads/2025/07/logo-delphos.svg"
+         onerror="this.style.display='none';document.getElementById('fb').style.display='flex';"
+         alt="Delphos">
+    <div class="nav-logo-fb" id="fb">
+      <div class="nav-logo-mk">D</div>
+      <div class="nav-logo-nm">DEL<em>PHOS</em></div>
+    </div>
+    <div class="nav-div"></div>
+    <div class="nav-tag">Portal R&S</div>
+  </div>
+  <div class="nav-right">Dados atualizados <b>2× ao dia</b> pela equipe de R&S</div>
+</nav>
+
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🛡️ Acesso restrito · Delphos</div>
+    <h1>Central de<br><em>Recrutamento & Seleção</em></h1>
+    <p class="hero-sub">Acompanhe os indicadores de vagas e desligamentos da Delphos. Selecione o painel que deseja consultar.</p>
+    <p class="hero-note">Atualizado pela equipe de R&S · Jundiaí · Campinas · São Paulo</p>
+  </div>
+</div>
+
+<div class="cards">
+
+  <div class="card">
+    <div class="card-top">
+      <span class="card-badge">Ativo</span>
+      <div class="card-icon">📊</div>
+      <div class="card-title">Painel de Vagas</div>
+      <div class="card-desc">Vagas ativas, funil por etapa, criticidade e pipeline de admissão por recrutador.</div>
+    </div>
+    <div class="card-body">
+      <a href="https://delphosrecrutamentoselecao-a11y.github.io/delphos-rs/delphos_painel_v7.html" target="_blank" class="card-btn">
+        Abrir Painel de Vagas →
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-top">
+      <span class="card-badge">Ativo</span>
+      <div class="card-icon">📉</div>
+      <div class="card-title">Painel de Desligamentos</div>
+      <div class="card-desc">Entrevistas de desligamento, motivos, índices por supervisor e análise com IA.</div>
+    </div>
+    <div class="card-body">
+      <a href="LINK_DESLIGAMENTOS" target="_blank" class="card-btn">
+        Abrir Painel de Desligamentos →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+<footer>Delphos Serviços e Segurança · Portal R&S · Uso interno</footer>
+
+</body>
+</html>
