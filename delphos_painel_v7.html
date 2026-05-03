@@ -579,22 +579,19 @@ function checkAlert() {
 
 function renderEsteira(d) {
   var cnt = function(e){return d.filter(function(r){return r.ETAPA_MACRO===e}).length};
-  var total = d.length || 1;
-  var pct = function(v){ return total > 0 ? Math.round(v/total*100) + '%' : '0%'; };
   var items = [
-    {l:'Vagas Ativas',v:d.length,s:'em aberto agora',c:'total',p:''},
-    {l:'Recém Abertas',v:cnt('ABERTA'),s:'sem movimentação',c:'eabe',p:pct(cnt('ABERTA'))},
-    {l:'Triagem',v:cnt('TRIAGEM'),s:'',c:'etri',p:pct(cnt('TRIAGEM'))},
-    {l:'Entrev. RH',v:cnt('ENTREVISTA RH'),s:'',c:'erh',p:pct(cnt('ENTREVISTA RH'))},
-    {l:'Entrev. OPS',v:cnt('ENTREVISTA OPS'),s:'',c:'eops',p:pct(cnt('ENTREVISTA OPS'))},
-    {l:'Pesquisa',v:cnt('PESQUISA'),s:'',c:'epesq',p:pct(cnt('PESQUISA'))},
-    {l:'Teste',v:cnt('TESTE'),s:'',c:'eteste',p:pct(cnt('TESTE'))},
-    {l:'Documentação',v:cnt('DOCUMENTAÇÃO'),s:'pré-admissão',c:'edoc',p:pct(cnt('DOCUMENTAÇÃO'))},
-    {l:'Análise Canc.',v:cnt('ANALISE CANCELAMENTO'),s:'em risco',c:'ecanc',p:pct(cnt('ANALISE CANCELAMENTO'))},
+    {l:'Vagas Ativas',v:d.length,s:'em aberto agora',c:'total'},
+    {l:'Recém Abertas',v:cnt('ABERTA'),s:'sem movimentação',c:'eabe'},
+    {l:'Triagem',v:cnt('TRIAGEM'),s:'',c:'etri'},
+    {l:'Entrev. RH',v:cnt('ENTREVISTA RH'),s:'',c:'erh'},
+    {l:'Entrev. OPS',v:cnt('ENTREVISTA OPS'),s:'',c:'eops'},
+    {l:'Pesquisa',v:cnt('PESQUISA'),s:'',c:'epesq'},
+    {l:'Teste',v:cnt('TESTE'),s:'',c:'eteste'},
+    {l:'Documentação',v:cnt('DOCUMENTAÇÃO'),s:'pré-admissão',c:'edoc'},
+    {l:'Análise Canc.',v:cnt('ANALISE CANCELAMENTO'),s:'em risco',c:'ecanc'},
   ];
   document.getElementById('esteira').innerHTML = items.map(function(k,i) {
-    var pctHtml = k.p ? '<div style="font-size:.62rem;font-weight:700;color:inherit;opacity:.55;margin-top:-2px;">' + k.p + ' do total</div>' : '';
-    return '<div class="ek ' + k.c + '" style="animation-delay:' + (i*.04) + 's"><div class="ek-l">' + k.l + '</div><div class="ek-v">' + k.v + '</div>' + pctHtml + (k.s ? '<div class="ek-s">' + k.s + '</div>' : '') + '</div>';
+    return '<div class="ek ' + k.c + '" style="animation-delay:' + (i*.04) + 's"><div class="ek-l">' + k.l + '</div><div class="ek-v">' + k.v + '</div>' + (k.s ? '<div class="ek-s">' + k.s + '</div>' : '') + '</div>';
   }).join('');
 }
 
@@ -613,11 +610,8 @@ function renderFunil(d) {
   ETAPA_ORDER.forEach(function(e){cnts[e]=0});
   d.forEach(function(r){if(cnts[r.ETAPA_MACRO]!==undefined)cnts[r.ETAPA_MACRO]++});
   var mx = Math.max.apply(null, Object.values(cnts).concat([1]));
-  var totalFunil = d.length;
   document.getElementById('funil').innerHTML = ETAPA_ORDER.map(function(e) {
-    var pct = totalFunil > 0 ? Math.round(cnts[e]/totalFunil*100) : 0;
-    var pctTxt = cnts[e] > 0 ? '<span style="font-size:.65rem;opacity:.85;margin-left:4px;">' + pct + '%</span>' : '';
-    return '<div class="fi"><div class="fi-l">' + e + '</div><div class="fi-bw"><div class="fi-b" style="width:' + (cnts[e]/mx*100) + '%;background:' + (ETAPA_COL[e]||'#9ca3af') + '">' + (cnts[e]||'') + pctTxt + '</div></div><div class="fi-n">' + cnts[e] + '</div></div>';
+    return '<div class="fi"><div class="fi-l">' + e + '</div><div class="fi-bw"><div class="fi-b" style="width:' + (cnts[e]/mx*100) + '%;background:' + (ETAPA_COL[e]||'#9ca3af') + '">' + (cnts[e]||'') + '</div></div><div class="fi-n">' + cnts[e] + '</div></div>';
   }).join('');
 }
 
@@ -852,16 +846,12 @@ function renderFluxo() {
   var totFe = FLUXO.reduce(function(s,r){return s+(r.encerradas||0)},0);
   var totCa = FLUXO.reduce(function(s,r){return s+(r.canceladas||0)},0);
   var totSl = totAb - totFe - totCa;
-  var totBase = totAb > 0 ? totAb : 1;
-  var pctFe = Math.round(totFe/totBase*100);
-  var pctCa = Math.round(totCa/totBase*100);
-  var pctSl = Math.round(totSl/totBase*100);
   document.getElementById('fkpis').innerHTML = [
-    {l:'Total Abertas',v:totAb,s:'vagas criadas no período',c:'ab',pct:''},
-    {l:'Encerradas (Adm.)',v:totFe,s:'candidatos admitidos',c:'fe',pct:pctFe+'% do total'},
-    {l:'Canceladas',v:totCa,s:'vagas canceladas',c:'ca',pct:pctCa+'% do total'},
-    {l:'Saldo Atual',v:totSl,s:'vagas em aberto',c:'sl',pct:pctSl+'% do total'},
-  ].map(function(k){return '<div class="fk '+k.c+'"><div class="fk-l">'+k.l+'</div><div class="fk-v">'+k.v+'</div><div class="fk-s">'+k.s+'</div>'+(k.pct?'<div style="font-size:.6rem;font-weight:700;opacity:.7;margin-top:2px;">'+k.pct+'</div>':'')+'</div>'}).join('');
+    {l:'Total Abertas',v:totAb,s:'vagas criadas no período',c:'ab'},
+    {l:'Encerradas (Adm.)',v:totFe,s:'candidatos admitidos',c:'fe'},
+    {l:'Canceladas',v:totCa,s:'vagas canceladas',c:'ca'},
+    {l:'Saldo Atual',v:totSl,s:'vagas em aberto',c:'sl'},
+  ].map(function(k){return '<div class="fk '+k.c+'"><div class="fk-l">'+k.l+'</div><div class="fk-v">'+k.v+'</div><div class="fk-s">'+k.s+'</div></div>'}).join('');
 
   document.getElementById('diaDia').innerHTML =
     '<thead><tr><th>Linha</th>' + DIAS.map(function(d){return '<th>'+d.dia+'</th>'}).join('') + '</tr></thead><tbody>' +
@@ -910,6 +900,40 @@ document.getElementById('filterBar2').style.display = 'none';
 buildSelects();
 buildSelectsP2();
 render();
+</script>
+
+<script>
+window.addEventListener('load', function() {
+  fetch('https://delphosrecrutamentoselecao-a11y.github.io/delphos-rs/vagas.csv')
+    .then(function(r){ return r.text(); })
+    .then(function(text){
+      var rows = text.split('\n').filter(function(l){return l.trim();});
+      var sep = rows[0].includes(';') ? ';' : ',';
+      var newData = [];
+      for(var i=1;i<rows.length;i++){
+        var c=rows[i].split(sep).map(function(x){return x.trim().replace(/^"|"$/g,'');});
+        if(!c[0]||!c[0].match(/^\d+/)) continue;
+        var et=(c[8]||'').trim();
+        if(et.toUpperCase().includes('DOCUMENT')) et='DOCUMENTA'+String.fromCharCode(199)+String.fromCharCode(195)+'O';
+        else if(et.toUpperCase().startsWith('TRIAGEM')) et='TRIAGEM';
+        else if(et.toUpperCase().includes('ANALISE CANCELAMENTO')) et='ANALISE CANCELAMENTO';
+        else if(et.toUpperCase().includes('ENTREVISTA RH')) et='ENTREVISTA RH';
+        else if(et.toUpperCase().includes('ENTREVISTA OPS')) et='ENTREVISTA OPS';
+        else if(et.toUpperCase().includes('PESQUISA')) et='PESQUISA';
+        else if(et.toUpperCase().includes('TESTE')) et='TESTE';
+        else if(et===''||et.toUpperCase()==='REABERTA') et='ABERTA';
+        if(et.toUpperCase()==='ENCERRADA'||et.toUpperCase()==='CANCELADA') continue;
+        newData.push({RP:c[0],DIAS_ABERTO:parseInt(c[3])||0,CRITICIDADE:c[4]||'',SERVICO:c[5]||'',RECRUTADOR:c[6]||'',STATUS_VAGA:c[7]||'',ETAPA_MACRO:et,CARGO:c[9]||'',SUPERVISAO:c[10]||'',CIDADE:c[12]||'',LOCAL:c[11]||'',CANDIDATO:c[21]||'',STATUS_ADM:c[22]||'',DATA_INTEGRACAO:c[23]||'',RESP_ADM:c[19]||'',OBS_REC:c[16]||'',OBS_ADM:c[26]||'',FILIAL:MAPS.rec[(c[6]||'').toUpperCase()]||'-',FILIAL_ADM:MAPS.pre[(c[19]||'').toUpperCase()]||'-'});
+      }
+      if(newData.length>0){
+        RAW=newData;
+        var now=new Date();
+        document.getElementById('updPill').textContent='atualizado: '+now.toLocaleDateString('pt-BR')+' '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+        resetSelects();buildSelects();render();
+      }
+    })
+    .catch(function(e){ console.log('Erro CSV auto:', e); });
+});
 </script>
 </body>
 </html>
