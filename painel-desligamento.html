@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Delphos &middot; People Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07120a;--s1:#0d1d11;--s2:#122016;--s3:#1a2d1e;
+  --green:#1db86a;--g2:#17a05c;--g3:#0f7a45;--g5:#6dcf95;
+  --bd:#1e3324;--bd2:#2d4a38;
+  --tx:#e8f5ec;--tm:#7aaa88;--td:#3a5a42;
+  --red:#e53935;--amber:#f59e0b;--blue:#3b82f6;--purple:#8b5cf6;--cyan:#06b6d4;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--g3);border-radius:2px}
+header{background:var(--s1);border-bottom:1px solid var(--bd);height:56px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mk{width:28px;height:28px;border-radius:7px;background:var(--green);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:.8rem;color:#fff}
+.logo-nm{font-family:'Syne',sans-serif;font-weight:800;font-size:.9rem;color:var(--tx)}
+.logo-nm em{color:var(--green);font-style:normal}
+.logo-div{width:1px;height:14px;background:var(--bd2);margin:0 10px}
+.logo-sub{font-size:.6rem;color:var(--td);text-transform:uppercase;letter-spacing:.12em}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.hdr-chip{background:rgba(29,184,106,.08);border:1px solid var(--bd);border-radius:20px;padding:3px 10px;font-size:.6rem;color:var(--tm)}
+.hdr-chip b{color:var(--green)}
+.upload-btn{background:rgba(29,184,106,.1);border:1px solid var(--g3);border-radius:6px;padding:5px 12px;font-size:.65rem;font-weight:700;color:var(--green);cursor:pointer;font-family:'DM Sans',sans-serif;position:relative}
+.upload-btn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+#dashboard{padding:20px 28px 48px}
+.filters{background:var(--s1);border:1px solid var(--bd);border-left:3px solid var(--g3);border-radius:8px;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:20px}
+.fl{font-size:.58rem;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.07em}
+select{background:var(--bg);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:5px;font-size:.68rem;font-family:'DM Sans',sans-serif;outline:none;cursor:pointer}
+select:focus{border-color:var(--green)}
+.btn-clr{margin-left:auto;background:transparent;border:1px solid var(--bd);color:var(--tm);padding:4px 12px;border-radius:5px;cursor:pointer;font-size:.65rem;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-clr:hover{border-color:var(--red);color:var(--red)}
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:20px}
+.kpi{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.green::before{background:var(--green)}.kpi.red::before{background:var(--red)}.kpi.amber::before{background:var(--amber)}.kpi.blue::before{background:var(--blue)}.kpi.purple::before{background:var(--purple)}.kpi.cyan::before{background:var(--cyan)}
+.kpi-ico{position:absolute;top:10px;right:12px;font-size:1.2rem;opacity:.25}
+.kpi-l{font-size:.58rem;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.kpi-v{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;line-height:1;color:var(--tx)}
+.kpi-s{font-size:.62rem;color:var(--tm);margin-top:4px}
+.row{display:grid;gap:14px;margin-bottom:14px}
+.r2{grid-template-columns:1fr 1fr}.r3{grid-template-columns:1fr 1fr 1fr}.r21{grid-template-columns:1.6fr 1fr}.r31{grid-template-columns:1fr 1fr 1fr}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:10px;padding:16px}
+.card-ttl{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tm);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.bar-list{display:flex;flex-direction:column;gap:7px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-lbl{font-size:.66rem;color:var(--tm);width:170px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{flex:1;background:var(--bg);border-radius:3px;height:22px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:8px;font-size:.65rem;font-weight:700;transition:width .8s}
+.bar-pct{position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:.58rem;color:var(--td)}
+.bar-n{font-size:.68rem;font-weight:700;width:22px;text-align:right;color:var(--tx)}
+.nota-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.nota{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:12px 8px;text-align:center}
+.nota-lbl{font-size:.58rem;color:var(--tm);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.nota-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;line-height:1}
+.nota-sub{font-size:.55rem;color:var(--td);margin-top:3px}
+.sup-list{display:flex;flex-direction:column;gap:6px}
+.sup-row{display:flex;align-items:center;gap:8px}
+.sup-nm{font-size:.68rem;color:var(--tm);width:100px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sup-track{flex:1;background:var(--bg);border-radius:3px;height:22px;position:relative;overflow:hidden}
+.sup-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:8px;font-size:.68rem;font-weight:700}
+.sup-cnt{position:absolute;right:7px;top:50%;transform:translateY(-50%);font-size:.58rem;color:var(--td)}
+.fala-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto}
+.fala{background:var(--s2);border-left:3px solid var(--g3);border-radius:0 6px 6px 0;padding:10px 13px}
+.fala.red{border-left-color:var(--red)}.fala.amber{border-left-color:var(--amber)}
+.fala-who{font-size:.6rem;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ftag{padding:1px 7px;border-radius:10px;font-size:.58rem;font-weight:700}
+.ftag.g{background:rgba(29,184,106,.12);color:var(--green)}.ftag.r{background:rgba(229,57,53,.12);color:var(--red)}.ftag.a{background:rgba(245,158,11,.12);color:var(--amber)}
+.fala-txt{font-size:.72rem;color:var(--tm);line-height:1.6}
+.alert-box{background:rgba(229,57,53,.07);border:1px solid rgba(229,57,53,.2);border-left:4px solid var(--red);border-radius:0 8px 8px 0;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
+.alert-box h4{font-size:.78rem;font-weight:700;color:#ef9a9a;margin-bottom:3px}
+.alert-box p{font-size:.7rem;color:var(--tm);line-height:1.5}
+.rev-cards{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.rev-card{background:rgba(29,184,106,.06);border:1px solid rgba(29,184,106,.18);border-radius:8px;padding:10px 14px;flex:1;min-width:180px}
+.rev-nm{font-size:.72rem;font-weight:700;color:var(--g5);margin-bottom:3px}
+.rev-info{font-size:.65rem;color:var(--tm);line-height:1.5}
+.rev-tag{margin-top:5px;display:inline-block;background:rgba(29,184,106,.12);color:var(--green);padding:2px 8px;border-radius:10px;font-size:.58rem;font-weight:700}
+.insight-bar{background:linear-gradient(135deg,rgba(29,184,106,.08),rgba(29,184,106,.03));border:1px solid rgba(29,184,106,.15);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.insight-item{text-align:center}
+.insight-v{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--green)}
+.insight-l{font-size:.6rem;color:var(--tm);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+.tempo-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tb{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;text-align:center}
+.tb-v{font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;line-height:1;margin-bottom:3px}
+.tb-l{font-size:.6rem;color:var(--tm);text-transform:uppercase;letter-spacing:.04em}
+.empty{font-size:.68rem;color:var(--td);padding:8px 0;font-style:italic}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.r2,.r3,.r21,.r31{grid-template-columns:1fr}.nota-grid{grid-template-columns:repeat(3,1fr)}.insight-bar{grid-template-columns:repeat(2,1fr)}header{padding:0 16px}#dashboard{padding:14px 16px 40px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-mk">D</div>
+    <div class="logo-nm">DEL<em>PHOS</em></div>
+    <div class="logo-div"></div>
+    <div class="logo-sub">People Analytics</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-chip">Base: <b id="cN">36</b> entrevistas</div>
+    <div class="hdr-chip" id="cDt" style="color:var(--td)">Atualizado: 05/05/2026</div>
+    <label class="upload-btn">&#8679; Atualizar CSV<input type="file" accept=".csv" onchange="loadCSV(event)"></label>
+  </div>
+</header>
+
+<div id="dashboard">
+  <!-- Filtros -->
+  <div class="filters">
+    <span class="fl">Filial</span><select id="fFil" onchange="render()"><option value="">Todas</option></select>
+    <span class="fl">Servi&ccedil;o</span><select id="fSrv" onchange="render()"><option value="">Todos</option></select>
+    <span class="fl">Supervisor</span><select id="fSup" onchange="render()"><option value="">Todos</option></select>
+    <span class="fl">Tipo</span><select id="fTip" onchange="render()"><option value="">Todos</option></select>
+    <button class="btn-clr" onclick="clearF()">&circlearrowright; Limpar</button>
+  </div>
+
+  <!-- Insight bar -->
+  <div class="insight-bar" id="insightBar"></div>
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="kpis"></div>
+
+  <!-- Reversoes -->
+  <div id="revBanner" style="display:none">
+    <div class="card-ttl" style="margin-bottom:8px;"><span class="dot" style="background:var(--green)"></span>&#9989; Revers&otilde;es &mdash; Colaboradores Retidos</div>
+    <div class="rev-cards" id="revCards"></div>
+  </div>
+
+  <!-- Alerta -->
+  <div class="alert-box" id="alertBox" style="display:none">
+    <div style="font-size:1.2rem">&#9888;&#65039;</div>
+    <div><h4>Alerta de Gest&atilde;o</h4><p id="alertTxt"></p></div>
+  </div>
+
+  <!-- Motivos -->
+  <div class="row r3">
+    <div class="card">
+      <div class="card-ttl"><span class="dot" style="background:var(--amber)"></span>Motivo Declarado (fala do colaborador)</div>
+      <div class="bar-list" id="mDecl"></div>
+    </div>
+    <div class="card">
+      <div class="card-ttl"><span class="dot" style="background:var(--blue)"></span>Fator Secund&aacute;rio</div>
+      <div class="bar-list" id="mSec"></div>
+    </div>
+    <div class="card">
+      <div class="card-ttl"><span class="dot" style="background:var(--red)"></span>Causa Real (vis&atilde;o do entrevistador)</div>
+      <div class="bar-list" id="mReal"></div>
+    </div>
+  </div>
+
+  <!-- Por filial / supervisor -->
+  <div class="row r2">
+    <div class="card">
+      <div class="card-ttl"><span class="dot" style="background:var(--purple)"></span>Volume por Supervisor</div>
+      <div class="sup-list" id="supVol"></div>
+    </div>
+    <div class="card">
+      <div class="card-ttl"><span class="dot" style="background:var(--cyan)"></span>Distribui&ccedil;&atilde;o por Filial e Servi&ccedil;o</div>
+      <div class="bar-list" id="filSrv"></div>
+    </div>
+  </div>
+
+  <!-- Notas -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-ttl"><span class="dot" style="background:var(--green)"></span>Avalia&ccedil;&atilde;o da Experi&ecirc;ncia &mdash; M&eacute;dias (escala 1&ndash;5)</div>
+    <div class="nota-grid" id="notas"></div>
+  </div>
+
+  <!-- Tempo de casa -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-ttl"><span class="dot" style="background:var(--amber)"></span>Tempo de Casa no Desligamento</div>
+    <div class="tempo-bars" id="tempoCasa"></div>
+  </div>
+
+  <!-- Falas -->
+  <div class="row r2" style="margin-top:14px">
+    <div class="card">
+      <div class="card-ttl"><span class="dot" style="background:var(--green)"></span>Falas dos Colaboradores</div>
+      <div class="fala-list" id="falas"></div>
+    </div>
+    <div class="card">
+      <div class="card-ttl"><span class="dot" style="background:var(--red)"></span>Pontos Negativos Relatados</div>
+      <div class="fala-list" id="negativos"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var BASE = [{"id": "1", "data": "23/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "Alan Vander Almeida", "re": "912336", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Reserva T\u00e9cnica", "supervisor": "Adolfo", "lider": "N/A", "admissao": "24/07/2025", "deslig": "23/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "Vai trabalhar por conta pr\u00f3pria", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Atestados", "justReal": "Pelo hist\u00f3rico haviam v\u00e1rios atestados m\u00e9dicos e advert\u00eancias", "nl": "4", "ne": "3", "nc": "3", "ns": "3", "ne2": "4", "trein": "PARCIALMENTE", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Trabalho aut\u00f4nomo", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "2", "data": "23/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "Kelli de Carvalho", "re": "145823", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "Cooper", "supervisor": "Thays", "lider": "N/A", "admissao": "09/04/2026", "deslig": "23/04/2026", "motDecl": "Problemas de relacionamento na equipe", "ctxDecl": "Alega que uma funcion\u00e1ria da DELPHOS, supostamente Indiana, que fala coisas enrolado, queria mandar no posto e te destrava, gritava muito com a colaboradora", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas de relacionamento na equipe", "justReal": "O posto \u00e9 tranquilo mas alega que estava insustent\u00e1vel manter-se no posto", "nl": "3", "ne": "1", "nc": "4", "ns": "4", "ne2": "4", "trein": "N\u00c3O", "neg": "Rela\u00e7\u00e3o com equipe (apenas a colaborada citada a qual n\u00e3o se recorda o nome) Anggibert", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "3", "data": "23/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "ROSELI HIPOLITO SANTOS", "re": "913289", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "MONTALTO", "supervisor": "ADOLFO", "lider": "N/A", "admissao": "23/12/2025", "deslig": "23/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "Colaboradora  informou que vai atuar na \u00e1rea da sa\u00fade", "temSec": "Sim", "motSec": "Problemas com a lideran\u00e7a imediata", "ctxSec": "Colaboradora informou que nunca viu seu supervisor no posto sendo o Adolfo. Informou tamb\u00e9m que o sindico pediu pra passar todas informa\u00e7\u00f5es pra ele, relatou caso de aux de limpeza q ficou 2 meses com uniforme rasgado, relatou que a Delphos est\u00e1 perdendo muito posto por culpa de Supervis\u00e3o, informou que falta profissionalismo por parte deles, n\u00e3o d\u00e3o retorno, nao respondem seus liderados, alguns s\u00e3o grosseiros entre outras situa\u00e7\u00f5es.", "causeReal": "Problemas com a lideran\u00e7a imediata", "justReal": "Colaboradora informou que nunca viu seu supervisor no posto sendo o Adolfo. Informou tamb\u00e9m que o sindico pediu pra passar todas informa\u00e7\u00f5es pra ele, relatou caso de aux de limpeza q ficou 2 meses com uniforme rasgado, relatou que a Delphos est\u00e1 perdendo muito posto por culpa de Supervis\u00e3o, informou que falta profissionalismo por parte deles, n\u00e3o d\u00e3o retorno, nao respondem seus liderados, alguns s\u00e3o grosseiros entre outras situa\u00e7\u00f5es.", "nl": "3", "ne": "5", "nc": "5", "ns": "5", "ne2": "5", "trein": "SIM", "neg": "Somente a falta de treinamento da gest\u00e3o em saber lhe dar com a equipe.", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Outro segmento", "motivoNovaOp": "Melhor escala", "sugestao": "nao", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "4", "data": "23/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "SANDRA NASCIMENTO RODRIGUES", "re": "145609", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "PORTAL DAS PALMEIRAS", "supervisor": "nao identificado", "lider": "MARIA", "admissao": "28/02/2026", "deslig": "23/04/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "MARIDO COM PROBLEMA DE SAUDE, E IA PEDIR CONTA ACABOU NAO PEDINDO E FICANDO NA FALTA, SUPERVISORA THIAIS NAO DEU RETORNO, ELA EST\u00c1 PERDIDA.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "MUDAN\u00c7A", "nl": "3", "ne": "3", "nc": "5", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "MUDAN\u00c7A DE ESCALA POIS VIROU RT", "voltaria": "Sim", "indicaria": "N\u00e3o", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "NAO", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "5", "data": "23/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "CICERO WILLIAM OTAVIO DE OLIVEIRA", "re": "910078", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "SAKATA FAZENDA", "supervisor": "SANDRO", "lider": "N/A", "admissao": "12/08/2024", "deslig": "23/04/2026", "motDecl": "Insatisfa\u00e7\u00e3o com a empresa", "ctxDecl": "DEPOIS DA PERCA DO SAKATA FAZENDA, COLABORADOR FICOU SEM POSTO E PERDIDO, DESLOCADO", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Dist\u00e2ncia / Transporte / Acesso ao posto", "justReal": "COLABORADOR NAO TEM COMO VIR PARA JUNDIAI PARA FICAR DE RESERVA", "nl": "4", "ne": "5", "nc": "4", "ns": "4", "ne2": "5", "trein": "N\u00c3O", "neg": "ALGUNS, DO SUPERVISOR QUE NAO DAVA SUPORTE NECESS\u00c1RIO", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "NAO", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "6", "data": "23/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "MARCOS SOBRINO GARCIA", "re": "913376", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "EPA QUIMICA", "supervisor": "SANDRO", "lider": "N\u00c3O TINHA L\u00cdDER", "admissao": "10/01/2026", "deslig": "23/04/2026", "motDecl": "Insatisfa\u00e7\u00e3o com a empresa", "ctxDecl": "Ir\u00e1 seguir com sua \u00e1rea de atua\u00e7\u00e3o (engenharia de processos) e teve uma insatisfa\u00e7\u00e3o com a antiga supervisora Daniele, no qual ele fez uma troca de dia de trabalho com uma folga para poder resolver um problema na faculdade mas a supervisora n\u00e3o formalizou e constou como falta injustificada, sendo que o mesmo fez duas FTs para compensar essa troca.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Insatisfa\u00e7\u00e3o com a empresa", "justReal": "Colaborador ficou chateado com o erro da supervis\u00e3o e realmente n\u00e3o quer ficar na empresa mais, \u00e9 a segunda vez que trabalha na empresa (na primeira vez saiu pois precisou resolver uns documentos de seu pa\u00eds (candidato Espanhol).)", "nl": "4", "ne": "5", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "N\u00e3o", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "Sem mais relatos", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "7", "data": "23/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "VANIA CRISTINA PEDRO BORDIN", "re": "145788", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "MYRIAD", "supervisor": "MAIARA", "lider": "N/A", "admissao": "01/04/2026", "deslig": "23/04/2026", "motDecl": "N\u00e3o obteve desligamento", "ctxDecl": "Colaboradora relata insatisfa\u00e7\u00e3o com o posto e demora para cair o vale transporte (ela solicitou ap\u00f3s sua admiss\u00e3o pois foi remanejada de posto, a princ\u00edpio iria para a Fareva que possui fretado, mas foi realocada para o Myriad que precisa de vale transporte)", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "N\u00e3o obteve desligamento", "justReal": "Demora para resolver o problema do vale transporte da colaboradora. Ela veio decidida a solicitar a demiss\u00e3o mas consegui reverter para um outro posto de outro supervisor.", "nl": "4", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N/A", "reversao": "SIM", "novoPosto": "Caminhos da Serra 3"}, {"id": "8", "data": "17/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "Leticia Diniz dos Santos", "re": "912358", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Montalto Doc", "supervisor": "Renan", "lider": "N/A", "admissao": "04/04/2025", "deslig": "17/04/2026", "motDecl": "Condi\u00e7\u00f5es do posto / estrutura de trabalho", "ctxDecl": "Colaboradora pediu demiss\u00e3o por conta que perdeu o posto e encontrou uma melhor oportunidade", "temSec": "Sim", "motSec": "Melhor Oportunidade Profissional", "ctxSec": "Melhor oportunidade na \u00e1rea", "causeReal": "Melhor Oportunidade Profissional", "justReal": "Colaboradora informou que conseguiu um cargo com melhor salario e beneficios", "nl": "4", "ne": "4", "nc": "4", "ns": "5", "ne2": "5", "trein": "SIM", "neg": "N\u00e3o", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Fun\u00e7\u00e3o diferente", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N/A", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "9", "data": "17/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "Rayana Elisario Silva", "re": "913121", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Reserva Tecnica", "supervisor": "Elizeu", "lider": "N/A", "admissao": "25/11/2025", "deslig": "17/04/2026", "motDecl": "Condi\u00e7\u00f5es do posto / estrutura de trabalho", "ctxDecl": "N\u00e3o se adaptou como reserva tecnica e mudan\u00e7a constante de postos", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Condi\u00e7\u00f5es do posto / estrutura de trabalho", "justReal": "N\u00e3o adapta\u00e7\u00e3o ao cargo", "nl": "5", "ne": "5", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "N/A", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N/A", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "10", "data": "17/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "Leticia Diniz dos Santos", "re": "912358", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Montalto Doc", "supervisor": "Renan", "lider": "N/A", "admissao": "04/04/2025", "deslig": "17/04/2026", "motDecl": "Condi\u00e7\u00f5es do posto / estrutura de trabalho", "ctxDecl": "Demiss\u00e3o por perca de posto e melhor oportunidade", "temSec": "Sim", "motSec": "Melhor Oportunidade Profissional", "ctxSec": "Melhor oportunidade salarial", "causeReal": "Melhor Oportunidade Profissional", "justReal": "Salario maior e mais beneficios", "nl": "5", "ne": "5", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "N/A", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Mesma fun\u00e7\u00e3o em outra empresa", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N/A", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "11", "data": "24/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "FILOMENA MARIA MACIEL DO NASCIMENTO", "re": "912634", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "Forest Hills", "supervisor": "Maiara", "lider": "Socorro", "admissao": "09/09/2025", "deslig": "24/04/2026", "motDecl": "Sa\u00fade", "ctxDecl": "PROBLEMA DE SAUDE - DIABETE", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Sa\u00fade", "justReal": "FALTA DE RETORNO DA SUPERVISORA, SENTIU QUE A SUPERVISORA TINHA RAIVA DELA, NAO DAVA ATEN\u00c7AO, FALTA DE EMPATIA, LIDER PASSAVA AS COISAS E ELA ( MAIARA NAO DAVA RETORNO)", "nl": "2", "ne": "5", "nc": "5", "ns": "5", "ne2": "4", "trein": "SIM", "neg": "SOMENTE O FATO COM A SUPERVISORA", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N\u00c3O", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "12", "data": "24/04/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "ADAILTON DA SILVA DOS SANTOS", "re": "910245", "servico": "Facilities", "cargo": "Manutencista", "posto": "Kerry", "supervisor": "Gislene", "lider": "Karine", "admissao": "11/09/2024", "deslig": "24/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "Conseguiu algo na ar\u00e9a que est\u00e1 estudando", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Melhor Oportunidade Profissional", "justReal": "melhor oportunidade", "nl": "4", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "N\u00e3o", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Outro segmento", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "13", "data": "27/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "JERONIMO SANTOS DE ALMEIDA", "re": "145845", "servico": "Facilities", "cargo": "AUXILIAR DE SERVI\u00c7OS GERAIS", "posto": "FAREVA", "supervisor": "FL\u00c1VIA", "lider": "N/A", "admissao": "16/04/2026", "deslig": "27/04/2026", "motDecl": "N\u00e3o houve sa\u00edda da empresa", "ctxDecl": "Colaborador relata insatisfa\u00e7\u00e3o com o posto Fareva no qual n\u00e3o se adaptou, e se sentiu desconfort\u00e1vel com as tratativas dos funcion\u00e1rios do posto e relatou ter conversado com a supervisora Fl\u00e1via para resolver a situa\u00e7\u00e3o, por\u00e9m n\u00e3o foi resolvido.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "N\u00e3o houve sa\u00edda da empresa", "justReal": "Colaborador demonstra insatisfa\u00e7\u00e3o com o posto e com a supervisora Fl\u00e1via", "nl": "3", "ne": "3", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N/A", "reversao": "SIM", "novoPosto": "SENSIENT"}, {"id": "14", "data": "27/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "MARIA HELLOISA DOS SANTOS", "re": "913896", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "PIEMONTE", "supervisor": "ADOLPHO", "lider": "N/A", "admissao": "19/03/2026", "deslig": "27/04/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "Colaboradora ir\u00e1 se desligar da empresa pois precisa cuidar da sua m\u00e3e que teve um infarto, e n\u00e3o tem mais ningu\u00e9m da fam\u00edlia para ajudar a cuidar dela.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Colaboradora ir\u00e1 dar um suporte para sua m\u00e3e pois n\u00e3o tem ningu\u00e9m da fam\u00edlia para ajudar", "nl": "4", "ne": "4", "nc": "3", "ns": "4", "ne2": "4", "trein": "PARCIALMENTE", "neg": "Colaboradora relata falta de respeito dos moradores, s\u00edndico n\u00e3o passa as regras para os moradores", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N/A", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "15", "data": "27/04/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "ERICK PEREIRA RIBEIRO", "re": "145858", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "FACULDADE MANDIC", "supervisor": "ELIANA", "lider": "LEONARDO", "admissao": "17/04/2026", "deslig": "24/04/2026", "motDecl": "Condi\u00e7\u00f5es do posto / estrutura de trabalho", "ctxDecl": "funcionaria informou que n\u00e3o se adptou ao posto de trabalho", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Problema com a organiza\u00e7\u00e3o do posto", "nl": "4", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "PARCIALMENTE", "neg": "n\u00e3o", "voltaria": "Talves", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "16", "data": "27/04/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "Tatiane Cristina Pozza Iansen", "re": "145883", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "Faculdade Mandic", "supervisor": "Eliana", "lider": "Leonardo", "admissao": "25/04/2026", "deslig": "27/04/2026", "motDecl": "Sa\u00fade", "ctxDecl": "Colaborador informou que teve crise no posto e achou melhor romper o contrato", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Colaborador n\u00e3o se adaptou ao posto e reatou crises", "nl": "4", "ne": "5", "nc": "3", "ns": "5", "ne2": "5", "trein": "SIM", "neg": "N\u00e3o", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "17", "data": "27/04/2026", "tipo": "Virtual", "filial": "Campinas", "colab": "Jos\u00e9 Paulo Pineli", "re": "510244", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "KSB", "supervisor": "Thais", "lider": "N/A", "admissao": "07/09/2024", "deslig": "27/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "Funcion\u00e1rio conseguiu uma melhor oportunidade", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Melhor Oportunidade Profissional", "justReal": "Funcion\u00e1rio conseguiu uma melhor oportunidade", "nl": "5", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "N\u00e3o informado", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "18", "data": "28/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "GABRIEL FELIPE FRANCO DE MORAES", "re": "914123", "servico": "Facilities", "cargo": "Vigia", "posto": "RESERVA TECNICA", "supervisor": "nao identificado", "lider": "N/A", "admissao": "16/04/2026", "deslig": "28/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "COLABORADORA RELATOU QUE TEM UMA LOJA", "temSec": "Sim", "motSec": "Dist\u00e2ncia / Transporte / Acesso ao posto", "ctxSec": "PROBLEMAS EM NAO TER POSTO FIXO E AGORA QUER A NOITE", "causeReal": "Problemas pessoais / familiares", "justReal": "EST\u00c1 COMO RESERVA E ESTAO ALOCANDO ELE EM POSTOS MUITO LONGE", "nl": "4", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "N\u00c3O", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "nao", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "19", "data": "28/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "FLAVIA SANTOS CERQUEIRA ANTONIO", "re": "913279", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "The One Office", "supervisor": "n\u00e3o identificado", "lider": "Ana Paula", "admissao": "21/12/2025", "deslig": "28/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "Passou em um concurso publico na \u00e1rea de atua\u00e7\u00e3o", "temSec": "Sim", "motSec": "Problemas com a lideran\u00e7a imediata", "ctxSec": "A colaboradora relatou falta de profissionalismo e abuso de poder em rela\u00e7\u00e3o \u00e0 lideran\u00e7a do posto (fofoca, intriga, humilha\u00e7\u00e3o)", "causeReal": "Problemas com a lideran\u00e7a imediata", "justReal": "Percebi que ela estava muito indecisa em rela\u00e7\u00e3o ao pedido de desligamento, mesmo tendo passado em um concurso a colaboradora mencionou a vontade de permanecer na empresa e que gostava bastante do posto mas como estava com problemas em rela\u00e7\u00e3o \u00e0 lideran\u00e7a ela optou por seguir com o desligamento", "nl": "3", "ne": "5", "nc": "5", "ns": "3", "ne2": "4", "trein": "PARCIALMENTE", "neg": "A \u00fanica quest\u00e3o dizia respeito \u00e0 lideran\u00e7a do posto, que abusava do poder com todos os colaboradores que passavam por l\u00e1, o que vinha causando inc\u00f4modo a ela.", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Outro segmento", "motivoNovaOp": "Melhor ambiente de trabalho", "sugestao": "A colaboradora sugere a realiza\u00e7\u00e3o de uma avalia\u00e7\u00e3o mais aprofundada no posto, a fim de identificar poss\u00edveis problemas internos.", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "20", "data": "28/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "FREDSON SOUSA GREGORIO PINTO", "re": "145713", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "Practice", "supervisor": "Thais", "lider": "Josefa", "admissao": "19/03/2026", "deslig": "28/04/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "Problemas familiares, precisa viajar para Bahia", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Sindica", "justReal": "A sindica \u00e9 dificil de lidar, fica em cima e nada est\u00e1 bom para ela", "nl": "5", "ne": "5", "nc": "4", "ns": "5", "ne2": "5", "trein": "SIM", "neg": "Somente a sindica", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "21", "data": "28/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "TATIANE APARECIDA RODRIGUES LINS", "re": "912628", "servico": "Seguran\u00e7a", "cargo": "Auxiliar Adm", "posto": "Myriad", "supervisor": "Adolpho", "lider": "N/A", "admissao": "10/09/2025", "deslig": "28/04/2026", "motDecl": "Sa\u00fade", "ctxDecl": "Foi recolhida para Reserva Tecnica pois entregou atestado e colocaram outra pessoa no lugar, a colaboradora tem hipertens\u00e3o e necessitou se ausentar por alguns dias", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Sa\u00fade", "justReal": "A colaboradora est\u00e1 chateada com o Supervisor Adolpho por ter sido recolhida e n\u00e3o buscar entender seu lado", "nl": "1", "ne": "5", "nc": "5", "ns": "5", "ne2": "5", "trein": "PARCIALMENTE", "neg": "N\u00e3o", "voltaria": "N\u00e3o", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "Prestar mais aten\u00e7\u00e3o no trabalho dos supervisores", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "22", "data": "27/04/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "Yuri Rodrigues gama da silva", "re": "913256", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Rossi Antilhas", "supervisor": "Thais", "lider": "N/A", "admissao": "17/12/2025", "deslig": "27/04/2026", "motDecl": "Problemas de relacionamento na equipe", "ctxDecl": "N\u00e3o se adptou ao posto e ao clima no trabalho", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas de relacionamento na equipe", "justReal": "N\u00e3o Gostou do clima do trabalho", "nl": "4", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "n\u00e3o", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "n\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "23", "data": "28/04/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "Rhaiza Fernanda atencio lima dos anjos", "re": "145884", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "Faculdade Mandic", "supervisor": "Eliana", "lider": "Leonardo", "admissao": "24/04/2026", "deslig": "28/04/2026", "motDecl": "Problemas de relacionamento na equipe", "ctxDecl": "Colaborador informou que o posto \u00e9 muito bagun\u00e7ado, que n\u00e3o consegui se adaptar a equipe, e a m\u00e1 organiza\u00e7\u00e3o.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas de relacionamento na equipe", "justReal": "Funcion\u00e1ria, gostou  do posto por\u00e9m teve problema com a equipe.", "nl": "5", "ne": "5", "nc": "5", "ns": "5", "ne2": "5", "trein": "PARCIALMENTE", "neg": "N\u00e3o", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N\u00e3o", "reversao": "SIM", "novoPosto": "KERRY"}, {"id": "25", "data": "29/04/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "ALAN VANDER DE ALMEIDA", "re": "912336", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Myriad", "supervisor": "Adopho", "lider": "N/A", "admissao": "24/07/2025", "deslig": "29/04/2026", "motDecl": "vai tentar outras \u00e1reas", "ctxDecl": "Colaborador informou que vai trabalhar de forma auton\u00f4ma", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Vai trabalhar em outras \u00e1reas", "justReal": "Ele n\u00e3o est\u00e1 aberto para conversas", "nl": "5", "ne": "4", "nc": "3", "ns": "5", "ne2": "5", "trein": "SIM", "neg": "N\u00e3o", "voltaria": "N\u00e3o", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Trabalho aut\u00f4nomo", "motivoNovaOp": "Oportunidade de crescimento", "sugestao": "Nada a declarar", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "26", "data": "29/04/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "Andr\u00e9 Donizete", "re": "900637", "servico": "Seguran\u00e7a", "cargo": "Vigilante", "posto": "Unicharme", "supervisor": "Thais", "lider": ".", "admissao": "29/05/2019", "deslig": "29/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "Colaborador conseguiu uma melhor oportunidade", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Melhor Oportunidade Profissional", "justReal": "Colaborador conseguiu uma melhor oportunidade", "nl": "5", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Mesma fun\u00e7\u00e3o em outra empresa", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "27", "data": "30/04/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "Elyone alves silva", "re": "913223", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Neo rodas", "supervisor": "Josimar", "lider": ".", "admissao": "11/12/2025", "deslig": "30/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "Colaborador consegui uma melhor oportunidade", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Melhor Oportunidade Profissional", "justReal": "melhor oportunidade", "nl": "4", "ne": "4", "nc": "1", "ns": "2", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Fun\u00e7\u00e3o diferente", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N\u00e3o", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "28", "data": "30/04/2026", "tipo": "Presencial", "filial": "S\u00e3o Paulo", "colab": "GILDO NUNES DO NASCIMENTO", "re": "908603", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "URBAN PACAEMBU", "supervisor": "RUBENS", "lider": "N/A", "admissao": "03/01/2024", "deslig": "30/04/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "DIFICULDADE COM  A ESCALA, PREFIRO TRABALHAR 5X2, A ESCALA 12X36 E CANSATIVA.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Melhor Oportunidade Profissional", "justReal": "MELHOR OPORTUNIDADE DE TRABALHO, NA AREA QUE ELE ATUAVA DE TI", "nl": "1", "ne": "5", "nc": "4", "ns": "1", "ne2": "1", "trein": "N\u00c3O", "neg": "N\u00c3O TEM", "voltaria": "Talves", "indicaria": "N\u00e3o", "novaOp": "Sim", "tipoNovaOp": "Outro segmento", "motivoNovaOp": "Op\u00e7\u00e3o 7", "sugestao": "N\u00c3O", "reversao": "N\u00c3O", "novoPosto": "URBAN PACAEMBU"}, {"id": "29", "data": "04/05/2026", "tipo": "Presencial", "filial": "S\u00e3o Paulo", "colab": "DANIEL RODRIGUES DE ALBUQUERQUE FILHO", "re": "913268", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "URBAN PACAEMBU", "supervisor": "ALEXANDRE", "lider": "N/A", "admissao": "19/12/2025", "deslig": "04/05/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "ARRUMEI OUTRO EMPREGO PROXIMO DA MINHA RESID\u00caNCIA", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Melhor Oportunidade Profissional", "justReal": "ARRUMOU OUTRO EMPREGO PROXIMO DA RESID\u00caNCIA, COM BENEFICIOS MAIORES", "nl": "4", "ne": "4", "nc": "3", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Mesma fun\u00e7\u00e3o em outra empresa", "motivoNovaOp": "Mais pr\u00f3ximo de casa", "sugestao": "N\u00c3O", "reversao": "N\u00c3O", "novoPosto": "URBAN PACAEMBU"}, {"id": "30", "data": "04/05/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "LUCAS NASCARATO RODRIGUES BOZ", "re": "913980", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Canto da Natureza", "supervisor": "Valdinei", "lider": "N/A", "admissao": "30/03/2026", "deslig": "04/05/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "Teve problemas familiares", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Realmente motivos familiares", "nl": "5", "ne": "5", "nc": "5", "ns": "5", "ne2": "5", "trein": "PARCIALMENTE", "neg": "nao", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "nao", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "31", "data": "04/05/2026", "tipo": "Presencial", "filial": "S\u00e3o Paulo", "colab": "SABRINA WALVIESSE DOS SANTOS", "re": "912934", "servico": "Seguran\u00e7a", "cargo": "Controlador/Porteiro", "posto": "GO BARRA FUNDA", "supervisor": "ALEXANDRE", "lider": "N/A", "admissao": "22/10/2025", "deslig": "04/05/2026", "motDecl": "Melhor Oportunidade Profissional", "ctxDecl": "ARRUMOU OUTRA OPORTUNIDADE NA AREA DE RH", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Melhor Oportunidade Profissional", "justReal": "MELHOR OPORTUNIDADE DE TRABALHO", "nl": "4", "ne": "5", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "N\u00c3O", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "Sim", "tipoNovaOp": "Fun\u00e7\u00e3o diferente", "motivoNovaOp": "Sal\u00e1rio maior", "sugestao": "N\u00c3O", "reversao": "N\u00c3O", "novoPosto": "GO BARRA FUNDA"}, {"id": "32", "data": "04/05/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "THAIS SOUZA ARAUJO", "re": "145815", "servico": "Facilities", "cargo": "L\u00edder de limpeza", "posto": "Munksjo", "supervisor": "CRISTIANE", "lider": "N/A", "admissao": "08/04/2026", "deslig": "04/05/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "Colaboradora relata que a pessoa no qual ficava com seus filhos n\u00e3o ir\u00e1 conseguir ficar mais por conta do hor\u00e1rio (14:00 \u00e0s 22:00) e n\u00e3o tem mais ningu\u00e9m que possa ficar com eles.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Realmente n\u00e3o tem mais nenhuma pessoa que possa ficar com os filhos da colaboradora, seu marido trabalha na escala tarde/noite tamb\u00e9m.", "nl": "4", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N/A", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "33", "data": "04/05/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "SILVIO CESAR DE PAULA", "re": "911797", "servico": "Facilities", "cargo": "AUXILIAR DE SERVI\u00c7OS GERAIS", "posto": "RESORT SANTA ANGELA", "supervisor": "MAIARA", "lider": "N/A", "admissao": "27/02/2026", "deslig": "04/05/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "Colaborador relata que est\u00e1 com problemas com \u00e1lcool e drogas, estava faltando bastaste por conta dessas reca\u00eddas e prefere sair da empresa do que causar mais problemas", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Acredito que o candidato tenha sido sincero em rela\u00e7\u00e3o a situa\u00e7\u00e3o dele, foi instru\u00eddo a procurar ajuda psicol\u00f3gica e para aos v\u00edcios", "nl": "4", "ne": "4", "nc": "4", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N/A", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "34", "data": "04/05/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "MARIA APARECIDA DOS SANTOS", "re": "145679", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "PRACTICE", "supervisor": "THAIS ALVES", "lider": "N/A", "admissao": "12/03/2026", "deslig": "04/05/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "Colaboradora relata ter tido um problema com a filha menor na escola e precisa se desligar da empresa para revolver (ela n\u00e3o entrou em detalhes sobre).", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Colaboradora precisa resolver um problema com sua filha na escola, relata ter trocado ela de escola recentemente e houve esse ocorrido.", "nl": "3", "ne": "4", "nc": "3", "ns": "4", "ne2": "4", "trein": "SIM", "neg": "", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "N/A", "reversao": "N\u00c3O", "novoPosto": ""}, {"id": "35", "data": "04/05/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "Maria Denise Ribeiro", "re": "913977", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "Graphic", "supervisor": "Neusa", "lider": "N/A", "admissao": "13/01/2026", "deslig": "04/05/2026", "motDecl": "Problemas pessoais / familiares", "ctxDecl": "Maria \u00e9 filha unica, n\u00e3o tem pai e sua m\u00e3e mora em Alagoas e est\u00e1 precisando de tratamento m\u00e9dico por ser idosa e Maria est\u00e1 se mudando para l\u00e1, por\u00e9m elogiou muito a empresa e n\u00e3o queria sair", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Problemas pessoais / familiares", "justReal": "Saida por motivos de saude da m\u00e3e de outro estado (Alagoas)", "nl": "5", "ne": "5", "nc": "5", "ns": "5", "ne2": "5", "trein": "SIM", "neg": "N\u00e3o", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "Elogios a empresa e ao setor de Recrutamento", "reversao": "N\u00c3O", "novoPosto": "N/A"}, {"id": "36", "data": "04/05/2026", "tipo": "Presencial", "filial": "Jundia\u00ed", "colab": "Aquila Maria da Silva", "re": "145336", "servico": "Facilities", "cargo": "Auxiliar de Limpeza", "posto": "DPA", "supervisor": "Flavia", "lider": "N/A", "admissao": "13/01/2026", "deslig": "04/05/2026", "motDecl": "Problemas de relacionamento na equipe", "ctxDecl": "Aquila reclamou que a supervisora Flavia fazia muitas coisas sem avisar o time e quando o pessoal a questionava ela era rude e  grossa, Flavia tambem mudou Aquila de posto sem a avisar o que resultou em faltas pela revolta de Aquila e ela resolveu vir pedir desligamento, porem nao queria, gostaria apenas de mudar de supervisora", "temSec": "Sim", "motSec": "Dist\u00e2ncia / Transporte / Acesso ao posto", "ctxSec": "Supervisora Flavia era rude e grossa e mudou Aquila de posto sem a avisar", "causeReal": "Problemas de relacionamento na equipe", "justReal": "O comportamento da supervisora Flavia", "nl": "5", "ne": "5", "nc": "5", "ns": "5", "ne2": "5", "trein": "SIM", "neg": "Sim, a supervisora Flavia e seus comportamentos e atitudes", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "Iniciar uma observa\u00e7\u00e3o na supervis\u00e3o da Flavia pois perdemos muitos clientes e funcionarios", "reversao": "N\u00c3O", "novoPosto": "N/A"}, {"id": "37", "data": "04/05/2026", "tipo": "Presencial", "filial": "Campinas", "colab": "Neirivan Souza de Oliveira Filho", "re": "910034", "servico": "Seguran\u00e7a", "cargo": "Vigia", "posto": "Jaguariuna Park", "supervisor": "Thais", "lider": "Lucilene", "admissao": "07/08/2024", "deslig": "04/05/2026", "motDecl": "Empresa perdeu o posto, foi realocado para outro (Amphenol), porem \u00e9 muito longe.", "ctxDecl": "Relatou que gosta de trabalhar na empresa, por\u00e9m o posto que foi realocado \u00e9 muito longe. Informou que j\u00e1 relatou a sua insatisfa\u00e7\u00e3o para a Supervisora Thais, porem n\u00e3o ouve mudan\u00e7a.", "temSec": "N\u00e3o", "motSec": "", "ctxSec": "", "causeReal": "Ele informou que gosta de trabalhar na empresa, porem o posto que foi realocado \u00e9 muito longe, j\u00e1 relatou o ocorrido para a Supervisora Thais, porem nada foi feito.", "justReal": "Por conta da realoca\u00e7\u00e3o para o novo posto (muito longe). Informou que gosta de trabalhar na empresa.", "nl": "3", "ne": "4", "nc": "4", "ns": "3", "ne2": "4", "trein": "SIM", "neg": "Realoca\u00e7\u00e3o de posto (muito longe).", "voltaria": "Sim", "indicaria": "Sim", "novaOp": "N\u00e3o", "tipoNovaOp": "", "motivoNovaOp": "", "sugestao": "Empresa boa, equipe tamb\u00e9m. Entrega de uniforme e EPI sempre no dentro do prazo.", "reversao": "N\u00c3O", "novoPosto": "Amphenol"}];
+
+function g(r,k){return (r[k]||'').trim()}
+function sim(v){return v&&v.trim().toLowerCase()==='sim'}
+function nao(v){return v&&v.trim().toLowerCase()==='n&#227;o'}
+function avg(arr){var f=arr.filter(function(v){return !isNaN(v)&&v!==''});return f.length?f.reduce(function(a,b){return a+parseFloat(b)},0)/f.length:0}
+function cnt(arr,fn){var m={};arr.forEach(function(r){var v=fn(r);if(v&&v.trim()){m[v]=(m[v]||0)+1}});return m}
+function topN(obj,n){return Object.entries(obj).sort(function(a,b){return b[1]-a[1]}).slice(0,n||8)}
+function pct(v,n){return n?((v/n)*100).toFixed(0)+'%':'0%'}
+function clrH(v){return v>=4?'var(--green)':v>=3?'var(--amber)':'var(--red)'}
+function calcMeses(adm,des){
+  try{
+    var a=adm.split('/'),d=des.split('/');
+    if(a.length>=3&&d.length>=3) return (parseInt(d[2])-parseInt(a[2]))*12+(parseInt(d[1])-parseInt(a[1]));
+  }catch(e){}
+  return null;
+}
+
+function loadCSV(e){
+  var f=e.target.files[0];if(!f) return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var txt=ev.target.result;
+    var lines=txt.replace(/\r/g,'').split('\n').filter(function(l){return l.trim()});
+    if(!lines.length) return;
+    var sep=lines[0].includes(';')?';':',';
+    function split(line){
+      var res=[],cur='',inQ=false;
+      for(var i=0;i<line.length;i++){
+        var c=line[i];
+        if(c==='"'){inQ=!inQ}
+        else if(c===sep&&!inQ){res.push(cur);cur=''}
+        else{cur+=c}
+      }
+      res.push(cur);return res;
+    }
+    var rows=lines.slice(1).map(function(l){return split(l)}).filter(function(r){return r.length>10&&r[0]&&r[0].match(/^\d+/)});
+    if(!rows.length){alert('Nenhum dado encontrado');return}
+    BASE=rows.map(function(r){
+      function gi(i){return r[i]?(r[i]||'').trim():''}
+      return {id:gi(0),data:gi(6),tipo:gi(7),filial:gi(8),colab:gi(9),re:gi(10),
+        servico:gi(11),cargo:gi(12),posto:gi(13),supervisor:gi(14),lider:gi(15),
+        admissao:gi(16),deslig:gi(17),motDecl:gi(18),ctxDecl:gi(19),
+        temSec:gi(20),motSec:gi(21),ctxSec:gi(22),causeReal:gi(23),justReal:gi(24),
+        nl:gi(25),ne:gi(26),nc:gi(27),ns:gi(28),ne2:gi(29),trein:gi(30),neg:gi(31),
+        voltaria:gi(32),indicaria:gi(33),novaOp:gi(34),tipoNovaOp:gi(35),motivoNovaOp:gi(36),
+        sugestao:gi(37),reversao:gi(38),novoPosto:gi(39)};
+    });
+    document.getElementById('cN').textContent=BASE.length;
+    document.getElementById('cDt').textContent='Atualizado: '+new Date().toLocaleDateString('pt-BR');
+    buildFilters();render();
+  };
+  reader.readAsText(f,'latin-1');
+}
+
+function buildFilters(){
+  function fill(id,fn){
+    var vals=[...new Set(BASE.map(fn).filter(Boolean))].sort();
+    var el=document.getElementById(id);
+    el.innerHTML='<option value="">Todos</option>';
+    vals.forEach(function(v){var o=document.createElement('option');o.value=v;o.text=v;el.appendChild(o)});
+  }
+  fill('fFil',function(r){return g(r,'filial')});
+  fill('fSrv',function(r){return g(r,'servico')});
+  fill('fSup',function(r){return g(r,'supervisor')});
+  fill('fTip',function(r){return g(r,'tipo')});
+}
+
+function getD(){
+  var fF=document.getElementById('fFil').value;
+  var fS=document.getElementById('fSrv').value;
+  var fSu=document.getElementById('fSup').value;
+  var fT=document.getElementById('fTip').value;
+  return BASE.filter(function(r){
+    return (!fF||g(r,'filial')===fF)&&(!fS||g(r,'servico')===fS)&&
+           (!fSu||g(r,'supervisor')===fSu)&&(!fT||g(r,'tipo')===fT);
+  });
+}
+
+function clearF(){
+  ['fFil','fSrv','fSup','fTip'].forEach(function(id){document.getElementById(id).value=''});
+  render();
+}
+
+function barras(elId,data,color,total){
+  var el=document.getElementById(elId);if(!el) return;
+  if(!data.length){el.innerHTML='<div class="empty">Nenhum dado</div>';return}
+  var max=data[0][1]||1;
+  el.innerHTML=data.map(function(item){
+    return '<div class="bar-row"><div class="bar-lbl" title="'+item[0]+'">'+item[0]+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+(item[1]/max*100).toFixed(0)+'%;background:'+color+'22;color:'+color+'">'+item[1]+'</div>'+
+      '<div class="bar-pct">'+pct(item[1],total)+'</div></div>'+
+      '<div class="bar-n">'+item[1]+'</div></div>';
+  }).join('');
+}
+
+function render(){
+  var d=getD(),n=d.length;if(!n) return;
+  
+  // Calcular m&#233;tricas
+  var revN=d.filter(function(r){return g(r,'reversao').toUpperCase()==='SIM'}).length;
+  var deslN=n-revN;
+  var indN=d.filter(function(r){return sim(g(r,'indicaria'))}).length;
+  var volN=d.filter(function(r){return sim(g(r,'voltaria'))}).length;
+  var novaOpN=d.filter(function(r){return sim(g(r,'novaOp'))}).length;
+  var tempos=d.map(function(r){return calcMeses(g(r,'admissao'),g(r,'deslig'))}).filter(function(v){return v!==null&&v>=0});
+  var avgT=tempos.length?avg(tempos):0;
+  var avgLid=avg(d.map(function(r){return parseFloat(g(r,'nl'))}).filter(function(v){return !isNaN(v)}));
+  
+  // Insight bar
+  document.getElementById('insightBar').innerHTML=[
+    {v:pct(deslN,n),l:'Taxa Desligamento'},
+    {v:pct(revN,n),l:'Taxa Revers&#227;o'},
+    {v:pct(volN,n),l:'Voltaria'},
+    {v:pct(indN,n),l:'Indicaria'}
+  ].map(function(k){return '<div class="insight-item"><div class="insight-v">'+k.v+'</div><div class="insight-l">'+k.l+'</div></div>'}).join('');
+
+  // KPIs
+  document.getElementById('kpis').innerHTML=[
+    {l:'Entrevistas',v:n,s:'no per&#237;odo',c:'green',ico:'&#128203;'},
+    {l:'Desligamentos',v:deslN,s:pct(deslN,n)+' do total',c:'red',ico:'&#128682;'},
+    {l:'Revers&#245;es',v:revN,s:pct(revN,n)+' retidos',c:'green',ico:'&#128260;'},
+    {l:'Tempo M&#233;dio',v:avgT.toFixed(1),s:'meses de casa',c:'amber',ico:'&#9201;'},
+    {l:'Indicaria',v:indN,s:pct(indN,n)+' indicaria',c:'blue',ico:'&#128077;'},
+    {l:'Voltaria',v:volN,s:pct(volN,n)+' voltaria',c:'purple',ico:'&#8617;'}
+  ].map(function(k){
+    return '<div class="kpi '+k.c+'"><span class="kpi-ico">'+k.ico+'</span>'+
+      '<div class="kpi-l">'+k.l+'</div><div class="kpi-v">'+k.v+'</div>'+
+      '<div class="kpi-s">'+k.s+'</div></div>';
+  }).join('');
+
+  // Reversoes
+  var revs=d.filter(function(r){return g(r,'reversao').toUpperCase()==='SIM'});
+  if(revs.length){
+    document.getElementById('revBanner').style.display='block';
+    document.getElementById('revCards').innerHTML=revs.map(function(r){
+      return '<div class="rev-card"><div class="rev-nm">&#9989; '+g(r,'colab')+'</div>'+
+        '<div class="rev-info">'+g(r,'supervisor')+' &middot; '+g(r,'filial')+'<br>'+g(r,'motDecl')+'</div>'+
+        (g(r,'novoPosto')?'<span class="rev-tag">&rarr; '+g(r,'novoPosto')+'</span>':'')+'</div>';
+    }).join('');
+  } else { document.getElementById('revBanner').style.display='none' }
+
+  // Alerta lideranca
+  var lidProb=d.filter(function(r){return (g(r,'causeReal')||'').toLowerCase().includes('lideran')}).length;
+  if(lidProb>0||avgLid<3.5){
+    document.getElementById('alertBox').style.display='flex';
+    document.getElementById('alertTxt').innerHTML=
+      (lidProb>0?lidProb+' entrevista(s) apontam <b>lideran&#231;a</b> como causa real. ':'')+ 
+      'Nota m&#233;dia de lideran&#231;a: <b>'+avgLid.toFixed(1)+'/5</b>.'+
+      (avgLid<3.5?' Abaixo do limiar de 3.5.':'');
+  } else { document.getElementById('alertBox').style.display='none' }
+
+  // Motivos
+  barras('mDecl',topN(cnt(d,function(r){return g(r,'motDecl')}),8),'#f59e0b',n);
+  var secD=d.filter(function(r){return g(r,'temSec').toLowerCase()==='sim'&&g(r,'motSec')});
+  barras('mSec',topN(cnt(secD,function(r){return g(r,'motSec')}),8),'#3b82f6',secD.length);
+  barras('mReal',topN(cnt(d,function(r){return g(r,'causeReal')}),8),'#e53935',n);
+
+  // Supervisor
+  var supVol=Object.entries(cnt(d,function(r){return g(r,'supervisor')})).sort(function(a,b){return b[1]-a[1]});
+  var maxV=supVol.length?supVol[0][1]:1;
+  document.getElementById('supVol').innerHTML=supVol.map(function(item){
+    return '<div class="sup-row"><div class="sup-nm">'+item[0]+'</div>'+
+      '<div class="sup-track"><div class="sup-fill" style="width:'+(item[1]/maxV*100).toFixed(0)+'%;background:rgba(139,92,246,.2);color:var(--purple)">'+item[1]+'</div>'+
+      '<div class="sup-cnt">'+pct(item[1],n)+'</div></div></div>';
+  }).join('');
+
+  // Por filial e servico
+  var filSrvData = [];
+  var filiais=[...new Set(d.map(function(r){return g(r,'filial')}).filter(Boolean))];
+  filiais.forEach(function(fil){
+    var total=d.filter(function(r){return g(r,'filial')===fil}).length;
+    filSrvData.push([fil,total]);
+  });
+  filSrvData.sort(function(a,b){return b[1]-a[1]});
+  barras('filSrv',filSrvData,'#06b6d4',n);
+
+  // Notas
+  var dims=[
+    {k:'nl',l:'Lideran&#231;a',ico:'&#128100;'},
+    {k:'ne',l:'Equipe',ico:'&#129309;'},
+    {k:'nc',l:'Condi&#231;&#245;es',ico:'&#127970;'},
+    {k:'ns',l:'Suporte',ico:'&#128222;'},
+    {k:'ne2',l:'Escala',ico:'&#9200;'}
+  ];
+  document.getElementById('notas').innerHTML=dims.map(function(dim){
+    var v=avg(d.map(function(r){return parseFloat(g(r,dim.k))}).filter(function(v){return !isNaN(v)}));
+    return '<div class="nota"><div class="nota-lbl">'+dim.ico+' '+dim.l+'</div>'+
+      '<div class="nota-val" style="color:'+clrH(v)+'">'+v.toFixed(1)+'</div>'+
+      '<div class="nota-sub">m&#233;dia /5</div></div>';
+  }).join('');
+
+  // Tempo de casa
+  var bk={'<1m':0,'1-3m':0,'3-6m':0,'6-12m':0,'1-2a':0,'>2a':0};
+  tempos.forEach(function(t){
+    if(t<1) bk['<1m']++;
+    else if(t<3) bk['1-3m']++;
+    else if(t<6) bk['3-6m']++;
+    else if(t<12) bk['6-12m']++;
+    else if(t<24) bk['1-2a']++;
+    else bk['>2a']++;
+  });
+  var colors={'<1m':'var(--red)','1-3m':'var(--amber)','3-6m':'var(--amber)','6-12m':'var(--green)','1-2a':'var(--green)','>2a':'var(--cyan)'};
+  document.getElementById('tempoCasa').innerHTML=Object.entries(bk).map(function(item){
+    return '<div class="tb"><div class="tb-v" style="color:'+colors[item[0]]+'">'+item[1]+'</div><div class="tb-l">'+item[0]+'</div></div>';
+  }).join('');
+
+  // Falas
+  var ctxList=d.filter(function(r){var c=g(r,'ctxDecl');return c&&c.length>8&&c.toLowerCase()!=='n/a'});
+  document.getElementById('falas').innerHTML=ctxList.map(function(r){
+    var rev=g(r,'reversao').toUpperCase()==='SIM';
+    return '<div class="fala"><div class="fala-who">'+g(r,'colab')+
+      (g(r,'supervisor')?'<span class="ftag g">'+g(r,'supervisor')+'</span>':'')+
+      (g(r,'filial')?'<span class="ftag a">'+g(r,'filial')+'</span>':'')+
+      (rev?'<span class="ftag g">&#128260; RETIDO</span>':'')+'</div>'+
+      '<div class="fala-txt">&#8220;'+g(r,'ctxDecl')+'&#8221;</div></div>';
+  }).join('')||'<div class="empty">Nenhum relato.</div>';
+
+  // Negativos
+  var negList=d.filter(function(r){
+    var neg=g(r,'neg');
+    return neg&&neg.length>3&&!['n/a','nao','n&#227;o','nao','N&#227;o',''].includes(neg.toLowerCase().trim());
+  });
+  document.getElementById('negativos').innerHTML=negList.map(function(r){
+    return '<div class="fala red"><div class="fala-who">'+g(r,'colab')+
+      (g(r,'supervisor')?'<span class="ftag r">'+g(r,'supervisor')+'</span>':'')+
+      (g(r,'filial')?'<span class="ftag a">'+g(r,'filial')+'</span>':'')+'</div>'+
+      '<div class="fala-txt">&#9888; '+g(r,'neg')+'</div></div>';
+  }).join('')||'<div class="empty">Nenhum ponto negativo.</div>';
+}
+
+// Inicializar
+(function(){
+  buildFilters();
+  render();
+})();
+</script>
+</body>
+</html>
