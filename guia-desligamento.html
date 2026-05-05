@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Guia · Painel de Desligamento Delphos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#f8faf8;color:#1a2e1e;line-height:1.7;max-width:860px;margin:0 auto;padding:40px 24px 80px}
+h1{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;color:#0d2b1e;margin-bottom:6px}
+.subtitle{font-size:.9rem;color:#6b8070;margin-bottom:40px;padding-bottom:20px;border-bottom:2px solid #d1fae5}
+h2{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;color:#0d2b1e;margin:36px 0 12px;display:flex;align-items:center;gap:10px}
+h2 .ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+h3{font-family:'Syne',sans-serif;font-weight:700;font-size:.85rem;color:#1db86a;text-transform:uppercase;letter-spacing:.08em;margin:20px 0 8px}
+p{font-size:.87rem;color:#374151;margin-bottom:12px}
+.card{background:#fff;border:1px solid #e2ece5;border-radius:12px;padding:20px 22px;margin-bottom:14px;border-left:4px solid var(--bar,#1db86a)}
+.card.amber{--bar:#f59e0b}.card.red{--bar:#e53935}.card.blue{--bar:#3b82f6}
+.card.purple{--bar:#8b5cf6}.card.cyan{--bar:#06b6d4}.card.orange{--bar:#f97316}
+.tag{display:inline-block;padding:3px 10px;border-radius:99px;font-size:.7rem;font-weight:700;margin-right:4px;margin-bottom:4px}
+.tag.g{background:#d1fae5;color:#065f46}.tag.r{background:#fee2e2;color:#991b1b}
+.tag.a{background:#fef3c7;color:#92400e}.tag.b{background:#dbeafe;color:#1e40af}
+table{width:100%;border-collapse:collapse;margin:12px 0 20px;font-size:.83rem}
+th{background:#f0fdf4;color:#0d2b1e;font-weight:700;padding:9px 12px;text-align:left;border-bottom:2px solid #d1fae5}
+td{padding:8px 12px;border-bottom:1px solid #e2ece5;color:#374151}
+tr:last-child td{border-bottom:none}
+.alert-box{background:#fff1f0;border:1px solid #fecaca;border-left:4px solid #e53935;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0}
+.alert-box h4{font-size:.82rem;font-weight:700;color:#991b1b;margin-bottom:4px}
+.alert-box p{font-size:.8rem;color:#7f1d1d;margin:0}
+.tip{background:#f0fdf4;border:1px solid #a7f3d0;border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.83rem;color:#065f46}
+.tip strong{color:#047857}
+.sep{border:none;border-top:1px solid #e2ece5;margin:32px 0}
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:700}
+.pill.g{background:#d1fae5;color:#065f46}.pill.r{background:#fee2e2;color:#991b1b}.pill.a{background:#fef3c7;color:#92400e}
+footer{margin-top:48px;padding-top:16px;border-top:1px solid #d1fae5;font-size:.75rem;color:#9ca3af;text-align:center}
+@media print{body{padding:20px}h2{break-before:auto}.card{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<h1>📘 Guia de Interpretação</h1>
+<p class="subtitle">Painel de Desligamento Delphos · Como ler, interpretar e agir sobre os dados</p>
+
+<!-- ======================== SEÇÃO 1 ======================== -->
+<h2><span class="ico" style="background:#d1fae5">📋</span> O que é este painel e para que serve</h2>
+<p>O Painel de Desligamento consolida as entrevistas realizadas no momento da saída de colaboradores. Seu objetivo é <strong>transformar relatos individuais em padrões identificáveis</strong>, permitindo que a gestão tome decisões preventivas antes que o problema se repita.</p>
+
+<div class="card">
+  <h3>Quem deve usar este painel</h3>
+  <p><strong>Time de R&S:</strong> acompanhamento semanal para identificar padrões emergentes por recrutador e supervisor.</p>
+  <p><strong>Gerência/Supervisão:</strong> revisão mensal para entender onde estão os gargalos de retenção.</p>
+  <p><strong>Diretoria:</strong> visão trimestral de tendências, custos de rotatividade e ações em curso.</p>
+</div>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 2 ======================== -->
+<h2><span class="ico" style="background:#d1fae5">📊</span> Aba 1 — Visão Geral</h2>
+
+<h3>Barra de Insights (topo)</h3>
+<p>Mostra os 5 indicadores mais estratégicos em destaque. Leitura rápida para qualquer nível de gestão.</p>
+<table>
+  <tr><th>Indicador</th><th>O que mede</th><th>Referência saudável</th></tr>
+  <tr><td><strong>Taxa de Reversão</strong></td><td>% de colaboradores que foram retidos após a entrevista</td><td>Acima de 10% indica boa capacidade de retenção</td></tr>
+  <tr><td><strong>Voltaria</strong></td><td>% que voltaria a trabalhar na Delphos</td><td>Acima de 70% = marca empregadora positiva</td></tr>
+  <tr><td><strong>Indicaria</strong></td><td>% que indicaria a empresa para outras pessoas</td><td>Acima de 80% = reputação positiva no mercado</td></tr>
+  <tr><td><strong>Tempo Médio de Casa</strong></td><td>Média de meses que os desligados ficaram na empresa</td><td>Abaixo de 6 meses é sinal de falha no onboarding</td></tr>
+  <tr><td><strong>Nota Liderança</strong></td><td>Avaliação média do supervisor direto (1-5)</td><td>Abaixo de 3.5 requer ação imediata de gestão</td></tr>
+</table>
+
+<h3>KPIs individuais</h3>
+<div class="card amber">
+  <h3>⚠️ Sem Treinamento</h3>
+  <p>Colaboradores que responderam "NÃO" receberam treinamento adequado. Um número alto aqui indica falha no processo de integração e é fator direto de evasão precoce.</p>
+</div>
+<div class="card">
+  <h3>💼 Nova Oportunidade</h3>
+  <p>Quantos saíram motivados por outra oferta de emprego. Combine este número com os motivos da nova oportunidade: se <strong>"salário maior"</strong> dominar, é sinal de desalinhamento salarial da empresa com o mercado.</p>
+</div>
+
+<h3>Motivo Declarado × Causa Real</h3>
+<div class="alert-box">
+  <h4>⚠️ Atenção: estes dois campos raramente coincidem</h4>
+  <p>O motivo declarado é o que o colaborador disse. A causa real é a percepção do entrevistador após escuta ativa. A diferença entre os dois revela o que o colaborador não quis dizer diretamente.</p>
+</div>
+<p>Exemplo prático dos seus dados:</p>
+<ul style="padding-left:20px;margin-bottom:12px;font-size:.86rem;color:#374151">
+  <li style="margin-bottom:6px"><strong>Declarado:</strong> "Melhor Oportunidade" (11 casos) → <strong>Real:</strong> "Melhor Oportunidade" (9 casos) — aqui há consistência</li>
+  <li style="margin-bottom:6px"><strong>Declarado:</strong> "Problemas pessoais" (8 casos) → <strong>Real:</strong> "Problemas pessoais" (10 casos) — o entrevistador identificou 2 casos a mais</li>
+  <li><strong>Ponto crítico:</strong> "Liderança" aparece como causa real em 2 casos, mas nenhum colaborador declarou isso espontaneamente — o dado só existe porque o entrevistador aprofundou a conversa.</li>
+</ul>
+<div class="tip"><strong>Como usar:</strong> quando a causa real é significativamente diferente do motivo declarado, revise o roteiro da entrevista e incentive o analista a aprofundar mais nas questões sensíveis.</div>
+
+<h3>Avaliação da Experiência (Notas 1–5)</h3>
+<table>
+  <tr><th>Dimensão</th><th>O que avalia</th><th>Se baixa, significa...</th></tr>
+  <tr><td>👤 Liderança</td><td>Suporte e postura do supervisor direto</td><td>Supervisor ausente, autoritário ou ineficaz</td></tr>
+  <tr><td>🤝 Equipe</td><td>Relacionamento com colegas de trabalho</td><td>Conflitos internos, fofoca, falta de colaboração</td></tr>
+  <tr><td>🏢 Condições</td><td>Estrutura física e adequação do posto</td><td>Posto precário, falta de EPI, local inadequado</td></tr>
+  <tr><td>📞 Suporte</td><td>Como a empresa (R&S, DP, ops) apoia o colaborador</td><td>Falta de comunicação, processos confusos</td></tr>
+  <tr><td>🕐 Escala</td><td>Satisfação com horários e jornada</td><td>Escala 12x36 cansativa, falta de folga adequada</td></tr>
+</table>
+
+<h3>Tempo de Casa</h3>
+<p>As faixas coloridas mostram em que momento os colaboradores saem:</p>
+<p><span class="pill r">&lt;1m</span> e <span class="pill a">1-3m</span> = <strong>alerta de onboarding</strong> — algo acontece nas primeiras semanas que faz o colaborador desistir. Investigar integração, treinamento e acolhimento do supervisor.</p>
+<p><span class="pill a">3-6m</span> = <strong>alerta de adaptação</strong> — colaborador passou o período inicial mas não se consolidou. Checar relacionamento com equipe e condições do posto.</p>
+<p><span class="pill g">6m+</span> = desligamento esperado por mercado, oportunidades ou questões pessoais. Menos preocupante estruturalmente.</p>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 3 ======================== -->
+<h2><span class="ico" style="background:#fee2e2">👤</span> Aba 2 — Supervisores &amp; Liderança</h2>
+
+<div class="alert-box">
+  <h4>🔴 Esta é a aba mais estratégica do painel para a gestão operacional</h4>
+  <p>Supervisores com múltiplas saídas E nota baixa de liderança são o principal fator evitável de rotatividade. Um bom supervisor retém mais do que qualquer benefício financeiro.</p>
+</div>
+
+<h3>Volume por Supervisor</h3>
+<p>Mostra quem aparece mais nas entrevistas de desligamento. Um supervisor com muitas saídas não é necessariamente o problema — pode simplesmente ter um time maior. Por isso, <strong>sempre cruzar com a nota de liderança.</strong></p>
+
+<h3>Nota Média de Liderança por Supervisor</h3>
+<p>Esta é a avaliação que os colaboradores deram para o supervisor na saída. Ordena do pior para o melhor. Identifique os supervisores que aparecem com nota abaixo de 3.0 — estes precisam de atenção imediata.</p>
+<div class="card red">
+  <h3>🚨 Quando agir</h3>
+  <p><strong>Nota ≤ 2.0:</strong> Reunião imediata com o supervisor para feedback estruturado. Verificar se há reclamações no RH.</p>
+  <p><strong>Nota 2.1–3.0:</strong> Acompanhamento próximo. Visita ao posto. Conversa individual com equipe.</p>
+  <p><strong>Nota 3.1–4.0:</strong> Oportunidade de desenvolvimento. PDI (Plano de Desenvolvimento Individual) com foco em liderança.</p>
+</div>
+
+<h3>Alertas de Supervisores</h3>
+<p>Cruza dois critérios: supervisor aparece como <strong>causa real</strong> na percepção do entrevistador E/OU tem nota de liderança abaixo de 3. Um alerta aqui é um ponto de ação concreto para a gestão.</p>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 4 ======================== -->
+<h2><span class="ico" style="background:#fef3c7">💬</span> Aba 3 — Falas &amp; Alertas</h2>
+<p>Esta aba traz os <strong>relatos na íntegra</strong>, essenciais para qualquer tomada de decisão qualitativa. Números mostram padrões; falas mostram causas.</p>
+
+<h3>O que os colaboradores disseram</h3>
+<p>Contexto do motivo principal — a fala espontânea do colaborador. Use para entender o que está por trás dos números. Muitas menções ao mesmo posto, supervisor ou situação são sinais de alerta sistêmico.</p>
+
+<h3>Pontos Negativos</h3>
+<p>Reclamações estruturadas. Filtre por supervisor ou filial para ver concentração. Um ponto negativo sobre liderança citado por 3 ou mais colaboradores diferentes do mesmo supervisor é evidência suficiente para ação de gestão.</p>
+
+<h3>Sugestões Finais</h3>
+<p>Frequentemente ignoradas, as sugestões são o dado mais valioso para melhoria contínua. Muitos colaboradores só dizem o que incomoda na saída porque não tiveram canal durante o contrato.</p>
+<div class="tip"><strong>Ação recomendada:</strong> crie um processo de devolutiva trimestral onde as sugestões recorrentes sejam apresentadas à liderança operacional com plano de resposta.</div>
+
+<h3>Percepção do Entrevistador</h3>
+<p>O julgamento qualificado do analista após a escuta. Dados mais honestos que o declarado pelo colaborador. Útil para calibrar: se o analista percebe recorrentemente liderança como causa real mas o colaborador declara outro motivo, o ambiente não é psicologicamente seguro o suficiente para falar abertamente.</p>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 5 ======================== -->
+<h2><span class="ico" style="background:#dbeafe">📋</span> Aba 4 — Registro Completo</h2>
+<p>Tabela com todos os registros individuais. Use para:</p>
+<ul style="padding-left:20px;margin-bottom:12px;font-size:.86rem;color:#374151">
+  <li style="margin-bottom:6px">Auditar casos específicos antes de uma reunião de gestão</li>
+  <li style="margin-bottom:6px">Filtrar por filial ou supervisor para preparar feedback</li>
+  <li>Verificar consistência dos dados preenchidos pelos analistas</li>
+</ul>
+<p>A coluna <strong>Meses</strong> é colorida: vermelho = menos de 3 meses (onboarding), amarelo = 3–6 meses, verde = mais de 6 meses.</p>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 6 ======================== -->
+<h2><span class="ico" style="background:#ede9fe">🔄</span> Como atualizar os dados</h2>
+<div class="card blue">
+  <h3>Passo a passo</h3>
+  <p>1. Exporte o formulário do Microsoft Forms como CSV (separador ponto e vírgula)</p>
+  <p>2. Salve o arquivo com o nome <strong>entrevistas.csv</strong></p>
+  <p>3. Acesse o painel e clique no botão <strong>↑ Atualizar CSV</strong> no canto superior direito</p>
+  <p>4. Selecione o arquivo — os dados atualizam automaticamente</p>
+  <p><strong>Alternativa:</strong> suba o arquivo <code>entrevistas.csv</code> diretamente no GitHub para manter a base atualizada para todos.</p>
+</div>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 7 ======================== -->
+<h2><span class="ico" style="background:#d1fae5">📅</span> Cadência recomendada de uso</h2>
+<table>
+  <tr><th>Frequência</th><th>Quem</th><th>O que olhar</th></tr>
+  <tr><td>Semanal</td><td>Analistas de R&S</td><td>Entrevistas novas, falas recentes, alertas de liderança</td></tr>
+  <tr><td>Mensal</td><td>Coordenador R&S</td><td>Tendências de motivo, notas por supervisor, tempo de casa</td></tr>
+  <tr><td>Trimestral</td><td>Gerência / Diretoria</td><td>Visão geral, evolução dos indicadores, ações tomadas</td></tr>
+</table>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 8 ======================== -->
+<h2><span class="ico" style="background:#fee2e2">🚨</span> Sinais de alerta que exigem ação imediata</h2>
+<div class="card red">
+  <p>🔴 Nota de liderança abaixo de 3.0 para qualquer supervisor com 3+ saídas</p>
+</div>
+<div class="card red">
+  <p>🔴 Mais de 40% das saídas com menos de 3 meses de casa — falha crítica no onboarding</p>
+</div>
+<div class="card amber">
+  <p>🟡 Mesmo posto ou cliente aparecendo em 3+ desligamentos no mesmo período</p>
+</div>
+<div class="card amber">
+  <p>🟡 Taxa de "voltaria" abaixo de 60% — sinal de deterioração da marca empregadora</p>
+</div>
+<div class="card amber">
+  <p>🟡 Mais de 30% sem treinamento adequado — risco de qualidade e segurança</p>
+</div>
+
+<hr class="sep">
+
+<!-- ======================== SEÇÃO 9 ======================== -->
+<h2><span class="ico" style="background:#d1fae5">💡</span> Os dados atuais em perspectiva (mai/2026)</h2>
+<div class="card">
+  <h3>✅ Pontos positivos identificados</h3>
+  <p><strong>86% voltariam</strong> a trabalhar na Delphos — excelente. A marca empregadora é percebida positivamente.</p>
+  <p><strong>94% indicariam</strong> a empresa — reputação forte no mercado de trabalho operacional.</p>
+  <p><strong>68% receberam treinamento adequado</strong> — maioria bem integrada.</p>
+</div>
+<div class="card amber">
+  <h3>⚠️ Pontos de atenção</h3>
+  <p><strong>Liderança com menor nota (3.88/5):</strong> é a dimensão mais fraca. Dois casos confirmados de liderança como causa real de saída. Supervisor ADOLPHO citado com ausência no posto.</p>
+  <p><strong>32% saíram em menos de 3 meses:</strong> 11 colaboradores — quase 1 em 3 saiu no período de onboarding. Ponto crítico para investigar integração.</p>
+  <p><strong>Supervisora FLAVIA:</strong> citada em sugestão de forma direta — "Iniciar uma observação na supervisão da Flavia pois perdemos muitos clientes e funcionários". Requer atenção da gestão operacional.</p>
+</div>
+<div class="card red">
+  <h3>🔴 Ação prioritária recomendada</h3>
+  <p>Revisar o processo de integração dos primeiros 90 dias. Com 32% das saídas ocorrendo antes de 3 meses, o problema não é o perfil do colaborador — é o que acontece depois da admissão.</p>
+</div>
+
+<footer>Delphos Serviços e Segurança · Guia do Painel de Desligamento · Gerado em 05/05/2026</footer>
+
+</body>
+</html>
