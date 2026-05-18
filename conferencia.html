@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delphos — Conferência BI × Painel</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0d2b1e;--navy2:#1a3d2a;--green:#1db86a;--g2:#17a05c;
+  --red:#dc2626;--yellow:#d97706;--orange:#ea580c;--blue:#2563eb;--purple:#7c3aed;
+  --bg:#f0f4f2;--white:#fff;--brd:#dde8e2;
+  --tx:#0d1f14;--tx2:#374151;--tx3:#6b7280;--tx4:#9ca3af;
+  --sh:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);--sh2:0 4px 20px rgba(0,0,0,.10);
+}
+body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));height:64px;padding:0 28px;display:flex;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.hdr-brand{display:flex;align-items:center;gap:10px;padding-right:24px;border-right:1px solid rgba(255,255,255,.1)}
+.hdr-logo{width:36px;height:36px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Montserrat",sans-serif;font-weight:900;font-size:1rem;color:#fff}
+.hdr-name{font-family:"Montserrat",sans-serif;font-weight:800;font-size:.95rem;color:#fff}
+.hdr-name span{color:var(--green)}
+.hdr-dept{font-size:.55rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.1em;margin-top:1px}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.back-btn{font-size:.62rem;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 12px;text-decoration:none;font-family:"Montserrat",sans-serif;font-weight:700;transition:all .15s}
+.back-btn:hover{color:#fff;border-color:var(--green)}
+.content{max-width:900px;margin:0 auto;padding:24px 20px 48px}
+h1{font-family:"Montserrat",sans-serif;font-size:1.3rem;font-weight:800;color:var(--tx);margin-bottom:4px}
+.sub{font-size:.73rem;color:var(--tx3);margin-bottom:22px}
+.upload-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.ubox{background:var(--white);border:2px dashed var(--brd);border-radius:12px;padding:22px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:var(--sh)}
+.ubox:hover,.ubox.ok{border-color:var(--green);background:#f0fdf4}
+.ubox input{display:none}
+.ubox .ico{font-size:1.8rem;margin-bottom:8px}
+.ubox .lbl{font-size:.72rem;font-weight:700;color:var(--tx3)}
+.ubox.ok .lbl{color:var(--g2)}
+.ubox .fname{font-size:.62rem;color:var(--g2);margin-top:4px;word-break:break-all}
+.btn-conf{background:var(--navy);color:#fff;border:none;border-radius:8px;padding:12px 24px;font-family:"Montserrat",sans-serif;font-weight:800;font-size:.82rem;cursor:pointer;width:100%;margin-bottom:18px;transition:all .2s;letter-spacing:.02em}
+.btn-conf:hover{background:var(--navy2)}
+.btn-conf:disabled{background:var(--brd);color:var(--tx3);cursor:not-allowed}
+/* KPIs */
+.krow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px}
+.kk{background:var(--white);border-radius:10px;padding:14px 16px;box-shadow:var(--sh);border:1.5px solid var(--brd);position:relative;overflow:hidden}
+.kk-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:10px 10px 0 0}
+.kk-v{font-family:"Montserrat",sans-serif;font-size:2rem;font-weight:900;line-height:1;margin-bottom:2px}
+.kk-l{font-size:.59rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3)}
+.kk-s{font-size:.56rem;color:var(--tx4);margin-top:2px}
+.kk.ok{border-color:#bbf7d0}.kk.ok .kk-v{color:var(--g2)}
+.kk.warn{border-color:#fde68a}.kk.warn .kk-v{color:var(--yellow)}
+.kk.danger{border-color:#fecaca}.kk.danger .kk-v{color:var(--red)}
+/* ALERT */
+.ok-banner{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:none;align-items:center;gap:10px}
+.ok-banner.on{display:flex}
+.ok-banner span{font-size:.73rem;color:var(--g2);font-weight:700}
+.warn-banner{background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:none;align-items:center;gap:10px}
+.warn-banner.on{display:flex}
+.warn-banner span{font-size:.73rem;color:var(--red);font-weight:700}
+/* SECTIONS */
+.sec{background:var(--white);border-radius:10px;margin-bottom:12px;overflow:hidden;box-shadow:var(--sh);border:1px solid var(--brd)}
+.sec-hd{padding:11px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--brd)}
+.sec-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sec-title{font-family:"Montserrat",sans-serif;font-size:.72rem;font-weight:800;color:var(--tx)}
+.sec-sub{font-size:.62rem;color:var(--tx3);margin-left:4px}
+.sec-cnt{margin-left:auto;font-size:.62rem;color:var(--tx3);background:var(--bg);border:1px solid var(--brd);border-radius:20px;padding:2px 8px;font-weight:700}
+.sec-body{padding:10px 16px;max-height:300px;overflow-y:auto}
+.sec-body::-webkit-scrollbar{width:3px}.sec-body::-webkit-scrollbar-thumb{background:var(--green);border-radius:2px}
+.vrow{display:grid;grid-template-columns:60px 1fr 1fr 1fr auto;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--brd)}
+.vrow:last-child{border-bottom:none}
+.vcod{font-family:"Montserrat",sans-serif;font-weight:700;font-size:.75rem;color:var(--g2)}
+.vinfo .vcli{font-weight:600;color:var(--tx);font-size:.7rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vinfo .vdet{font-size:.6rem;color:var(--tx3);margin-top:1px}
+.vrec{font-size:.65rem;color:var(--blue);font-weight:600;white-space:nowrap}
+.vstatus{font-size:.62rem;font-weight:600;color:var(--tx2)}
+.vtag{font-size:.57rem;font-weight:700;padding:2px 8px;border-radius:12px;white-space:nowrap}
+.vtag.nova{background:#dcfce7;color:var(--g2)}
+.vtag.canc{background:#fef3c7;color:var(--yellow)}
+.vtag.adm{background:#ede9fe;color:var(--purple)}
+.vtag.ancanc{background:#ffedd5;color:var(--orange)}
+.vtag.danger{background:#fee2e2;color:var(--red)}
+.vtag.semrec{background:#dbeafe;color:var(--blue)}
+.vtag.semdoc{background:#fce7f3;color:#be185d}
+.empty{color:var(--tx4);font-size:.72rem;padding:10px 0;text-align:center}
+.data-tag{font-size:.6rem;color:var(--tx3);text-align:right;margin-bottom:12px}
+#resultado{display:none}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo">D</div>
+    <div>
+      <div class="hdr-name">DEL<span>PHOS</span></div>
+      <div class="hdr-dept">Conferência BI × Painel</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <a href="index.html" class="back-btn">← Portal R&S</a>
+  </div>
+</div>
+
+<div class="content">
+  <h1>🔍 Conferência Diária</h1>
+  <p class="sub">Carregue os dois arquivos para detectar divergências automaticamente entre o BI e o seu Painel de Vagas.</p>
+
+  <div class="upload-row">
+    <label class="ubox" id="boxBI">
+      <input type="file" accept=".xlsx,.csv" onchange="loadBI(this)">
+      <div class="ico">📥</div>
+      <div class="lbl">Export do BI (.xlsx ou .csv)</div>
+      <div class="fname" id="fnBI"></div>
+    </label>
+    <label class="ubox" id="boxP">
+      <input type="file" accept=".csv" onchange="loadPainel(this)">
+      <div class="ico">📋</div>
+      <div class="lbl">Painel de Vagas R&S (Aba 1 — .csv)</div>
+      <div class="fname" id="fnP"></div>
+    </label>
+  </div>
+
+  <button class="btn-conf" id="btnConf" onclick="conferir()" disabled>🔍 Conferir Divergências</button>
+
+  <div class="ok-banner" id="okBanner"><span>✅</span><span>Tudo alinhado! BI e Painel estão sincronizados.</span></div>
+  <div class="warn-banner" id="warnBanner"><span>⚠️</span><span id="warnMsg"></span></div>
+
+  <div id="resultado">
+    <div class="data-tag" id="dataTag"></div>
+    <div class="krow">
+      <div class="kk" id="kBI"><div class="kk-bar" style="background:var(--green)"></div><div class="kk-v" id="vBI">–</div><div class="kk-l">Vagas no BI</div><div class="kk-s">exportadas hoje</div></div>
+      <div class="kk" id="kP"><div class="kk-bar" style="background:var(--blue)"></div><div class="kk-v" id="vP">–</div><div class="kk-l">Abertas no Painel</div><div class="kk-s">status em aberto</div></div>
+      <div class="kk" id="kD"><div class="kk-bar" style="background:var(--brd)"></div><div class="kk-v" id="vD">–</div><div class="kk-l">Diferença</div><div class="kk-s" id="sD"></div></div>
+    </div>
+
+    <div class="sec" id="secNova">
+      <div class="sec-hd"><div class="sec-dot" style="background:#16a34a"></div><div class="sec-title">🆕 No BI mas NÃO no Painel</div><div class="sec-sub">— faltou importar</div><span class="sec-cnt" id="cntNova">0</span></div>
+      <div class="sec-body" id="listNova"><div class="empty">Nenhuma ✅</div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hd"><div class="sec-dot" style="background:var(--yellow)"></div><div class="sec-title">🟡 BI aberta · Painel = CANCELADA</div><div class="sec-sub">— aguardando cancelar no HK</div><span class="sec-cnt" id="cntCanc">0</span></div>
+      <div class="sec-body" id="listCanc"><div class="empty">Nenhuma ✅</div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hd"><div class="sec-dot" style="background:var(--orange)"></div><div class="sec-title">🟠 BI aberta · Painel = ANÁLISE CANCELAMENTO</div><div class="sec-sub">— cancelamento em andamento</div><span class="sec-cnt" id="cntAnCanc">0</span></div>
+      <div class="sec-body" id="listAnCanc"><div class="empty">Nenhuma ✅</div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hd"><div class="sec-dot" style="background:var(--purple)"></div><div class="sec-title">🟣 BI aberta · Painel = ADMITIDO</div><div class="sec-sub">— submeter admissão no HK</div><span class="sec-cnt" id="cntAdm">0</span></div>
+      <div class="sec-body" id="listAdm"><div class="empty">Nenhuma ✅</div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hd"><div class="sec-dot" style="background:var(--red)"></div><div class="sec-title">🚨 Aberta no Painel mas NÃO no BI</div><div class="sec-sub">— não admitida nem cancelada, verificar no HK</div><span class="sec-cnt" id="cntSumiu">0</span></div>
+      <div class="sec-body" id="listSumiu"><div class="empty">Nenhuma ✅</div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hd"><div class="sec-dot" style="background:var(--blue)"></div><div class="sec-title">👤 Vagas sem Recrutador informado</div><div class="sec-sub">— atribuir analista responsável</div><span class="sec-cnt" id="cntSemRec">0</span></div>
+      <div class="sec-body" id="listSemRec"><div class="empty">Nenhuma ✅</div></div>
+    </div>
+    <div class="sec">
+      <div class="sec-hd"><div class="sec-dot" style="background:#be185d"></div><div class="sec-title">📋 Em Documentação sem Responsável de Pré-Admissão</div><div class="sec-sub">— atribuir responsável</div><span class="sec-cnt" id="cntSemDoc">0</span></div>
+      <div class="sec-body" id="listSemDoc"><div class="empty">Nenhuma ✅</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var dadosBI = null, dadosPainel = null;
+var SABERTOS = ['ABERTA','TRIAGEM 1','TRIAGEM 2','TRIAGEM 3','REABERTA',
+  'PESQUISA SOCIAL 1','PESQUISA SOCIAL 2','PESQUISA SOCIAL 3',
+  'ENTREVISTA RH 1','ENTREVISTA RH 2','ENTREVISTA RH 3',
+  'ENTREVISTA OPS 1','ENTREVISTA OPS 2','ENTREVISTA OPS 3',
+  'ENTREVISTA CLIENTE 1','ENTREVISTA CLIENTE 2','ENTREVISTA CLIENTE 3',
+  'EM DOCUMENTAÇÃO 1','EM DOCUMENTAÇÃO 2','EM DOCUMENTAÇÃO 3',
+  'TESTE PSICOLÓGICO','ANALISE CANCELAMENTO','ANÁLISE CANCELAMENTO'];
+var SDOC = ['EM DOCUMENTAÇÃO 1','EM DOCUMENTAÇÃO 2','EM DOCUMENTAÇÃO 3'];
+
+function loadBI(input){
+  var file=input.files[0];if(!file)return;
+  document.getElementById('fnBI').textContent=file.name;
+  document.getElementById('boxBI').classList.add('ok');
+  document.getElementById('boxBI').querySelector('.lbl').textContent='✅ BI carregado';
+  var ext=file.name.split('.').pop().toLowerCase();
+  var reader=new FileReader();
+  reader.onload=function(e){
+    if(ext==='xlsx'){
+      var wb=XLSX.read(e.target.result,{type:'array'});
+      var ws=wb.Sheets[wb.SheetNames[0]];
+      var json=XLSX.utils.sheet_to_json(ws,{defval:''});
+      dadosBI={};
+      json.forEach(function(r){
+        var cod=(r['Cód']||r['Cod']||r['COD']||'').toString().replace('.0','').trim();
+        if(cod)dadosBI[cod]={local:r['LOCAL']||r['Local']||'',cargo:r['CARGO']||r['Cargo']||'',sup:r['SUPERVISÃO']||r['SUPERVISAO']||'',sel:r['SELECIONADOR']||''};
+      });
+    } else {
+      var text=e.target.result;
+      var rows=text.split('\n').filter(function(r){return r.trim()});
+      var sep=rows[0].includes(';')?';':',';
+      var hdr=rows[0].split(sep).map(function(h){return h.trim().replace(/"/g,'')});
+      dadosBI={};
+      for(var i=1;i<rows.length;i++){
+        var cols=rows[i].split(sep).map(function(c){return c.trim().replace(/"/g,'')});
+        var obj={};hdr.forEach(function(h,j){obj[h]=cols[j]||''});
+        var cod=(obj['Cód']||obj['Cod']||obj['COD']||'').toString().replace('.0','').trim();
+        if(cod)dadosBI[cod]={local:obj['LOCAL']||'',cargo:obj['CARGO']||'',sup:obj['SUPERVISÃO']||obj['SUPERVISAO']||'',sel:obj['SELECIONADOR']||''};
+      }
+    }
+    checkReady();
+  };
+  if(ext==='xlsx')reader.readAsArrayBuffer(file);
+  else reader.readAsText(file,'latin1');
+}
+
+function loadPainel(input){
+  var file=input.files[0];if(!file)return;
+  document.getElementById('fnP').textContent=file.name;
+  document.getElementById('boxP').classList.add('ok');
+  document.getElementById('boxP').querySelector('.lbl').textContent='✅ Painel carregado';
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var text=e.target.result;
+    var rows=text.split('\n').filter(function(r){return r.trim()});
+    var sep=rows[0].includes(';')?';':',';
+    var hdr=rows[0].split(sep).map(function(h){return h.trim().replace(/"/g,'')});
+    dadosPainel={};
+    for(var i=1;i<rows.length;i++){
+      var cols=rows[i].split(sep).map(function(c){return c.trim().replace(/"/g,'')});
+      var obj={};hdr.forEach(function(h,j){obj[h]=cols[j]||''});
+      var cod=(obj['COD ']||obj['COD']||'').toString().replace('.0','').trim();
+      var status=(obj['STATUS RECRUTADOR']||'').trim().toUpperCase();
+      if(cod)dadosPainel[cod]={
+        cargo:obj['CARGO']||'',
+        cliente:obj['CLIENTE']||'',
+        status:status,
+        recrutador:obj['RECRUTADOR']||'',
+        supervisor:obj['SUPERVISÃO']||obj['SUPERVISAO']||'',
+        resp_adm:obj['RESPONSÁVEL']||''
+      };
+    }
+    checkReady();
+  };
+  reader.readAsText(file,'latin1');
+}
+
+function checkReady(){if(dadosBI&&dadosPainel)document.getElementById('btnConf').disabled=false}
+
+function row(cod,cli,cargo,rec,sup,respAdm,status,tagCls,tagLbl){
+  return '<div class="vrow">'+
+    '<div class="vcod">'+cod+'</div>'+
+    '<div class="vinfo"><div class="vcli">'+(cli||'–')+'</div><div class="vdet">'+(cargo||'–')+'</div></div>'+
+    '<div class="vrec">'+(rec||sup||'–')+'</div>'+
+    '<div class="vstatus">'+(respAdm?'Pré-adm: '+respAdm:(status||'–'))+'</div>'+
+    '<span class="vtag '+tagCls+'">'+tagLbl+'</span></div>';
+}
+
+function renderList(id,items){
+  document.getElementById(id).innerHTML=items.length===0?'<div class="empty">Nenhuma ✅</div>':items.join('');
+}
+
+function conferir(){
+  var totalBI=Object.keys(dadosBI).length;
+  var abertos=Object.keys(dadosPainel).filter(function(c){return SABERTOS.indexOf(dadosPainel[c].status)>=0});
+  var totalP=abertos.length;
+  var diff=totalBI-totalP;
+
+  document.getElementById('vBI').textContent=totalBI;
+  document.getElementById('vP').textContent=totalP;
+  document.getElementById('vD').textContent=(diff>0?'+':'')+diff;
+
+  var kD=document.getElementById('kD');
+  kD.className='kk '+(diff===0?'ok':'danger');
+  document.getElementById('kD').querySelector('.kk-bar').style.background=diff===0?'var(--green)':'var(--red)';
+  document.getElementById('sD').textContent=diff===0?'tudo alinhado ✅':Math.abs(diff)+' vaga(s) desalinhada(s)';
+
+  var nova=[],canc=[],ancanc=[],adm=[],sumiu=[],semRec=[],semDoc=[];
+
+  Object.keys(dadosBI).forEach(function(cod){
+    var b=dadosBI[cod],p=dadosPainel[cod];
+    if(!p){nova.push(row(cod,b.local,b.cargo,b.sel,b.sup,'','','nova','Falta importar'));}
+    else{
+      var st=p.status;
+      if(st==='CANCELADA')canc.push(row(cod,p.cliente||b.local,p.cargo,p.recrutador,p.supervisor,p.resp_adm,st,'canc','Cancelar no HK'));
+      else if(st==='ANALISE CANCELAMENTO'||st==='ANÁLISE CANCELAMENTO')ancanc.push(row(cod,p.cliente||b.local,p.cargo,p.recrutador,p.supervisor,p.resp_adm,st,'ancanc','Em análise'));
+      else if(st==='ADMITIDO')adm.push(row(cod,p.cliente||b.local,p.cargo,p.recrutador,p.supervisor,p.resp_adm,st,'adm','Submeter no HK'));
+    }
+  });
+
+  abertos.forEach(function(cod){
+    if(!dadosBI[cod]){
+      var p=dadosPainel[cod];
+      var wAdm=(p.status_doc||'').toUpperCase()==='ADMITIDO';
+      var critAdm=(p.crit||'').toUpperCase()==='ADMITIDO';
+      if(wAdm||critAdm){
+        // Admissão já lançada no painel mas HK ainda não processou - não é alerta
+        adm.push(row(cod,p.cliente,p.cargo,p.recrutador,p.supervisor,p.resp_adm,p.status,'adm','Submeter no HK'));
+      } else {
+        sumiu.push(row(cod,p.cliente,p.cargo,p.recrutador,p.supervisor,p.resp_adm,p.status,'danger','Verificar no HK'));
+      }
+    }
+  });
+
+  abertos.forEach(function(cod){
+    var p=dadosPainel[cod];
+    if(!p.recrutador||!p.recrutador.trim()||p.recrutador.toUpperCase()==='NÃO INFORMADO'){
+      var b=dadosBI[cod]||{};
+      semRec.push(row(cod,p.cliente||b.local||'–',p.cargo,p.recrutador||'–',p.supervisor,p.resp_adm,p.status,'semrec','Atribuir analista'));
+    }
+  });
+
+  Object.keys(dadosPainel).forEach(function(cod){
+    var p=dadosPainel[cod];
+    if(SDOC.indexOf(p.status)>=0&&(!p.resp_adm||!p.resp_adm.trim()))
+      semDoc.push(row(cod,p.cliente,p.cargo,p.recrutador,p.supervisor,'⚠️ Sem responsável',p.status,'semdoc','Atribuir pré-adm'));
+  });
+
+  document.getElementById('cntNova').textContent=nova.length;
+  document.getElementById('cntCanc').textContent=canc.length;
+  document.getElementById('cntAnCanc').textContent=ancanc.length;
+  document.getElementById('cntAdm').textContent=adm.length;
+  document.getElementById('cntSumiu').textContent=sumiu.length;
+  document.getElementById('cntSemRec').textContent=semRec.length;
+  document.getElementById('cntSemDoc').textContent=semDoc.length;
+
+  renderList('listNova',nova);renderList('listCanc',canc);renderList('listAnCanc',ancanc);
+  renderList('listAdm',adm);renderList('listSumiu',sumiu);renderList('listSemRec',semRec);renderList('listSemDoc',semDoc);
+
+  var total=nova.length+canc.length+ancanc.length+adm.length+sumiu.length+semRec.length+semDoc.length;
+  document.getElementById('okBanner').classList.toggle('on',total===0);
+  document.getElementById('warnBanner').classList.toggle('on',total>0);
+  if(total>0)document.getElementById('warnMsg').textContent=total+' divergência(s) e alerta(s) — verifique antes de atualizar o painel!';
+
+  var now=new Date();
+  document.getElementById('dataTag').textContent='Conferência realizada em '+now.toLocaleDateString('pt-BR')+' às '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('resultado').style.display='block';
+}
+</script>
+</body>
+</html>
