@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delphos — Painel de Desligamentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0d2b1e;--navy2:#1a3d2a;--green:#1db86a;--g2:#17a05c;--g3:#e8f9f0;
+  --red:#dc2626;--yellow:#d97706;--blue:#2563eb;--purple:#7c3aed;--cyan:#0891b2;--orange:#ea580c;
+  --bg:#f0f4f2;--white:#fff;--brd:#dde8e2;--brd2:#e5e7eb;
+  --tx:#0d1f14;--tx2:#374151;--tx3:#6b7280;--tx4:#9ca3af;
+  --sh:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);--sh2:0 4px 20px rgba(0,0,0,.10);
+}
+body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));height:64px;padding:0 28px;display:flex;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.hdr-brand{display:flex;align-items:center;gap:10px;padding-right:24px;border-right:1px solid rgba(255,255,255,.1)}
+.hdr-logo{width:36px;height:36px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Montserrat",sans-serif;font-weight:900;font-size:1rem;color:#fff}
+.hdr-name{font-family:"Montserrat",sans-serif;font-weight:800;font-size:.95rem;color:#fff}
+.hdr-name span{color:#f87171}
+.hdr-dept{font-size:.55rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.1em;margin-top:1px}
+.hdr-tabs{display:flex;height:100%;padding-left:20px;flex:1}
+.tab{height:100%;padding:0 16px;display:flex;align-items:center;gap:7px;font-family:"Montserrat",sans-serif;font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:rgba(255,255,255,.38);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+.tab:hover{color:rgba(255,255,255,.7)}
+.tab.on{color:#fff;border-bottom-color:#f87171}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.back-btn{font-size:.62rem;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 12px;text-decoration:none;font-family:"Montserrat",sans-serif;font-weight:700;transition:all .15s}
+.back-btn:hover{color:#fff;border-color:#f87171}
+.upd{font-size:.57rem;color:rgba(255,255,255,.28);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:4px;padding:3px 8px}
+
+/* FILTERS */
+.fbar{background:var(--white);border-bottom:2px solid var(--brd);padding:8px 28px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.fl{font-family:"Montserrat",sans-serif;font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--tx3);white-space:nowrap}
+.fsel{border:1.5px solid var(--brd);border-radius:20px;background:var(--white);font-size:.62rem;font-weight:600;color:var(--tx2);padding:4px 12px;outline:none;cursor:pointer;font-family:"Open Sans",sans-serif}
+.fsel:focus{border-color:var(--red)}
+.fsep{width:1px;height:18px;background:var(--brd2)}
+.af-tags{display:flex;gap:5px;flex-wrap:wrap;margin-left:4px}
+.af-tag{background:var(--navy);color:#fff;border-radius:20px;padding:2px 9px;font-size:.6rem;font-weight:600;display:flex;align-items:center;gap:5px;cursor:pointer}
+.clr-btn{margin-left:auto;padding:3px 10px;border-radius:5px;border:1.5px solid var(--brd);background:transparent;font-family:"Montserrat",sans-serif;font-size:.6rem;font-weight:700;color:var(--tx3);cursor:pointer}
+.clr-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* PAGES */
+.page{display:none}.page.on{display:block}
+.cnt{padding:18px 28px;display:flex;flex-direction:column;gap:14px}
+
+/* KPI ROW */
+.krow{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:10px}
+.kk{background:var(--white);border-radius:10px;padding:15px 17px;box-shadow:var(--sh);border:1.5px solid var(--brd);position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.kk-bar{position:absolute;top:0;left:0;right:0;height:4px;border-radius:10px 10px 0 0}
+.kk-v{font-family:"Montserrat",sans-serif;font-size:2.1rem;font-weight:900;line-height:1;margin-bottom:2px}
+.kk-l{font-size:.59rem;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em}
+.kk-s{font-size:.56rem;color:var(--tx4);margin-top:2px}
+.kk.dest{background:linear-gradient(135deg,var(--navy),var(--navy2))}
+.kk.dest .kk-v{color:#f87171}.kk.dest .kk-l{color:rgba(255,255,255,.4)}.kk.dest .kk-s{color:rgba(255,255,255,.22)}
+
+/* NPS CARDS */
+.nps-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.nps-card{background:var(--white);border-radius:10px;padding:16px 18px;box-shadow:var(--sh);border:1px solid var(--brd);text-align:center}
+.nps-pct{font-family:"Montserrat",sans-serif;font-size:2.4rem;font-weight:900;line-height:1}
+.nps-lbl{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx3);margin-top:4px}
+.nps-bar{margin-top:8px;height:6px;background:var(--brd2);border-radius:3px;overflow:hidden}
+.nps-fill{height:100%;border-radius:3px;transition:width .8s}
+
+/* CARDS */
+.g2{display:grid;grid-template-columns:1.6fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.card{background:var(--white);border-radius:10px;padding:17px 19px;box-shadow:var(--sh);border:1px solid var(--brd)}
+.ct{display:flex;align-items:center;gap:8px;margin-bottom:13px}
+.ct .b{width:4px;height:17px;border-radius:2px;flex-shrink:0}
+.ct-title{font-family:"Montserrat",sans-serif;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--navy)}
+.ct-sub{font-size:.56rem;color:var(--tx4);margin-left:4px}
+.ct-cnt{margin-left:auto;font-size:.59rem;color:var(--tx3);background:var(--bg);border:1px solid var(--brd);border-radius:20px;padding:2px 7px;font-weight:600}
+
+/* RANK BARS */
+.rank-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer;border-radius:5px;padding:2px 4px;transition:background .12s}
+.rank-item:hover{background:var(--bg)}
+.rank-item.active{background:#fef2f2}
+.rank-pos{font-family:"Montserrat",sans-serif;font-size:.62rem;font-weight:900;color:var(--tx3);width:16px;text-align:right;flex-shrink:0}
+.rank-lbl{font-size:.62rem;color:var(--tx2);font-weight:500;width:160px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-bg{flex:1;background:var(--bg);border-radius:4px;height:20px;overflow:hidden}
+.rank-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.6rem;font-weight:700;color:#fff;transition:width .8s}
+.rank-n{font-family:"Montserrat",sans-serif;font-size:.7rem;font-weight:800;width:24px;text-align:right;flex-shrink:0}
+
+/* AVALIAÇÕES */
+.aval-item{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.aval-lbl{font-size:.63rem;color:var(--tx2);font-weight:600;width:200px;flex-shrink:0}
+.aval-bar{flex:1;background:var(--brd2);border-radius:4px;height:22px;overflow:hidden;position:relative}
+.aval-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.62rem;font-weight:700;color:#fff;transition:width .8s}
+.aval-num{font-family:"Montserrat",sans-serif;font-size:.75rem;font-weight:900;width:32px;text-align:right;flex-shrink:0}
+.stars{display:flex;gap:2px;margin-top:2px}
+.star{font-size:.55rem}
+
+/* TEMPO CASA */
+.tc-row{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.tc-box{background:var(--bg);border-radius:8px;padding:10px 12px;text-align:center;border:1px solid var(--brd)}
+.tc-v{font-family:"Montserrat",sans-serif;font-size:1.5rem;font-weight:900;line-height:1}
+.tc-l{font-size:.57rem;color:var(--tx3);margin-top:3px;font-weight:600}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.on{display:flex}
+.modal{background:var(--white);border-radius:14px;padding:24px;max-width:680px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:var(--sh2)}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.modal-title{font-family:"Montserrat",sans-serif;font-size:.9rem;font-weight:800;color:var(--navy)}
+.modal-close{background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:4px 10px;cursor:pointer;font-size:.7rem;font-weight:700;color:var(--tx3)}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+.modal-row{padding:8px 0;border-bottom:1px solid var(--brd)}
+.modal-row:last-child{border-bottom:none}
+.mr-label{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:2px}
+.mr-val{font-size:.7rem;color:var(--tx);line-height:1.4}
+.mr-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tag-sm{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.58rem;font-weight:700}
+.tag-sim{background:#dcfce7;color:var(--g2)}
+.tag-nao{background:#fee2e2;color:var(--red)}
+.tag-talvez{background:#fef3c7;color:var(--yellow)}
+
+/* TABLE */
+.tsc{overflow-x:auto;max-height:320px;overflow-y:auto}
+.tsc::-webkit-scrollbar{height:3px;width:3px}.tsc::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px}
+table.dt{width:100%;border-collapse:collapse;min-width:800px}
+.dt th{font-size:.56rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em;padding:7px 9px;text-align:left;border-bottom:2px solid var(--brd);background:#f9fafb;font-weight:700;position:sticky;top:0;z-index:5;white-space:nowrap}
+.dt td{font-size:.63rem;padding:7px 9px;border-bottom:1px solid var(--brd);color:var(--tx2)}
+.dt tbody tr:hover td{background:#fef2f2;cursor:pointer}
+
+/* NOTA BADGE */
+.nb{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.6rem;font-weight:700}
+.nb.alta{background:#dcfce7;color:var(--g2)}.nb.media{background:#fef3c7;color:var(--yellow)}.nb.baixa{background:#fee2e2;color:var(--red)}
+
+footer{text-align:center;padding:9px;font-size:.57rem;color:var(--tx4);border-top:1px solid var(--brd);background:var(--white);margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo">D</div>
+    <div>
+      <div class="hdr-name">DEL<span>PHOS</span></div>
+      <div class="hdr-dept">Entrevistas de Desligamento</div>
+    </div>
+  </div>
+  <div class="hdr-tabs">
+    <div class="tab on" onclick="showPage('p1',this)">📊 Visão Geral</div>
+    <div class="tab" onclick="showPage('p2',this)">⭐ Avaliações</div>
+    <div class="tab" onclick="showPage('p3',this)">👥 Supervisores & Postos</div>
+  </div>
+  <div class="hdr-r">
+    <div class="upd" id="updTag">–</div>
+    <a href="index.html" class="back-btn">← Portal R&S</a>
+  </div>
+</div>
+
+<!-- FILTROS -->
+<div class="fbar">
+  <span class="fl">Filial</span>
+  <select class="fsel" id="selFilial" onchange="applyFilter()"><option value="">Todas</option></select>
+  <div class="fsep"></div>
+  <span class="fl">Serviço</span>
+  <select class="fsel" id="selServico" onchange="applyFilter()"><option value="">Todos</option></select>
+  <div class="fsep"></div>
+  <span class="fl">Período</span>
+  <select class="fsel" id="selPeriodo" onchange="applyFilter()"><option value="">Todos</option></select>
+  <div class="af-tags" id="afTags"></div>
+  <button class="clr-btn" onclick="clearFilters()">✕ Limpar filtros</button>
+</div>
+
+<!-- PAGE 1 — VISÃO GERAL -->
+<div class="page on" id="p1">
+<div class="cnt">
+  <div class="krow" id="krow1"></div>
+  <div class="nps-row" id="npsRow"></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--red)"></div><span class="ct-title">Motivos de Saída</span><span class="ct-sub">— declarado pelo colaborador</span></div>
+      <div id="rankMotivos"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--orange)"></div><span class="ct-title">Perfil por Serviço</span></div>
+      <div id="rankServico"></div>
+      <div style="margin-top:14px"><div class="ct"><div class="b" style="background:var(--purple)"></div><span class="ct-title">Por Filial</span></div></div>
+      <div id="rankFilial"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--blue)"></div><span class="ct-title">Evolução Mensal</span></div>
+      <div id="evolMensal"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--cyan)"></div><span class="ct-title">Tempo de Casa</span><span class="ct-sub">— perfil de quem sai</span></div>
+      <div class="tc-row" id="tcRow"></div>
+      <div style="margin-top:14px" id="tcBars"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><div class="b" style="background:var(--tx3)"></div><span class="ct-title">Detalhamento</span><span class="ct-sub">— clique para ver entrevista completa</span><span class="ct-cnt" id="detCnt">0</span></div>
+    <div class="tsc"><table class="dt" id="detTable"></table></div>
+  </div>
+</div>
+</div>
+
+<!-- PAGE 2 — AVALIAÇÕES -->
+<div class="page" id="p2">
+<div class="cnt">
+  <div class="card">
+    <div class="ct"><div class="b" style="background:var(--blue)"></div><span class="ct-title">Notas Médias por Dimensão</span><span class="ct-sub">— escala de 1 a 5</span></div>
+    <div id="avalGeral"></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--green)"></div><span class="ct-title">Notas por Filial</span></div>
+      <div id="avalFilial"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--orange)"></div><span class="ct-title">Notas por Serviço</span></div>
+      <div id="avalServico"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><div class="b" style="background:var(--purple)"></div><span class="ct-title">Treinamento Adequado</span></div>
+    <div id="treinamento" style="display:flex;gap:20px;align-items:center;flex-wrap:wrap"></div>
+  </div>
+</div>
+</div>
+
+<!-- PAGE 3 — SUPERVISORES & POSTOS -->
+<div class="page" id="p3">
+<div class="cnt">
+  <div class="g2">
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--red)"></div><span class="ct-title">Supervisores com Mais Saídas</span><span class="ct-sub">— clique para filtrar</span></div>
+      <div id="rankSup"></div>
+    </div>
+    <div class="card">
+      <div class="ct"><div class="b" style="background:var(--orange)"></div><span class="ct-title">Postos com Mais Saídas</span><span class="ct-sub">— clique para filtrar</span></div>
+      <div id="rankPosto"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct"><div class="b" style="background:var(--yellow)"></div><span class="ct-title">Alertas — Notas Baixas por Supervisor</span><span class="ct-sub">— média abaixo de 3</span></div>
+    <div id="alertasSup"></div>
+  </div>
+  <div class="card">
+    <div class="ct"><div class="b" style="background:var(--tx3)"></div><span class="ct-title">Detalhamento</span><span class="ct-sub">— filtrado por supervisor/posto</span><span class="ct-cnt" id="detCnt3">0</span></div>
+    <div class="tsc"><table class="dt" id="detTable3"></table></div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="modalTitle">Entrevista de Desligamento</div>
+      <button class="modal-close" onclick="closeModal()">✕ Fechar</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer>Delphos Serviços e Segurança · Painel de Desligamentos · v1.0</footer>
+
+<script>
+
+var RAW_ORIG = [];
+var RAW = [];
+
+function parseDesligCSV(text){
+  if(text.charCodeAt(0)===65279) text=text.slice(1);
+  var lines=text.split('\n').filter(function(r){return r.trim()});
+  if(!lines.length) return;
+  var fl=lines[0];
+  var sep=(fl.split(';').length-1)>(fl.split(',').length-1)?';':',';
+  var hdr=lines[0].split(sep).map(function(h){return h.trim().replace(/^"|"$/g,'').replace(/\xa0/g,'').trim()});
+  RAW_ORIG=[];
+  for(var i=1;i<lines.length;i++){
+    var cols=lines[i].split(sep).map(function(c){return c.trim().replace(/^"|"$/g,'')});
+    if(!cols[0]) continue;
+    var obj={};hdr.forEach(function(h,j){obj[h]=cols[j]||''});
+    RAW_ORIG.push(obj);
+  }
+  RAW=RAW_ORIG.slice();
+}
+var F = {filial:'', servico:'', periodo:''};
+var P3_FILTER = {sup:'', posto:''};
+
+var NOTAS_COLS = [
+  {key:'Como você avalia o apoio da liderança direta (supervisor/gestor)?', label:'Liderança'},
+  {key:'Como você avalia o relacionamento com a equipe de trabalho?', label:'Equipe'},
+  {key:'Como você avalia as condições do posto?', label:'Condições do Posto'},
+  {key:'Como você avalia o suporte e a organização da empresa (processos, comunicação, apoio)?', label:'Suporte da Empresa'},
+  {key:'Como você avalia a escala e jornada de trabalho?', label:'Escala/Jornada'},
+];
+
+function getNota(r, key){var v=parseFloat(r[key]);return isNaN(v)?null:v;}
+function getMediaNotas(rows){
+  return NOTAS_COLS.map(function(c){
+    var vals=rows.map(function(r){return getNota(r,c.key);}).filter(function(v){return v!==null;});
+    var avg=vals.length>0?vals.reduce(function(a,b){return a+b;},0)/vals.length:null;
+    return {label:c.label, avg:avg, n:vals.length};
+  });
+}
+
+function notaColor(v){
+  if(v===null) return 'var(--tx4)';
+  if(v>=4) return 'var(--g2)';
+  if(v>=3) return 'var(--yellow)';
+  return 'var(--red)';
+}
+function notaClass(v){
+  if(v===null) return '';
+  if(v>=4) return 'alta';
+  if(v>=3) return 'media';
+  return 'baixa';
+}
+function stars(v){
+  if(!v) return '';
+  var s='';
+  for(var i=1;i<=5;i++) s+='<span class="star">'+(i<=Math.round(v)?'★':'☆')+'</span>';
+  return '<div class="stars">'+s+'</div>';
+}
+
+function calcDiasCasa(adm, desl){
+  try{
+    var pa=adm.split('/'); var pd=desl.split('/');
+    if(pa.length<3||pd.length<3) return null;
+    var a=new Date(parseInt(pa[2]),parseInt(pa[1])-1,parseInt(pa[0]));
+    var d=new Date(parseInt(pd[2]),parseInt(pd[1])-1,parseInt(pd[0]));
+    return Math.round((d-a)/(1000*60*60*24));
+  }catch(e){return null;}
+}
+
+function getMotivo(r){
+  var m=(r['Qual foi o principal motivo do pedido de desligamento?']||'').trim();
+  // Normalize
+  if(!m) return 'Não informado';
+  return m;
+}
+
+function getPeriodo(r){
+  var d=r['Data da Entrevista']||'';
+  if(!d) return null;
+  var p=d.split('/');
+  if(p.length<3) return null;
+  return p[2]+'-'+p[1].padStart(2,'0');
+}
+function getPeriodoLabel(k){
+  if(!k) return '';
+  var p=k.split('-');
+  var meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  return meses[parseInt(p[1])-1]+'/'+p[0];
+}
+
+// Build selects
+function buildSelects(){
+  var filiais=[...new Set(RAW_ORIG.map(function(r){return (r['FIlial Responsável']||'').trim();}).filter(Boolean))].sort();
+  var servicos=[...new Set(RAW_ORIG.map(function(r){return (r['Serviço']||'').trim();}).filter(Boolean))].sort();
+  var periodos=[...new Set(RAW_ORIG.map(function(r){return getPeriodo(r);}).filter(Boolean))].sort();
+
+  fillSel('selFilial', filiais);
+  fillSel('selServico', servicos);
+  fillSel('selPeriodo', periodos, getPeriodoLabel);
+}
+
+function fillSel(id, arr, labelFn){
+  var el=document.getElementById(id);
+  arr.forEach(function(v){
+    var o=document.createElement('option');
+    o.value=v; o.text=labelFn?labelFn(v):v;
+    el.appendChild(o);
+  });
+}
+
+function applyFilter(){
+  F.filial=document.getElementById('selFilial').value;
+  F.servico=document.getElementById('selServico').value;
+  F.periodo=document.getElementById('selPeriodo').value;
+  RAW=RAW_ORIG.filter(function(r){
+    if(F.filial && (r['FIlial Responsável']||'').trim()!==F.filial) return false;
+    if(F.servico && (r['Serviço']||'').trim()!==F.servico) return false;
+    if(F.periodo && getPeriodo(r)!==F.periodo) return false;
+    return true;
+  });
+  updateAfTags();
+  render();
+}
+
+function clearFilters(){
+  F={filial:'',servico:'',periodo:''};
+  document.getElementById('selFilial').value='';
+  document.getElementById('selServico').value='';
+  document.getElementById('selPeriodo').value='';
+  RAW=RAW_ORIG.slice();
+  updateAfTags();
+  render();
+}
+
+function updateAfTags(){
+  var labels={filial:'Filial',servico:'Serviço',periodo:'Período'};
+  var tags=Object.keys(F).filter(function(k){return F[k];}).map(function(k){
+    var lbl=k==='periodo'?getPeriodoLabel(F[k]):F[k];
+    return '<span class="af-tag" onclick="clearOne(''+k+'')">'+labels[k]+': '+lbl+' ✕</span>';
+  });
+  document.getElementById('afTags').innerHTML=tags.join('');
+}
+
+function clearOne(key){
+  F[key]='';
+  document.getElementById('sel'+key.charAt(0).toUpperCase()+key.slice(1)).value='';
+  applyFilter();
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function render(){
+  renderP1();
+  var activeTab=document.querySelector('.page.on');
+  if(activeTab&&activeTab.id==='p2') renderP2();
+  if(activeTab&&activeTab.id==='p3') renderP3();
+}
+
+function renderP1(){
+  var d=RAW;
+  var total=d.length;
+
+  // KPIs
+  var voltaria=d.filter(function(r){return (r['Você voltaria a trabalhar na DELPHOS futuramente?']||'').toLowerCase()==='sim';}).length;
+  var indicaria=d.filter(function(r){return (r['Você indicaria a DELPHOS para outra pessoa trabalhar?']||'').toLowerCase()==='sim';}).length;
+  var novaOp=d.filter(function(r){return (r['A saída foi motivada por uma nova oportunidade de trabalho?']||'').toLowerCase()==='sim';}).length;
+  var diasCasa=d.map(function(r){return calcDiasCasa(r['Data de Admissão'],r['Data do Desligamento']);}).filter(function(v){return v!==null&&v>=0;});
+  var mediaCasa=diasCasa.length>0?Math.round(diasCasa.reduce(function(a,b){return a+b;},0)/diasCasa.length):0;
+
+  document.getElementById('krow1').innerHTML=[
+    {cls:'dest',v:total,l:'Entrevistas Realizadas',s:'total no período',bar:'#f87171'},
+    {cls:'',v:Math.round(voltaria/total*100)+'%',l:'Voltaria à Delphos',s:voltaria+' de '+total+' colaboradores',bar:'var(--g2)',col:'var(--g2)'},
+    {cls:'',v:Math.round(indicaria/total*100)+'%',l:'Indicaria a Delphos',s:indicaria+' de '+total+' colaboradores',bar:'var(--blue)',col:'var(--blue)'},
+    {cls:'',v:Math.round(novaOp/total*100)+'%',l:'Nova Oportunidade',s:'motivou o desligamento',bar:'var(--orange)',col:'var(--orange)'},
+    {cls:'',v:Math.round(mediaCasa/30)+'m',l:'Tempo Médio de Casa',s:mediaCasa+' dias em média',bar:'var(--purple)',col:'var(--purple)'},
+  ].map(function(k){
+    return '<div class="kk '+k.cls+'">'+
+      '<div class="kk-bar" style="background:'+k.bar+'"></div>'+
+      '<div class="kk-v" style="color:'+(k.col||'inherit')+'">'+k.v+'</div>'+
+      '<div class="kk-l">'+k.l+'</div>'+
+      '<div class="kk-s">'+k.s+'</div>'+
+      '</div>';
+  }).join('');
+
+  // NPS cards
+  var rev=d.filter(function(r){return (r['Foi Possível reversão']||'').toUpperCase()==='SIM';}).length;
+  document.getElementById('npsRow').innerHTML=[
+    {v:Math.round(voltaria/total*100),lbl:'Voltaria à Delphos',color:'var(--g2)',n:voltaria},
+    {v:Math.round(indicaria/total*100),lbl:'Indicaria a Delphos',color:'var(--blue)',n:indicaria},
+    {v:Math.round(rev/total*100),lbl:'Reversão obtida',color:'var(--purple)',n:rev},
+  ].map(function(k){
+    return '<div class="nps-card">'+
+      '<div class="nps-pct" style="color:'+k.color+'">'+k.v+'%</div>'+
+      '<div class="nps-lbl">'+k.lbl+'</div>'+
+      '<div style="font-size:.57rem;color:var(--tx3);margin-top:2px">'+k.n+' de '+total+'</div>'+
+      '<div class="nps-bar"><div class="nps-fill" style="width:'+k.v+'%;background:'+k.color+'"></div></div>'+
+      '</div>';
+  }).join('');
+
+  // Motivos ranking
+  var motivos={};
+  d.forEach(function(r){var m=getMotivo(r);motivos[m]=(motivos[m]||0)+1;});
+  var topMotivos=Object.entries(motivos).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+  var maxM=topMotivos.length>0?topMotivos[0][1]:1;
+  var colors=['#dc2626','#ea580c','#d97706','#2563eb','#7c3aed','#0891b2','#16a34a','#be185d','#475569','#92400e'];
+  document.getElementById('rankMotivos').innerHTML=topMotivos.map(function(item,i){
+    var pct=Math.round(item[1]/total*100);
+    return '<div class="rank-item" onclick="filterByMotivo(''+item[0].replace(/'/g,"\'")+'')" title="Clique para filtrar">'+
+      '<div class="rank-pos">'+(i+1)+'</div>'+
+      '<div class="rank-lbl" title="'+item[0]+'">'+item[0]+'</div>'+
+      '<div class="rank-bg"><div class="rank-fill" style="width:'+(item[1]/maxM*100)+'%;background:'+colors[i%colors.length]+'">'+item[1]+'</div></div>'+
+      '<div class="rank-n" style="color:'+colors[i%colors.length]+'">'+pct+'%</div>'+
+      '</div>';
+  }).join('');
+
+  // Serviço ranking
+  var servs={};
+  d.forEach(function(r){var s=(r['Serviço']||'Outros').trim();servs[s]=(servs[s]||0)+1;});
+  var maxS=Math.max.apply(null,Object.values(servs).concat([1]));
+  document.getElementById('rankServico').innerHTML=Object.entries(servs).sort(function(a,b){return b[1]-a[1];}).map(function(item){
+    return '<div class="rank-item">'+
+      '<div class="rank-lbl">'+item[0]+'</div>'+
+      '<div class="rank-bg"><div class="rank-fill" style="width:'+(item[1]/maxS*100)+'%;background:var(--orange)">'+item[1]+'</div></div>'+
+      '<div class="rank-n">'+Math.round(item[1]/total*100)+'%</div>'+
+      '</div>';
+  }).join('');
+
+  // Filial ranking
+  var fils={};
+  d.forEach(function(r){var s=(r['FIlial Responsável']||'Outros').trim();fils[s]=(fils[s]||0)+1;});
+  var maxF=Math.max.apply(null,Object.values(fils).concat([1]));
+  document.getElementById('rankFilial').innerHTML=Object.entries(fils).sort(function(a,b){return b[1]-a[1];}).map(function(item){
+    return '<div class="rank-item">'+
+      '<div class="rank-lbl">'+item[0]+'</div>'+
+      '<div class="rank-bg"><div class="rank-fill" style="width:'+(item[1]/maxF*100)+'%;background:var(--purple)">'+item[1]+'</div></div>'+
+      '<div class="rank-n">'+item[1]+'</div>'+
+      '</div>';
+  }).join('');
+
+  // Evolução mensal
+  var meses={};
+  d.forEach(function(r){var p=getPeriodo(r);if(p)meses[p]=(meses[p]||0)+1;});
+  var mk=Object.keys(meses).sort();
+  var maxMes=Math.max.apply(null,Object.values(meses).concat([1]));
+  document.getElementById('evolMensal').innerHTML=mk.map(function(m){
+    var n=meses[m],pct=Math.round(n/maxMes*100);
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'+
+      '<div style="font-size:.62rem;color:var(--tx3);width:60px;flex-shrink:0">'+getPeriodoLabel(m)+'</div>'+
+      '<div style="flex:1;background:var(--brd2);border-radius:4px;height:22px;overflow:hidden">'+
+        '<div style="height:100%;width:'+pct+'%;background:var(--red);border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:.62rem;font-weight:700;color:#fff;transition:width .8s">'+n+'</div>'+
+      '</div>'+
+      '</div>';
+  }).join('');
+
+  // Tempo de casa
+  var faixas=[
+    {l:'< 3 meses',min:0,max:90,col:'var(--red)'},
+    {l:'3 a 6 meses',min:90,max:180,col:'var(--orange)'},
+    {l:'6 a 12 meses',min:180,max:365,col:'var(--yellow)'},
+    {l:'> 1 ano',min:365,max:99999,col:'var(--g2)'},
+  ];
+  var tcCounts=faixas.map(function(f){return {l:f.l,n:diasCasa.filter(function(v){return v>=f.min&&v<f.max;}).length,col:f.col};});
+  document.getElementById('tcRow').innerHTML=tcCounts.map(function(t){
+    return '<div class="tc-box">'+
+      '<div class="tc-v" style="color:'+t.col+'">'+t.n+'</div>'+
+      '<div class="tc-l">'+t.l+'</div>'+
+      '</div>';
+  }).join('');
+  var maxTC=Math.max.apply(null,tcCounts.map(function(t){return t.n;}).concat([1]));
+  document.getElementById('tcBars').innerHTML=tcCounts.map(function(t){
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:7px">'+
+      '<div style="font-size:.62rem;color:var(--tx3);width:90px;flex-shrink:0">'+t.l+'</div>'+
+      '<div style="flex:1;background:var(--brd2);border-radius:4px;height:18px;overflow:hidden">'+
+        '<div style="height:100%;width:'+(t.n/maxTC*100)+'%;background:'+t.col+';border-radius:4px;display:flex;align-items:center;padding-left:6px;font-size:.58rem;font-weight:700;color:#fff">'+t.n+'</div>'+
+      '</div>'+
+      '</div>';
+  }).join('');
+
+  // Detail table
+  renderDetTable(d, 'detTable', 'detCnt');
+}
+
+function renderDetTable(d, tableId, cntId){
+  document.getElementById(cntId).textContent=d.length+' entrevistas';
+  document.getElementById(tableId).innerHTML=
+    '<thead><tr><th>Data</th><th>Colaborador</th><th>Cargo</th><th>Serviço</th><th>Filial</th><th>Supervisor</th><th>Tempo Casa</th><th>Motivo Principal</th><th>Voltaria</th><th>Indicaria</th></tr></thead><tbody>'+
+    d.map(function(r,i){
+      var dc=calcDiasCasa(r['Data de Admissão'],r['Data do Desligamento']);
+      var dcStr=dc!==null?Math.floor(dc/30)+'m'+' ('+dc+'d)':'–';
+      var volt=(r['Você voltaria a trabalhar na DELPHOS futuramente?']||'').toLowerCase();
+      var ind=(r['Você indicaria a DELPHOS para outra pessoa trabalhar?']||'').toLowerCase();
+      var tagV=volt==='sim'?'sim':volt==='não'||volt==='nao'?'nao':'talvez';
+      var tagI=ind==='sim'?'sim':ind==='não'||ind==='nao'?'nao':'talvez';
+      return '<tr onclick="openModal('+i+')" title="Clique para ver entrevista completa">'+
+        '<td>'+(r['Data da Entrevista']||'–')+'</td>'+
+        '<td style="font-weight:600;color:var(--navy)">'+(r['Colaborador']||'–')+'</td>'+
+        '<td style="max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(r['Cargo']||'–')+'</td>'+
+        '<td>'+(r['Serviço']||'–')+'</td>'+
+        '<td>'+(r['FIlial Responsável']||'–')+'</td>'+
+        '<td style="max-width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(r['Supervisor1']||'–')+'</td>'+
+        '<td style="font-family:Montserrat;font-weight:700">'+dcStr+'</td>'+
+        '<td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.6rem" title="'+getMotivo(r)+'">'+getMotivo(r)+'</td>'+
+        '<td><span class="tag-sm tag-'+tagV+'">'+volt+'</span></td>'+
+        '<td><span class="tag-sm tag-'+tagI+'">'+ind+'</span></td>'+
+        '</tr>';
+    }).join('')+'</tbody>';
+}
+
+function renderP2(){
+  var d=RAW;
+  // Geral
+  var medias=getMediaNotas(d);
+  var maxAval=5;
+  document.getElementById('avalGeral').innerHTML=medias.map(function(m){
+    var pct=m.avg?Math.round(m.avg/5*100):0;
+    var col=notaColor(m.avg);
+    return '<div class="aval-item">'+
+      '<div class="aval-lbl">'+m.label+'</div>'+
+      '<div class="aval-bar"><div class="aval-fill" style="width:'+pct+'%;background:'+col+'">'+
+        (m.avg?m.avg.toFixed(1)+' / 5.0':'–')+
+      '</div></div>'+
+      '<div class="aval-num" style="color:'+col+'">'+(m.avg?m.avg.toFixed(1):'–')+'</div>'+
+      '</div>';
+  }).join('');
+
+  // Por filial
+  var filiais=[...new Set(d.map(function(r){return (r['FIlial Responsável']||'').trim();}).filter(Boolean))].sort();
+  document.getElementById('avalFilial').innerHTML=filiais.map(function(f){
+    var rows=d.filter(function(r){return (r['FIlial Responsável']||'').trim()===f;});
+    var ms=getMediaNotas(rows);
+    var globalAvg=ms.filter(function(m){return m.avg!==null;}).reduce(function(acc,m){return acc+m.avg;},0)/ms.filter(function(m){return m.avg!==null;}).length;
+    return '<div style="margin-bottom:12px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'+
+        '<span style="font-weight:700;font-size:.68rem;color:var(--navy)">'+f+'</span>'+
+        '<span class="nb '+notaClass(globalAvg)+'">'+globalAvg.toFixed(1)+'</span>'+
+        '<span style="font-size:.57rem;color:var(--tx3)">'+rows.length+' entrevistas</span>'+
+      '</div>'+
+      ms.map(function(m){
+        var pct=m.avg?Math.round(m.avg/5*100):0;
+        return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'+
+          '<div style="font-size:.57rem;color:var(--tx3);width:110px;flex-shrink:0">'+m.label+'</div>'+
+          '<div style="flex:1;background:var(--brd2);border-radius:3px;height:14px;overflow:hidden">'+
+            '<div style="height:100%;width:'+pct+'%;background:'+notaColor(m.avg)+';border-radius:3px"></div>'+
+          '</div>'+
+          '<div style="font-size:.6rem;font-weight:700;color:'+notaColor(m.avg)+';width:24px">'+(m.avg?m.avg.toFixed(1):'–')+'</div>'+
+          '</div>';
+      }).join('')+
+      '</div>';
+  }).join('');
+
+  // Por serviço
+  var servs=[...new Set(d.map(function(r){return (r['Serviço']||'').trim();}).filter(Boolean))].sort();
+  document.getElementById('avalServico').innerHTML=servs.map(function(s){
+    var rows=d.filter(function(r){return (r['Serviço']||'').trim()===s;});
+    var ms=getMediaNotas(rows);
+    var globalAvg=ms.filter(function(m){return m.avg!==null;}).reduce(function(acc,m){return acc+m.avg;},0)/ms.filter(function(m){return m.avg!==null;}).length;
+    return '<div style="margin-bottom:12px">'+
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'+
+        '<span style="font-weight:700;font-size:.68rem;color:var(--navy)">'+s+'</span>'+
+        '<span class="nb '+notaClass(globalAvg)+'">'+globalAvg.toFixed(1)+'</span>'+
+        '<span style="font-size:.57rem;color:var(--tx3)">'+rows.length+' entrevistas</span>'+
+      '</div>'+
+      ms.map(function(m){
+        var pct=m.avg?Math.round(m.avg/5*100):0;
+        return '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'+
+          '<div style="font-size:.57rem;color:var(--tx3);width:110px;flex-shrink:0">'+m.label+'</div>'+
+          '<div style="flex:1;background:var(--brd2);border-radius:3px;height:14px;overflow:hidden">'+
+            '<div style="height:100%;width:'+pct+'%;background:'+notaColor(m.avg)+';border-radius:3px"></div>'+
+          '</div>'+
+          '<div style="font-size:.6rem;font-weight:700;color:'+notaColor(m.avg)+';width:24px">'+(m.avg?m.avg.toFixed(1):'–')+'</div>'+
+          '</div>';
+      }).join('')+
+      '</div>';
+  }).join('');
+
+  // Treinamento
+  var trein={SIM:0,PARCIALMENTE:0,'NÃO':0};
+  d.forEach(function(r){var t=(r['Você recebeu treinamento adequado para desempenhar suas atividades?']||'').toUpperCase().trim();if(trein[t]!==undefined)trein[t]++;});
+  var total=d.length||1;
+  var tColors={SIM:'var(--g2)',PARCIALMENTE:'var(--yellow)','NÃO':'var(--red)'};
+  document.getElementById('treinamento').innerHTML=Object.entries(trein).map(function(item){
+    var pct=Math.round(item[1]/total*100);
+    return '<div style="text-align:center;padding:14px 20px;background:var(--bg);border-radius:10px;border:1.5px solid var(--brd);min-width:120px">'+
+      '<div style="font-family:Montserrat;font-size:2rem;font-weight:900;color:'+tColors[item[0]]+'">'+pct+'%</div>'+
+      '<div style="font-size:.62rem;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-top:2px">'+item[0]+'</div>'+
+      '<div style="font-size:.57rem;color:var(--tx4);margin-top:1px">'+item[1]+' colaboradores</div>'+
+      '</div>';
+  }).join('');
+}
+
+function renderP3(){
+  var d=RAW;
+
+  // Supervisores
+  var sups={};
+  d.forEach(function(r){
+    var s=(r['Supervisor1']||'').trim();
+    if(!s||s.toLowerCase()==='nan'||s==='') return;
+    if(!sups[s]) sups[s]={n:0,notas:[]};
+    sups[s].n++;
+    NOTAS_COLS.forEach(function(c){
+      var v=parseFloat(r[c.key]);
+      if(!isNaN(v)) sups[s].notas.push(v);
+    });
+  });
+  var topSups=Object.entries(sups).sort(function(a,b){return b[1].n-a[1].n;}).slice(0,12);
+  var maxSup=topSups.length>0?topSups[0][1].n:1;
+
+  document.getElementById('rankSup').innerHTML=topSups.map(function(item){
+    var s=item[0], data=item[1];
+    var avgNota=data.notas.length>0?data.notas.reduce(function(a,b){return a+b;},0)/data.notas.length:null;
+    var isAct=P3_FILTER.sup===s;
+    return '<div class="rank-item'+(isAct?' active':'')+'" onclick="filterP3('sup',''+s.replace(/'/g,"\'")+'')" title="Clique para filtrar">'+
+      '<div class="rank-pos"></div>'+
+      '<div class="rank-lbl" title="'+s+'">'+s+'</div>'+
+      '<div class="rank-bg"><div class="rank-fill" style="width:'+(data.n/maxSup*100)+'%;background:var(--red)">'+data.n+'</div></div>'+
+      '<div class="rank-n">'+data.n+'</div>'+
+      (avgNota?'<span class="nb '+notaClass(avgNota)+'" style="margin-left:4px;flex-shrink:0">'+avgNota.toFixed(1)+'</span>':'')+
+      '</div>';
+  }).join('');
+
+  // Postos
+  var postos={};
+  d.forEach(function(r){
+    var p=(r['Posto/Cliente']||'').trim();
+    if(!p||p==='nan') return;
+    postos[p]=(postos[p]||0)+1;
+  });
+  var topPostos=Object.entries(postos).sort(function(a,b){return b[1]-a[1];}).slice(0,12);
+  var maxP=topPostos.length>0?topPostos[0][1]:1;
+
+  document.getElementById('rankPosto').innerHTML=topPostos.map(function(item){
+    var isAct=P3_FILTER.posto===item[0];
+    return '<div class="rank-item'+(isAct?' active':'')+'" onclick="filterP3('posto',''+item[0].replace(/'/g,"\'")+'')" title="Clique para filtrar">'+
+      '<div class="rank-pos"></div>'+
+      '<div class="rank-lbl" title="'+item[0]+'">'+item[0]+'</div>'+
+      '<div class="rank-bg"><div class="rank-fill" style="width:'+(item[1]/maxP*100)+'%;background:var(--orange)">'+item[1]+'</div></div>'+
+      '<div class="rank-n">'+item[1]+'</div>'+
+      '</div>';
+  }).join('');
+
+  // Alertas supervisores nota baixa
+  var alertas=Object.entries(sups).filter(function(item){
+    var data=item[1];
+    if(data.notas.length===0) return false;
+    var avg=data.notas.reduce(function(a,b){return a+b;},0)/data.notas.length;
+    return avg<3 && data.n>=2;
+  }).sort(function(a,b){
+    var avgA=a[1].notas.reduce(function(x,y){return x+y;},0)/a[1].notas.length;
+    var avgB=b[1].notas.reduce(function(x,y){return x+y;},0)/b[1].notas.length;
+    return avgA-avgB;
+  });
+
+  document.getElementById('alertasSup').innerHTML=alertas.length===0
+    ?'<div style="color:var(--tx4);font-size:.72rem;padding:10px;text-align:center">✅ Nenhum supervisor com notas críticas</div>'
+    :alertas.map(function(item){
+      var avg=item[1].notas.reduce(function(a,b){return a+b;},0)/item[1].notas.length;
+      return '<div style="display:flex;align-items:center;gap:12px;padding:8px 10px;background:#fef2f2;border-radius:8px;margin-bottom:6px;border-left:4px solid var(--red)">'+
+        '<span style="font-weight:700;color:var(--red);font-family:Montserrat;font-size:.8rem">'+avg.toFixed(1)+'</span>'+
+        '<span style="font-weight:600;font-size:.7rem">'+item[0]+'</span>'+
+        '<span style="font-size:.62rem;color:var(--tx3);margin-left:auto">'+item[1].n+' saídas</span>'+
+        '</div>';
+    }).join('');
+
+  // Filtered table
+  var filtered=d.filter(function(r){
+    if(P3_FILTER.sup && (r['Supervisor1']||'').trim()!==P3_FILTER.sup) return false;
+    if(P3_FILTER.posto && (r['Posto/Cliente']||'').trim()!==P3_FILTER.posto) return false;
+    return true;
+  });
+  renderDetTable(filtered, 'detTable3', 'detCnt3');
+}
+
+function filterP3(key, val){
+  if(P3_FILTER[key]===val) P3_FILTER[key]=''; else P3_FILTER[key]=val;
+  renderP3();
+}
+
+function filterByMotivo(motivo){
+  // Filter RAW by motivo and show in table
+  var filtered=RAW.filter(function(r){return getMotivo(r)===motivo;});
+  renderDetTable(filtered,'detTable','detCnt');
+  document.getElementById('detTable').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(idx){
+  var r=RAW[idx];
+  if(!r) return;
+  var dc=calcDiasCasa(r['Data de Admissão'],r['Data do Desligamento']);
+  var volt=(r['Você voltaria a trabalhar na DELPHOS futuramente?']||'').toLowerCase();
+  var ind=(r['Você indicaria a DELPHOS para outra pessoa trabalhar?']||'').toLowerCase();
+  var tagV=volt==='sim'?'sim':volt==='não'||volt==='nao'?'nao':'talvez';
+  var tagI=ind==='sim'?'sim':ind==='não'||ind==='nao'?'nao':'talvez';
+
+  var notas=NOTAS_COLS.map(function(c){
+    var v=parseFloat(r[c.key]);
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">'+
+      '<span style="font-size:.6rem;color:var(--tx3);width:130px;flex-shrink:0">'+c.label+'</span>'+
+      '<span style="font-family:Montserrat;font-weight:900;font-size:.75rem;color:'+notaColor(isNaN(v)?null:v)+'">'+(!isNaN(v)?v+'/5':'–')+'</span>'+
+      (!isNaN(v)?stars(v):'')+
+      '</div>';
+  }).join('');
+
+  document.getElementById('modalTitle').textContent='Entrevista — '+(r['Colaborador']||'Colaborador');
+  document.getElementById('modalBody').innerHTML=
+    '<div class="mr-grid">'+
+      '<div><div class="modal-row"><div class="mr-label">Colaborador</div><div class="mr-val" style="font-weight:700">'+r['Colaborador']+'</div></div>'+
+      '<div class="modal-row"><div class="mr-label">Cargo / Serviço</div><div class="mr-val">'+r['Cargo']+' · '+r['Serviço']+'</div></div>'+
+      '<div class="modal-row"><div class="mr-label">Posto / Cliente</div><div class="mr-val">'+r['Posto/Cliente']+'</div></div>'+
+      '<div class="modal-row"><div class="mr-label">Supervisor</div><div class="mr-val">'+r['Supervisor1']+'</div></div></div>'+
+      '<div><div class="modal-row"><div class="mr-label">Filial</div><div class="mr-val">'+r['FIlial Responsável']+'</div></div>'+
+      '<div class="modal-row"><div class="mr-label">Tempo de Casa</div><div class="mr-val" style="font-family:Montserrat;font-weight:700">'+r['Data de Admissão']+' → '+r['Data do Desligamento']+(dc!==null?' ('+dc+' dias)':'')+'</div></div>'+
+      '<div class="modal-row"><div class="mr-label">Voltaria / Indicaria</div><div class="mr-val"><span class="tag-sm tag-'+tagV+'">'+volt+'</span> / <span class="tag-sm tag-'+tagI+'">'+ind+'</span></div></div>'+
+      '<div class="modal-row"><div class="mr-label">Analista</div><div class="mr-val">'+r['Analista Responsável']+'</div></div></div>'+
+    '</div>'+
+    '<div class="modal-row"><div class="mr-label">Motivo Principal (colaborador)</div><div class="mr-val" style="font-weight:600;color:var(--red)">'+getMotivo(r)+'</div></div>'+
+    '<div class="modal-row"><div class="mr-label">Contexto</div><div class="mr-val">'+r['Descreva brevemente o contexto do motivo principal (fala do colaborador)']+'</div></div>'+
+    (r['Existe outro fator que também influenciou a decisão?']==='Sim'||r['Existe outro fator que também influenciou a decisão?']==='Sim '?
+      '<div class="modal-row"><div class="mr-label">Motivo Secundário</div><div class="mr-val">'+r['Qual foi o motivo secundário do pedido de desligamento?']+'</div></div>':'')+
+    '<div class="modal-row"><div class="mr-label">Avaliações</div><div class="mr-val">'+notas+'</div></div>'+
+    (r['Existe algum ponto específico que impactou negativamente sua experiência?']?
+      '<div class="modal-row"><div class="mr-label">Ponto Negativo</div><div class="mr-val" style="color:var(--red)">'+r['Existe algum ponto específico que impactou negativamente sua experiência?']+'</div></div>':'')+
+    (r['Gostaria de deixar alguma sugestão ou comentário final?']&&r['Gostaria de deixar alguma sugestão ou comentário final?'].toLowerCase()!=='não'&&r['Gostaria de deixar alguma sugestão ou comentário final?'].toLowerCase()!=='nao'?
+      '<div class="modal-row"><div class="mr-label">Sugestão Final</div><div class="mr-val" style="font-style:italic">'+r['Gostaria de deixar alguma sugestão ou comentário final?']+'</div></div>':'')+
+    '<div class="modal-row"><div class="mr-label">Reversão / Nova Oportunidade</div><div class="mr-val">Reversão: <b>'+r['Foi Possível reversão']+'</b> · Nova oportunidade: <b>'+r['A saída foi motivada por uma nova oportunidade de trabalho?']+'</b></div></div>';
+
+  document.getElementById('modal').classList.add('on');
+}
+
+function closeModal(){document.getElementById('modal').classList.remove('on');}
+
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on')});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});
+  document.getElementById(id).classList.add('on'); el.classList.add('on');
+  if(id==='p2') renderP2();
+  if(id==='p3') renderP3();
+}
+
+// INIT — load from GitHub
+fetch('desligamento.csv')
+  .then(function(r){if(!r.ok)throw new Error('not found');return r.arrayBuffer();})
+  .then(function(buf){
+    var dec=new TextDecoder('utf-8');
+    parseDesligCSV(dec.decode(buf));
+    buildSelects();
+    render();
+    document.getElementById('updTag').textContent='📅 '+new Date().toLocaleDateString('pt-BR')+' (auto)';
+  })
+  .catch(function(err){
+    document.getElementById('updTag').textContent='⚠️ desligamento.csv não encontrado';
+    console.log('Erro ao carregar CSV:', err);
+  });
+</script>
+</body>
+</html>

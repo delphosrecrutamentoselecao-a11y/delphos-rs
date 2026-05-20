@@ -882,10 +882,24 @@ function renderPipeline(){
   document.getElementById('tblCnt2').textContent=rows2.length+' vagas';
   // Show active filter tags
   var tags=[];
-  if(P2_FILTER.status_doc) tags.push('<span style="background:var(--navy);color:#fff;border-radius:20px;padding:2px 9px;font-size:.6rem;font-weight:600;cursor:pointer" onclick="filterP2('status_doc',''+P2_FILTER.status_doc+'')">'+P2_FILTER.status_doc+' ✕</span>');
-  if(P2_FILTER.resp) tags.push('<span style="background:var(--navy);color:#fff;border-radius:20px;padding:2px 9px;font-size:.6rem;font-weight:600;cursor:pointer" onclick="filterP2('resp',''+P2_FILTER.resp+'')">'+P2_FILTER.resp+' ✕</span>');
   var pft=document.getElementById('p2FilterTags');
-  if(pft) pft.innerHTML=tags.join('');
+  if(pft){
+    pft.innerHTML='';
+    if(P2_FILTER.status_doc){
+      var t1=document.createElement('span');
+      t1.style.cssText='background:var(--navy);color:#fff;border-radius:20px;padding:2px 9px;font-size:.6rem;font-weight:600;cursor:pointer';
+      t1.textContent=P2_FILTER.status_doc+' ✕';
+      t1.onclick=function(){filterP2('status_doc',P2_FILTER.status_doc);};
+      pft.appendChild(t1);
+    }
+    if(P2_FILTER.resp){
+      var t2=document.createElement('span');
+      t2.style.cssText='background:var(--navy);color:#fff;border-radius:20px;padding:2px 9px;font-size:.6rem;font-weight:600;cursor:pointer;margin-left:4px';
+      t2.textContent=P2_FILTER.resp+' ✕';
+      t2.onclick=function(){filterP2('resp',P2_FILTER.resp);};
+      pft.appendChild(t2);
+    }
+  }
   document.getElementById('vt2').innerHTML=
     '<thead><tr><th>Código</th><th>Cargo</th><th>Cliente</th><th>Recrutador</th><th>Dias</th><th>Criticidade</th><th>Candidato</th><th>Responsável</th><th>Status Doc.</th><th>Integração</th><th>Admissão</th><th>Obs.</th></tr></thead><tbody>'+
     rows2.map(function(r){
