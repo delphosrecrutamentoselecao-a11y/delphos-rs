@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delphos — Captação de Candidatos</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0d2b1e;--navy2:#1a3d2a;--green:#1db86a;--g2:#17a05c;--g3:#e8f9f0;
+  --red:#dc2626;--yellow:#d97706;--blue:#2563eb;--purple:#7c3aed;--cyan:#0891b2;--orange:#ea580c;
+  --bg:#f0f4f2;--white:#fff;--brd:#dde8e2;--brd2:#e5e7eb;
+  --tx:#0d1f14;--tx2:#374151;--tx3:#6b7280;--tx4:#9ca3af;
+  --sh:0 1px 4px rgba(0,0,0,.06),0 2px 8px rgba(0,0,0,.04);--sh2:0 4px 20px rgba(0,0,0,.10);
+}
+body{font-family:"Open Sans",sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+.hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));height:64px;padding:0 28px;display:flex;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.3)}
+.hdr-brand{display:flex;align-items:center;gap:10px;padding-right:24px;border-right:1px solid rgba(255,255,255,.1)}
+.hdr-logo{width:36px;height:36px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:"Montserrat",sans-serif;font-weight:900;font-size:1rem;color:#fff}
+.hdr-name{font-family:"Montserrat",sans-serif;font-weight:800;font-size:.95rem;color:#fff}
+.hdr-name span{color:#60a5fa}
+.hdr-dept{font-size:.55rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.1em;margin-top:1px}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:8px}
+.back-btn{font-size:.62rem;color:rgba(255,255,255,.5);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px 12px;text-decoration:none;font-family:"Montserrat",sans-serif;font-weight:700}
+.analyst-sel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:6px;color:#fff;font-size:.65rem;font-weight:700;padding:5px 10px;outline:none;font-family:"Montserrat",sans-serif;cursor:pointer}
+.analyst-sel option{background:var(--navy);color:#fff}
+.upd{font-size:.57rem;color:rgba(255,255,255,.28);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:4px;padding:3px 8px}
+
+/* FILTERS */
+.fbar{background:var(--white);border-bottom:2px solid var(--brd);padding:8px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.fl{font-family:"Montserrat",sans-serif;font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--tx3);white-space:nowrap}
+.fsel{border:1.5px solid var(--brd);border-radius:20px;background:var(--white);font-size:.62rem;font-weight:600;color:var(--tx2);padding:4px 12px;outline:none;cursor:pointer;font-family:"Open Sans",sans-serif}
+.fsel:focus{border-color:var(--blue)}
+.fsep{width:1px;height:18px;background:var(--brd2);flex-shrink:0}
+.srch{border:1.5px solid var(--brd);border-radius:20px;background:var(--white);font-size:.62rem;color:var(--tx2);padding:5px 14px;outline:none;font-family:"Open Sans",sans-serif;width:200px}
+.srch:focus{border-color:var(--blue)}
+.clr-btn{margin-left:auto;padding:3px 10px;border-radius:5px;border:1.5px solid var(--brd);background:transparent;font-family:"Montserrat",sans-serif;font-size:.6rem;font-weight:700;color:var(--tx3);cursor:pointer}
+.clr-btn:hover{border-color:var(--red);color:var(--red)}
+
+/* STATUS TABS */
+.stabs{background:var(--white);border-bottom:1px solid var(--brd);padding:0 28px;display:flex;gap:0}
+.stab{padding:10px 16px;font-family:"Montserrat",sans-serif;font-size:.62rem;font-weight:700;color:var(--tx3);cursor:pointer;border-bottom:3px solid transparent;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.stab:hover{color:var(--navy)}
+.stab.on{color:var(--blue);border-bottom-color:var(--blue)}
+.stab .cnt{background:var(--brd2);border-radius:20px;padding:1px 7px;font-size:.58rem;min-width:20px;text-align:center}
+.stab.on .cnt{background:var(--blue);color:#fff}
+
+/* CONTENT */
+.cnt{padding:18px 28px}
+.krow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:16px}
+.kk{background:var(--white);border-radius:10px;padding:13px 15px;box-shadow:var(--sh);border:1.5px solid var(--brd);position:relative;overflow:hidden;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.kk:hover{transform:translateY(-2px);box-shadow:var(--sh2)}
+.kk.on{border-color:var(--blue);box-shadow:0 0 0 2px rgba(37,99,235,.2)}
+.kk-bar{position:absolute;top:0;left:0;right:0;height:4px}
+.kk-v{font-family:"Montserrat",sans-serif;font-size:1.9rem;font-weight:900;line-height:1;margin-bottom:2px}
+.kk-l{font-size:.58rem;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.cand-card{background:var(--white);border-radius:10px;box-shadow:var(--sh);border:1.5px solid var(--brd);overflow:hidden;transition:box-shadow .15s}
+.cand-card:hover{box-shadow:var(--sh2)}
+.cand-card.novo{border-left:4px solid var(--blue)}
+.cand-card.assumido{border-left:4px solid var(--yellow)}
+.cand-card.contatado{border-left:4px solid var(--green)}
+.cand-card.nao-aproveitado{border-left:4px solid var(--tx4);opacity:.6}
+.cand-card.encaminhado{border-left:4px solid var(--purple)}
+.card-hd{padding:12px 14px;border-bottom:1px solid var(--brd2);display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.card-nome{font-family:"Montserrat",sans-serif;font-weight:800;font-size:.78rem;color:var(--navy);line-height:1.2}
+.card-cargo{font-size:.63rem;color:var(--tx3);margin-top:2px}
+.card-status{font-size:.57rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.st-novo{background:#dbeafe;color:var(--blue)}
+.st-assumido{background:#fef3c7;color:var(--yellow)}
+.st-contatado{background:#dcfce7;color:var(--g2)}
+.st-nao{background:#f3f4f6;color:var(--tx3)}
+.st-encaminhado{background:#ede9fe;color:var(--purple)}
+.card-body{padding:10px 14px}
+.card-info{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.ci{font-size:.62rem;color:var(--tx2)}
+.ci span{font-weight:600;color:var(--tx)}
+.card-vagas{background:var(--g3);border-radius:6px;padding:7px 10px;margin-bottom:10px;border:1px solid var(--brd)}
+.cv-title{font-size:.57rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g2);margin-bottom:5px}
+.cv-item{font-size:.62rem;color:var(--tx2);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.cv-item:before{content:"→";color:var(--g2);font-weight:700}
+.cv-none{font-size:.6rem;color:var(--tx4);font-style:italic}
+.card-footer{padding:8px 14px;border-top:1px solid var(--brd2);display:flex;gap:6px;flex-wrap:wrap}
+.btn-acao{padding:5px 12px;border-radius:6px;border:none;font-family:"Montserrat",sans-serif;font-size:.6rem;font-weight:700;cursor:pointer;transition:all .15s;flex:1;text-align:center}
+.btn-assumir{background:var(--yellow);color:#fff}
+.btn-assumir:hover{background:#b45309}
+.btn-contato{background:var(--g2);color:#fff}
+.btn-contato:hover{background:#15803d}
+.btn-enc{background:var(--purple);color:#fff}
+.btn-enc:hover{background:#6d28d9}
+.btn-nao{background:var(--brd2);color:var(--tx3)}
+.btn-nao:hover{background:var(--tx4);color:#fff}
+.btn-desfazer{background:var(--brd);color:var(--tx3);font-size:.55rem}
+.btn-desfazer:hover{border:1px solid var(--red);color:var(--red)}
+.assumido-por{font-size:.6rem;color:var(--yellow);font-weight:700;margin-top:4px;text-align:center}
+.empty{text-align:center;padding:48px;color:var(--tx4)}
+.empty-ico{font-size:2.5rem;margin-bottom:8px}
+.empty-txt{font-size:.8rem;font-weight:600}
+.empty-sub{font-size:.7rem;margin-top:4px}
+
+/* ALERT BANNER */
+.alert-banner{background:#fef3c7;border:1.5px solid #fde68a;border-radius:8px;padding:10px 16px;margin-bottom:14px;font-size:.72rem;color:#92400e;display:flex;align-items:center;gap:8px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center}
+.modal-overlay.on{display:flex}
+.modal{background:var(--white);border-radius:12px;padding:22px;max-width:500px;width:90%;box-shadow:var(--sh2)}
+.modal-title{font-family:"Montserrat",sans-serif;font-weight:800;font-size:.88rem;color:var(--navy);margin-bottom:14px}
+.modal-sel{width:100%;border:1.5px solid var(--brd);border-radius:8px;padding:8px 12px;font-size:.75rem;margin-bottom:10px;outline:none}
+.modal-sel:focus{border-color:var(--blue)}
+.modal-textarea{width:100%;border:1.5px solid var(--brd);border-radius:8px;padding:8px 12px;font-size:.72rem;height:80px;resize:none;outline:none;font-family:"Open Sans",sans-serif}
+.modal-textarea:focus{border-color:var(--blue)}
+.modal-btns{display:flex;gap:8px;margin-top:14px}
+.modal-ok{flex:1;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:10px;font-family:"Montserrat",sans-serif;font-weight:700;font-size:.75rem;cursor:pointer}
+.modal-cancel{background:var(--brd);color:var(--tx3);border:none;border-radius:8px;padding:10px 16px;font-family:"Montserrat",sans-serif;font-weight:700;font-size:.75rem;cursor:pointer}
+
+footer{text-align:center;padding:9px;font-size:.57rem;color:var(--tx4);border-top:1px solid var(--brd);background:var(--white);margin-top:16px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo">D</div>
+    <div><div class="hdr-name">DEL<span>PHOS</span></div><div class="hdr-dept">Captação de Candidatos</div></div>
+  </div>
+  <div class="hdr-r">
+    <span style="font-size:.6rem;color:rgba(255,255,255,.4);font-weight:600">Você é:</span>
+    <select class="analyst-sel" id="analystSel">
+      <option value="">— Selecione —</option>
+      <option value="WILLIAM">WILLIAM (Captação)</option>
+      <option value="FREITAS">FREITAS</option>
+      <option value="NATHALYA">NATHALYA</option>
+      <option value="AMANDA">AMANDA</option>
+      <option value="ANDREIA">ANDREIA</option>
+      <option value="ELONY">ELONY</option>
+      <option value="GIOVANNA">GIOVANNA</option>
+      <option value="GABRIELA">GABRIELA</option>
+      <option value="SIDNEY">SIDNEY</option>
+      <option value="ANA LUIZA">ANA LUIZA</option>
+    </select>
+    <div class="upd" id="updTag">–</div>
+    <a href="index.html" class="back-btn">← Portal</a>
+  </div>
+</div>
+
+<div class="fbar">
+  <span class="fl">Região</span>
+  <select class="fsel" id="selRegiao"><option value="">Todas</option></select>
+  <div class="fsep"></div>
+  <span class="fl">Cargo</span>
+  <select class="fsel" id="selCargo"><option value="">Todos</option></select>
+  <div class="fsep"></div>
+  <span class="fl">Disponibilidade</span>
+  <select class="fsel" id="selDisp"><option value="">Qualquer</option></select>
+  <div class="fsep"></div>
+  <input type="text" class="srch" id="srch" placeholder="🔍 Buscar por nome...">
+  <button class="clr-btn" id="btnClr">✕ Limpar</button>
+</div>
+
+<div class="stabs">
+  <div class="stab on" data-status="todos">Todos <span class="cnt" id="cnt-todos">0</span></div>
+  <div class="stab" data-status="novo">🔵 Novos <span class="cnt" id="cnt-novo">0</span></div>
+  <div class="stab" data-status="assumido">🟡 Assumidos <span class="cnt" id="cnt-assumido">0</span></div>
+  <div class="stab" data-status="contatado">🟢 Contatados <span class="cnt" id="cnt-contatado">0</span></div>
+  <div class="stab" data-status="encaminhado">🟣 Encaminhados <span class="cnt" id="cnt-encaminhado">0</span></div>
+  <div class="stab" data-status="nao-aproveitado">⚪ Não Aproveitados <span class="cnt" id="cnt-nao-aproveitado">0</span></div>
+</div>
+
+<div class="cnt">
+  <div class="krow" id="krow"></div>
+  <div id="alertBanner" class="alert-banner" style="display:none">
+    ⚠️ <span id="alertMsg"></span>
+  </div>
+  <div class="cards-grid" id="cardsGrid"></div>
+</div>
+
+<!-- MODAL ENCAMINHAR -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Encaminhar Candidato</div>
+    <label style="font-size:.65rem;font-weight:700;color:var(--tx3);display:block;margin-bottom:4px">VAGA SUGERIDA</label>
+    <select class="modal-sel" id="modalVaga"><option value="">Selecione uma vaga...</option></select>
+    <label style="font-size:.65rem;font-weight:700;color:var(--tx3);display:block;margin-bottom:4px;margin-top:8px">OBSERVAÇÃO</label>
+    <textarea class="modal-textarea" id="modalObs" placeholder="Ex: Candidato com experiência em vigilância, disponível para noturno..."></textarea>
+    <div class="modal-btns">
+      <button class="modal-cancel" id="modalCancel">Cancelar</button>
+      <button class="modal-ok" id="modalOk">✅ Confirmar Encaminhamento</button>
+    </div>
+  </div>
+</div>
+
+<footer>Delphos Serviços e Segurança · Painel de Captação · v2.0</footer>
+
+<script>
+var ORIG = [];
+var VAGAS = [];
+var STATUS = {}; // {id: {status, analyst, vaga, obs, ts}}
+var CURRENT_ANALYST = '';
+var FILTER_STATUS = 'todos';
+var FILTER = {regiao:'', cargo:'', disp:''};
+var SEARCH = '';
+var MODAL_CANDIDATE_ID = null;
+
+var REGION_MAP = {
+  'jundiai':'Jundiaí','jundiaí':'Jundiaí','jundiai ':'Jundiaí',
+  'campinas':'Campinas','campinas ':'Campinas',
+  'são paulo':'São Paulo','sao paulo':'São Paulo','sp':'São Paulo',
+  'varzea paulista':'Várzea Paulista','várzea paulista':'Várzea Paulista',
+  'francisco morato':'Francisco Morato',
+  'franco da rocha':'Franco da Rocha',
+  'campo limpo paulista':'Campo Limpo Paulista',
+  'itatiba':'Itatiba','itupeva':'Itupeva',
+  'cabreúva':'Cabreúva','cabreuva':'Cabreúva',
+  'sorocaba':'Sorocaba','atibaia':'Atibaia',
+  'indaiatuba':'Indaiatuba','louveira':'Louveira',
+  'mairiporã':'Mairiporã','mairipora':'Mairiporã',
+  'hortolândia':'Hortolândia','hortolandia':'Hortolândia',
+  'vinhedo':'Vinhedo','salto':'Salto','itu':'Itu',
+  'guarulhos':'Guarulhos','barueri':'Barueri',
+  'bragança paulista':'Bragança Paulista','jarinu':'Jarinu',
+  'cajamar':'Cajamar','itapevi':'Itapevi',
+  'americana':'Americana','limeira':'Limeira',
+  'piracaia':'Piracaia','nazaré paulista':'Nazaré Paulista',
+  'nazare paulista':'Nazaré Paulista',
+};
+
+var CARGO_KEYWORDS = {
+  'SEGURANÇA': ['vigilante','vigia','controlador de acesso','controladora','portaria','porteiro','inspetor','segurança','controle de acesso'],
+  'FACILITIES': ['limpeza','serviços gerais','zelador','zeladora','líder de limpeza','lider de limpeza'],
+  'ADM': ['adm','administrativo','recepcionista','jurídico','juridico','auxiliar de arquivo'],
+};
+
+function normalizeRegion(r){
+  var k=(r||'').toLowerCase().trim();
+  return REGION_MAP[k]||r;
+}
+
+function normalizeCargo(c){
+  var k=(c||'').toLowerCase();
+  for(var srv in CARGO_KEYWORDS){
+    var kws=CARGO_KEYWORDS[srv];
+    for(var i=0;i<kws.length;i++){
+      if(k.indexOf(kws[i])>=0) return srv;
+    }
+  }
+  return 'OUTROS';
+}
+
+function getStatus(id){
+  return STATUS[id]||{status:'novo',analyst:'',vaga:'',obs:'',ts:''};
+}
+
+function saveStatus(){
+  try{localStorage.setItem('delphos_captacao_status', JSON.stringify(STATUS));}catch(e){}
+}
+
+function loadStatus(){
+  try{
+    var s=localStorage.getItem('delphos_captacao_status');
+    if(s) STATUS=JSON.parse(s);
+  }catch(e){}
+}
+
+// Find matching vagas for a candidate
+function findVagas(cand){
+  if(!VAGAS.length) return [];
+  var regNorm=normalizeRegion(cand['REGIÃO']);
+  var cargoServ=normalizeCargo(cand['INTERESSE']);
+  var disp=(cand['DISPONIBILIDADE']||'').toLowerCase();
+
+  return VAGAS.filter(function(v){
+    // Match by service
+    var vServ=(v['SERVIÇO']||'').toUpperCase();
+    if(cargoServ!=='OUTROS'&&vServ!==cargoServ) return false;
+    // Match by region (partial)
+    var vLoc=(v['LOCALIDADE']||'').toLowerCase();
+    var rLow=regNorm.toLowerCase();
+    if(rLow&&vLoc.indexOf(rLow)<0&&rLow.indexOf(vLoc.split('-')[0].trim())<0) return false;
+    // Match by turno/disponibilidade
+    if(disp&&disp!=='qualquer horário'){
+      var vTurno=(v['TURNO']||'').toLowerCase();
+      if(disp.indexOf('diurno')>=0&&vTurno.indexOf('diurno')<0) return false;
+      if(disp.indexOf('noturno')>=0&&vTurno.indexOf('noturno')<0&&vTurno.indexOf('notu')<0) return false;
+    }
+    return true;
+  }).slice(0,3);
+}
+
+function render(){
+  var d=ORIG.filter(function(r){
+    var st=getStatus(r._id).status;
+    if(FILTER_STATUS!=='todos'&&st!==FILTER_STATUS) return false;
+    if(FILTER.regiao&&normalizeRegion(r['REGIÃO'])!==FILTER.regiao) return false;
+    if(FILTER.cargo){
+      var cs=normalizeCargo(r['INTERESSE']);
+      if(cs!==FILTER.cargo) return false;
+    }
+    if(FILTER.disp&&r['DISPONIBILIDADE']!==FILTER.disp) return false;
+    if(SEARCH){
+      var q=SEARCH.toLowerCase();
+      if((r['NOME COMPLETO']||'').toLowerCase().indexOf(q)<0&&
+         (r['INTERESSE']||'').toLowerCase().indexOf(q)<0&&
+         (r['REGIÃO']||'').toLowerCase().indexOf(q)<0) return false;
+    }
+    return true;
+  });
+
+  // Count by status
+  var counts={todos:ORIG.length,novo:0,assumido:0,contatado:0,encaminhado:0,'nao-aproveitado':0};
+  ORIG.forEach(function(r){
+    var st=getStatus(r._id).status;
+    if(counts[st]!==undefined) counts[st]++;
+  });
+  Object.keys(counts).forEach(function(k){
+    var el=document.getElementById('cnt-'+k);
+    if(el) el.textContent=counts[k];
+  });
+
+  // KPIs
+  var sem=ORIG.filter(function(r){return getStatus(r._id).status==='novo';}).length;
+  var comVaga=ORIG.filter(function(r){return findVagas(r).length>0;}).length;
+  var exColabs=ORIG.filter(function(r){return(r['EX-COLABORADOR']||'').toLowerCase()==='sim';}).length;
+  var dispQ=ORIG.filter(function(r){return(r['DISPONIBILIDADE']||'').toLowerCase()==='qualquer horário';}).length;
+  document.getElementById('krow').innerHTML=[
+    {v:ORIG.length,l:'Total Candidatos',bar:'var(--blue)',col:'var(--blue)',fs:'todos'},
+    {v:sem,l:'Aguardando Contato',bar:'var(--red)',col:'var(--red)',fs:'novo'},
+    {v:counts.assumido,l:'Em Atendimento',bar:'var(--yellow)',col:'var(--yellow)',fs:'assumido'},
+    {v:comVaga,l:'Com Vaga Compatível',bar:'var(--g2)',col:'var(--g2)',fs:''},
+    {v:exColabs,l:'Ex-Colaboradores',bar:'var(--purple)',col:'var(--purple)',fs:''},
+  ].map(function(k){
+    var isOn=FILTER_STATUS===k.fs&&k.fs;
+    return '<div class="kk'+(isOn?' on':'')+'" data-fs="'+k.fs+'">'+
+      '<div class="kk-bar" style="background:'+k.bar+'"></div>'+
+      '<div class="kk-v" style="color:'+k.col+'">'+k.v+'</div>'+
+      '<div class="kk-l">'+k.l+'</div></div>';
+  }).join('');
+
+  // Alert
+  if(sem>0&&FILTER_STATUS==='todos'){
+    document.getElementById('alertBanner').style.display='flex';
+    document.getElementById('alertMsg').textContent=sem+' candidato'+(sem>1?'s':'')+' aguardando contato — sem analista responsável';
+  } else {
+    document.getElementById('alertBanner').style.display='none';
+  }
+
+  // Cards
+  var grid=document.getElementById('cardsGrid');
+  grid.innerHTML='';
+  if(d.length===0){
+    grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="empty-ico">🔍</div><div class="empty-txt">Nenhum candidato encontrado</div><div class="empty-sub">Tente ajustar os filtros</div></div>';
+    return;
+  }
+
+  d.forEach(function(r){
+    var st=getStatus(r._id);
+    var vagas=findVagas(r);
+    var regNorm=normalizeRegion(r['REGIÃO']);
+    var card=document.createElement('div');
+    card.className='cand-card '+st.status;
+
+    var stLabels={'novo':'🔵 Novo','assumido':'🟡 Assumido','contatado':'🟢 Contatado','encaminhado':'🟣 Encaminhado','nao-aproveitado':'⚪ Não Aproveitado'};
+    var stClasses={'novo':'st-novo','assumido':'st-assumido','contatado':'st-contato','encaminhado':'st-encaminhado','nao-aproveitado':'st-nao'};
+
+    var html='<div class="card-hd">'+
+      '<div><div class="card-nome">'+(r['NOME COMPLETO']||r['Nome']||'Sem nome')+'</div>'+
+      '<div class="card-cargo">'+(r['INTERESSE']||'–')+' · '+regNorm+'</div>'+
+      (r['EX-COLABORADOR']==='Sim'?'<div style="font-size:.57rem;color:var(--purple);font-weight:700;margin-top:2px">⭐ Ex-Colaborador</div>':'')+
+      '</div>'+
+      '<span class="card-status '+(stClasses[st.status]||'st-novo')+'">'+stLabels[st.status]+'</span>'+
+      '</div>';
+
+    html+='<div class="card-body">';
+    html+='<div class="card-info">'+
+      '<div class="ci">📍 <span>'+regNorm+'</span></div>'+
+      '<div class="ci">⏰ <span>'+(r['DISPONIBILIDADE']||'–')+'</span></div>'+
+      '<div class="ci">📱 <span>'+(r['WHATSAPP']||'–')+'</span></div>'+
+      '<div class="ci">📅 <span>'+(r['DATA']||'–')+'</span></div>'+
+      '</div>';
+
+    // Vagas compatíveis
+    if(vagas.length>0){
+      html+='<div class="card-vagas"><div class="cv-title">✅ Vagas Compatíveis</div>';
+      vagas.forEach(function(v){
+        html+='<div class="cv-item">'+(v['COD']||'')+(v['COD']?' · ':'')+
+          (v['CARGO']||'')+(v['LOCALIDADE']?' — '+v['LOCALIDADE']:'')+
+          (v['TURNO']?' ('+v['TURNO']+')':'')+'</div>';
+      });
+      html+='</div>';
+    } else {
+      html+='<div class="card-vagas"><div class="cv-none">Nenhuma vaga compatível no momento</div></div>';
+    }
+
+    // Obs se encaminhado
+    if(st.vaga||st.obs){
+      html+='<div style="font-size:.62rem;color:var(--purple);margin-bottom:6px">'+
+        (st.vaga?'📋 '+st.vaga+'<br>':'')+
+        (st.obs?'💬 '+st.obs:'')+'</div>';
+    }
+
+    if(st.analyst){
+      html+='<div class="assumido-por">👤 '+st.analyst+(st.ts?' · '+st.ts:'')+'</div>';
+    }
+
+    html+='</div>'; // card-body
+
+    // Footer buttons
+    html+='<div class="card-footer">';
+    if(st.status==='novo'){
+      if(CURRENT_ANALYST){
+        html+='<button class="btn-acao btn-assumir" data-id="'+r._id+'" data-action="assumir">👋 Assumir</button>';
+      }
+      html+='<button class="btn-acao btn-nao" data-id="'+r._id+'" data-action="nao">✕ Não Aproveitar</button>';
+    } else if(st.status==='assumido'){
+      html+='<button class="btn-acao btn-contato" data-id="'+r._id+'" data-action="contatado">📞 Contatado</button>';
+      html+='<button class="btn-acao btn-enc" data-id="'+r._id+'" data-action="encaminhar">📋 Encaminhar</button>';
+      html+='<button class="btn-acao btn-nao" data-id="'+r._id+'" data-action="nao">✕ Não Aproveitar</button>';
+    } else if(st.status==='contatado'){
+      html+='<button class="btn-acao btn-enc" data-id="'+r._id+'" data-action="encaminhar">📋 Encaminhar p/ Vaga</button>';
+      html+='<button class="btn-acao btn-nao" data-id="'+r._id+'" data-action="nao">✕ Não Aproveitar</button>';
+    } else if(st.status==='encaminhado'||st.status==='nao-aproveitado'){
+      html+='<button class="btn-acao btn-desfazer" data-id="'+r._id+'" data-action="desfazer">↩ Desfazer</button>';
+    }
+    html+='</div>';
+
+    card.innerHTML=html;
+    card.querySelectorAll('[data-action]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        handleAction(this.dataset.id, this.dataset.action, r);
+      });
+    });
+    grid.appendChild(card);
+  });
+
+  // KPI click handlers
+  document.querySelectorAll('.kk[data-fs]').forEach(function(k){
+    k.addEventListener('click',function(){
+      var fs=this.dataset.fs;
+      if(!fs) return;
+      FILTER_STATUS=FILTER_STATUS===fs?'todos':fs;
+      document.querySelectorAll('.stab').forEach(function(t){t.classList.remove('on');});
+      var tab=document.querySelector('.stab[data-status="'+FILTER_STATUS+'"]');
+      if(tab) tab.classList.add('on');
+      render();
+    });
+  });
+}
+
+function handleAction(id, action, r){
+  if(!CURRENT_ANALYST&&action!=='desfazer'){
+    alert('Selecione seu nome no topo antes de interagir!');
+    return;
+  }
+  var now=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  if(action==='assumir'){
+    STATUS[id]={status:'assumido',analyst:CURRENT_ANALYST,vaga:'',obs:'',ts:now};
+    saveStatus(); render();
+  } else if(action==='contatado'){
+    STATUS[id]={status:'contatado',analyst:CURRENT_ANALYST,vaga:'',obs:'',ts:now};
+    saveStatus(); render();
+  } else if(action==='nao'){
+    STATUS[id]={status:'nao-aproveitado',analyst:CURRENT_ANALYST,vaga:'',obs:'',ts:now};
+    saveStatus(); render();
+  } else if(action==='desfazer'){
+    delete STATUS[id];
+    saveStatus(); render();
+  } else if(action==='encaminhar'){
+    openEncaminhar(id, r);
+  }
+}
+
+function openEncaminhar(id, r){
+  MODAL_CANDIDATE_ID=id;
+  document.getElementById('modalTitle').textContent='Encaminhar: '+(r['NOME COMPLETO']||'Candidato');
+  var sel=document.getElementById('modalVaga');
+  sel.innerHTML='<option value="">Selecione uma vaga...</option>';
+  var vagas=findVagas(r);
+  vagas.forEach(function(v){
+    var o=document.createElement('option');
+    o.value=(v['COD']||'')+(v['CARGO']?' - '+v['CARGO']:'');
+    o.text=(v['COD']||'')+(v['CARGO']?' - '+v['CARGO']:'')+
+           (v['LOCALIDADE']?' ('+v['LOCALIDADE']+')':'')+
+           (v['TURNO']?' '+v['TURNO']:'');
+    sel.appendChild(o);
+  });
+  document.getElementById('modalObs').value='';
+  document.getElementById('modal').classList.add('on');
+}
+
+// INIT
+function parseCSV(text, sep){
+  if(text.charCodeAt(0)===65279) text=text.slice(1);
+  var lines=text.split('\n').filter(function(r){return r.trim();});
+  if(!lines.length) return [];
+  var fl=lines[0];
+  var s=sep||(((fl.split(';').length-1)>(fl.split(',').length-1))?';':',');
+  var hdr=lines[0].split(s).map(function(h){return h.trim().replace(/^"|"$/g,'').trim();});
+  var result=[];
+  for(var i=1;i<lines.length;i++){
+    var cols=lines[i].split(s).map(function(c){return c.trim().replace(/^"|"$/g,'');});
+    if(!cols[0]) continue;
+    var obj={};hdr.forEach(function(h,j){obj[h]=cols[j]||'';});
+    obj._id=String(i);
+    result.push(obj);
+  }
+  return result;
+}
+
+function buildSelects(){
+  var regioes=[...new Set(ORIG.map(function(r){return normalizeRegion(r['REGIÃO']);}).filter(Boolean))].sort();
+  var cargos=['SEGURANÇA','FACILITIES','ADM','OUTROS'];
+  var disps=[...new Set(ORIG.map(function(r){return r['DISPONIBILIDADE']||'';}).filter(Boolean))].sort();
+
+  function fill(id,arr){
+    var el=document.getElementById(id);
+    arr.forEach(function(v){var o=document.createElement('option');o.value=v;o.text=v;el.appendChild(o);});
+  }
+  fill('selRegiao',regioes);
+  fill('selCargo',cargos);
+  fill('selDisp',disps);
+}
+
+// Event listeners
+document.getElementById('analystSel').addEventListener('change',function(){
+  CURRENT_ANALYST=this.value;
+  render();
+});
+
+document.querySelectorAll('.stab').forEach(function(t){
+  t.addEventListener('click',function(){
+    FILTER_STATUS=this.dataset.status;
+    document.querySelectorAll('.stab').forEach(function(x){x.classList.remove('on');});
+    this.classList.add('on');
+    render();
+  });
+});
+
+document.getElementById('selRegiao').addEventListener('change',function(){FILTER.regiao=this.value;render();});
+document.getElementById('selCargo').addEventListener('change',function(){FILTER.cargo=this.value;render();});
+document.getElementById('selDisp').addEventListener('change',function(){FILTER.disp=this.value;render();});
+document.getElementById('srch').addEventListener('input',function(){SEARCH=this.value;render();});
+document.getElementById('btnClr').addEventListener('click',function(){
+  FILTER={regiao:'',cargo:'',disp:''};SEARCH='';FILTER_STATUS='todos';
+  document.getElementById('selRegiao').value='';
+  document.getElementById('selCargo').value='';
+  document.getElementById('selDisp').value='';
+  document.getElementById('srch').value='';
+  document.querySelectorAll('.stab').forEach(function(t){t.classList.remove('on');});
+  document.querySelector('.stab[data-status="todos"]').classList.add('on');
+  render();
+});
+
+document.getElementById('modalCancel').addEventListener('click',function(){document.getElementById('modal').classList.remove('on');});
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');});
+document.getElementById('modalOk').addEventListener('click',function(){
+  if(!MODAL_CANDIDATE_ID) return;
+  var vaga=document.getElementById('modalVaga').value;
+  var obs=document.getElementById('modalObs').value;
+  var now=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  STATUS[MODAL_CANDIDATE_ID]={status:'encaminhado',analyst:CURRENT_ANALYST,vaga:vaga,obs:obs,ts:now};
+  saveStatus();
+  document.getElementById('modal').classList.remove('on');
+  render();
+});
+
+// Load data
+loadStatus();
+
+var loaded={captacao:false, vagas:false};
+function tryRender(){
+  if(loaded.captacao){
+    buildSelects();
+    render();
+    document.getElementById('updTag').textContent='📅 '+new Date().toLocaleDateString('pt-BR');
+  }
+}
+
+fetch('captacao.csv')
+  .then(function(r){if(!r.ok)throw new Error('not found');return r.arrayBuffer();})
+  .then(function(buf){
+    ORIG=parseCSV(new TextDecoder('utf-8').decode(buf));
+    loaded.captacao=true;
+    tryRender();
+  })
+  .catch(function(){
+    document.getElementById('updTag').textContent='⚠️ captacao.csv não encontrado';
+  });
+
+fetch('vagas.csv')
+  .then(function(r){if(!r.ok)throw new Error('not found');return r.arrayBuffer();})
+  .then(function(buf){
+    VAGAS=parseCSV(new TextDecoder('utf-8').decode(buf));
+    // Filter only active vagas
+    var SABERTOS=['TRIAGEM','ENTREVISTA RH','ENTREVISTA OPS','ENTREVISTA CLIENTE','PESQUISA','TESTE','DOCUMENTAÇÃO','ANÁLISE CANCELAMENTO','ABERTA','REABERTA'];
+    VAGAS=VAGAS.filter(function(v){return SABERTOS.indexOf((v['STATUS GERAL']||v['STATUS RECRUTADOR']||'').trim().toUpperCase())>=0;});
+    loaded.vagas=true;
+    if(loaded.captacao) render();
+  })
+  .catch(function(){console.log('vagas.csv não carregado');});
+</script>
+</body>
+</html>
